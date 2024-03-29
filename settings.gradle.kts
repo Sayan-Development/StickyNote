@@ -9,13 +9,5 @@ pluginManagement {
 
 rootProject.name = "StickyNote"
 
-/*include(":core")
-include(":paper")
-include(":bukkit")
-include(
-    ":database:core",
-    ":database:bukkit",
-    ":database:velocity"
-)
-include("bukkit-database")
-include("velocity-database")*/
+include("core")
+include("bukkit")
