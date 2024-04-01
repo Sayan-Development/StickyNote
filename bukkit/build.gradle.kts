@@ -5,7 +5,7 @@ plugins {
     id("me.kcra.takenaka.accessor") version "1.1.1"
 }
 
-group = "org.sayandevelopment.bukkit"
+group = "org.sayandevelopment.stickynote.bukkit"
 
 repositories {
     // Takenaka
@@ -18,13 +18,13 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
 
-//    implementation("me.kcra.takenaka.accessor:me.kcra.takenaka.accessor.gradle.plugin:1.1.1")
-//    implementation(accessorRuntime())
-//    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
-//
-//    implementation("net.kyori:adventure-api:4.16.0")
-//    implementation("net.kyori:adventure-text-minimessage:4.16.0")
-//    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
+    implementation("me.kcra.takenaka.accessor:me.kcra.takenaka.accessor.gradle.plugin:1.1.1")
+    implementation(accessorRuntime())
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
+
+    implementation("net.kyori:adventure-api:4.16.0")
+    implementation("net.kyori:adventure-text-minimessage:4.16.0")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
 
     compileOnly(project(":core"))
 }
@@ -893,7 +893,7 @@ publishing {
             url = uri("https://repo.sayandevelopment.org/releases/")
 
             credentials {
-                username = "syrent"
+                username = System.getenv("REPO_USER")
                 password = System.getenv("REPO_TOKEN")
             }
         }
