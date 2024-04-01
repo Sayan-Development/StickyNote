@@ -1,8 +1,8 @@
 group = "org.sayandevelopment.core"
 
 dependencies {
-    implementation("org.spongepowered:configurate-yaml:4.1.2")
-    implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
+//    implementation("org.spongepowered:configurate-yaml:4.1.2")
+//    implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
 }
 
 publishing {
@@ -14,11 +14,12 @@ publishing {
 
     repositories {
         maven {
-            name = "jitpack"
-            url = uri("https://jitpack.io/")
-            content {
-                includeGroup("com.github.Mohamad82Bz")
-//                includeGroup("org.sayandevelopment.stickynote")
+            name = "sayandevelopment-repo"
+            url = uri("https://repo.sayandevelopment.org/releases/")
+
+            credentials {
+                username = "syrent"
+                password = System.getenv("REPO_TOKEN")
             }
         }
     }

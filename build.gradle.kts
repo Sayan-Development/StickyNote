@@ -6,8 +6,8 @@ plugins {
 }
 
 allprojects {
-    group = "com.github.Mohamad82Bz"
-    version = "1.0.0"
+    group = "org.sayandevelopment.stickynote"
+    version = "1.0.6"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -50,7 +50,12 @@ publishing {
     repositories {
         maven {
             name = "sayandevelopment-repo"
-            url = uri("https://sayandevelopment.org/")
+            url = uri("https://repo.sayandevelopment.org/releases/")
+
+            credentials {
+                username = "syrent"
+                password = System.getenv("REPO_TOKEN")
+            }
         }
     }
 }
