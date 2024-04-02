@@ -32,7 +32,7 @@ dependencies {
     implementation("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
 
-    compileOnly(project(":stickynote-core"))
+//    compileOnly(project(":stickynote-core"))
 }
 
 tasks {

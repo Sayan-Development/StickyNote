@@ -17,7 +17,7 @@ object AdventureUtils {
     @JvmStatic
     val miniMessage = MiniMessage.miniMessage()
 
-    @JvmStatic
+    /*@JvmStatic
     fun sendMessage(player: Player, message: Component) {
         audience.player(player).sendMessage(message)
     }
@@ -25,22 +25,25 @@ object AdventureUtils {
     @JvmStatic
     fun sendMessage(sender: CommandSender, message: Component) {
         audience.sender(sender).sendMessage(message)
-    }
+    }*/
 
+    @JvmStatic
     fun Player.sendMessage(message: Component) {
-        sendMessage(this, message)
-    }
-
-    fun CommandSender.sendMessage(message: Component) {
-        sendMessage(this, message)
+        audience.player(this).sendMessage(message)
     }
 
     @JvmStatic
-    fun toComponent(content: String, vararg placeholder: TagResolver): Component {
-        return miniMessage.deserialize(content, *placeholder)
+    fun CommandSender.sendMessage(message: Component) {
+        audience.sender(this).sendMessage(message)
     }
 
+    /*@JvmStatic
+    fun toComponent(content: String, vararg placeholder: TagResolver): Component {
+        return miniMessage.deserialize(content, *placeholder)
+    }*/
+
+    @JvmStatic
     fun String.component(vararg placeholder: TagResolver): Component {
-        return toComponent(this, *placeholder)
+        return miniMessage.deserialize(this, *placeholder)
     }
 }
