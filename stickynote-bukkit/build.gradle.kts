@@ -11,6 +11,9 @@ repositories {
 
     // SpigotAPI
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+
+    // cloud
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -23,6 +26,11 @@ dependencies {
     implementation("net.kyori:adventure-api:4.16.0")
     implementation("net.kyori:adventure-text-minimessage:4.16.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.2")
+
+    implementation("org.incendo:cloud-core:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-paper:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
 
     compileOnly(project(":stickynote-core"))
 }
