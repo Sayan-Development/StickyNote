@@ -55,7 +55,7 @@ subprojects {
                     licenses {
                         license {
                             name.set("GNU General Public License v3.0")
-                            url.set("https://github.com/sayan-development/stickynote")
+                            url.set("https://github.com/sayan-development/stickynote/blob/master/LICENSE")
                         }
                     }
                     developers {
@@ -67,7 +67,7 @@ subprojects {
                         developer {
                             id.set("syrent")
                             name.set("abbas")
-                            email.set("")
+                            email.set("syrent2356@gmail.com")
                         }
                     }
                     scm {
