@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.slf4j.LoggerFactory
+import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
@@ -64,32 +65,32 @@ object StickyNote {
     }
 
     @JvmStatic
-    fun runSync(runnable: () -> Unit) {
+    fun runSync(runnable: Runnable) {
         plugin.server.scheduler.runTask(plugin, runnable)
     }
 
     @JvmStatic
-    fun runSync(runnable: () -> Unit, delay: Long) {
+    fun runSync(runnable: Runnable, delay: Long) {
         plugin.server.scheduler.runTaskLater(plugin, runnable, delay)
     }
 
     @JvmStatic
-    fun runSync(runnable: () -> Unit, delay: Long, period: Long) {
+    fun runSync(runnable: Runnable, delay: Long, period: Long) {
         plugin.server.scheduler.runTaskTimer(plugin, runnable, delay, period)
     }
 
     @JvmStatic
-    fun runAsync(runnable: () -> Unit) {
+    fun runAsync(runnable: Runnable) {
         plugin.server.scheduler.runTaskAsynchronously(plugin, runnable)
     }
 
     @JvmStatic
-    fun runAsync(runnable: () -> Unit, delay: Long) {
+    fun runAsync(runnable: Runnable, delay: Long) {
         plugin.server.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay)
     }
 
     @JvmStatic
-    fun runAsync(runnable: () -> Unit, delay: Long, period: Long) {
+    fun runAsync(runnable: Runnable, delay: Long, period: Long) {
         plugin.server.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period)
     }
 
@@ -143,27 +144,27 @@ object StickyNote {
 
 }
 
-fun runSync(runnable: () -> Unit) {
+fun runSync(runnable: Runnable) {
     StickyNote.runSync(runnable)
 }
 
-fun runSync(runnable: () -> Unit, delay: Long) {
+fun runSync(runnable: Runnable, delay: Long) {
     StickyNote.runSync(runnable, delay)
 }
 
-fun runSync(runnable: () -> Unit, delay: Long, period: Long) {
+fun runSync(runnable: Runnable, delay: Long, period: Long) {
     StickyNote.runSync(runnable, delay, period)
 }
 
-fun runAsync(runnable: () -> Unit) {
+fun runAsync(runnable: Runnable) {
     StickyNote.runAsync(runnable)
 }
 
-fun runAsync(runnable: () -> Unit, delay: Long) {
+fun runAsync(runnable: Runnable, delay: Long) {
     StickyNote.runAsync(runnable, delay)
 }
 
-fun runAsync(runnable: () -> Unit, delay: Long, period: Long) {
+fun runAsync(runnable: Runnable, delay: Long, period: Long) {
     StickyNote.runAsync(runnable, delay, period)
 }
 
