@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.3"
+    version = "1.0.5"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -21,6 +21,10 @@ allprojects {
     java {
         withJavadocJar()
         withSourcesJar()
+
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
     }
 }
 
