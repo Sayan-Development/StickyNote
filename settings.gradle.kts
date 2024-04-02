@@ -9,5 +9,5 @@ pluginManagement {
 
 rootProject.name = "StickyNote"
 
-include("core")
-include("bukkit")
+include("stickynote-core")
+include("stickynote-bukkit")

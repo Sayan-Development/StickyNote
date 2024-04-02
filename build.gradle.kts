@@ -6,8 +6,8 @@ plugins {
 }
 
 allprojects {
-    group = "org.sayandevelopment.stickynote"
-    version = "1.0.1"
+    group = "org.sayandevelopment"
+    version = "1.0.0"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -32,29 +32,62 @@ subprojects {
 
         shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name}.jar")
+            archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
             from("LICENSE")
             minimize()
         }
-    }
-}
 
-publishing {
-    publications {
-        create<MavenPublication>("shadowJar") {
-            artifact(tasks["shadowJar"])
+        jar {
+            enabled = false
         }
     }
 
-    repositories {
-        maven {
-            name = "sayandevelopment-repo"
-            url = uri("https://repo.sayandevelopment.org/releases/")
+    publishing {
+        publications {
+            create<MavenPublication>("mavenJava") {
+                from(components["java"])
+                pom {
+                    name.set("stickynote")
+                    description.set("A modular Kotlin library for Minecraft: JE")
+                    url.set("https://github.com/sayan-development/stickynote")
+                    licenses {
+                        license {
+                            name.set("GNU General Public License v3.0")
+                            url.set("https://github.com/sayan-development/stickynote")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("mohamad82")
+                            name.set("mohamad")
+                            email.set("")
+                        }
+                        developer {
+                            id.set("syrent")
+                            name.set("abbas")
+                            email.set("")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:github.com/sayan-development/stickynote.git")
+                        developerConnection.set("scm:git:ssh://github.com/sayan-development/stickynote.git")
+                        url.set("https://github.com/sayan-development/stickynote/tree/master")
+                    }
+                }
+            }
+        }
 
-            credentials {
-                username = System.getenv("REPO_USER")
-                password = System.getenv("REPO_TOKEN")
+        repositories {
+            maven {
+                name = "sayandevelopment-repo"
+                url = uri("https://repo.sayandevelopment.org/snapshots/")
+
+                credentials {
+                    username = project.findProperty("repo.sayan.user") as String
+                    password = project.findProperty("repo.sayan.token") as String
+                }
             }
         }
     }

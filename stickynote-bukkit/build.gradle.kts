@@ -5,8 +5,6 @@ plugins {
     id("me.kcra.takenaka.accessor") version "1.1.1"
 }
 
-group = "org.sayandevelopment.stickynote.bukkit"
-
 repositories {
     // Takenaka
     maven("https://repo.screamingsandals.org/public")
@@ -26,7 +24,13 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.16.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.2")
 
-    compileOnly(project(":core"))
+    compileOnly(project(":stickynote-core"))
+}
+
+tasks {
+    sourcesJar {
+        dependsOn(generateAccessors)
+    }
 }
 
 @Suppress("LocalVariableName")
@@ -877,25 +881,4 @@ accessors {
 
     }*/
 
-}
-
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            artifact(tasks["jar"])
-        }
-    }
-
-    repositories {
-        maven {
-            name = "sayandevelopment-repo"
-            url = uri("https://repo.sayandevelopment.org/releases/")
-
-            credentials {
-                username = System.getenv("REPO_USER")
-                password = System.getenv("REPO_TOKEN")
-            }
-        }
-    }
 }
