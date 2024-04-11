@@ -1,11 +1,11 @@
 package org.sayandevelopment.bukkit.command
 
-import org.sayandevelopment.bukkit.command.interfaces.SenderExtension
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.sayandevelopment.bukkit.command.interfaces.SenderExtension
 import org.sayandevelopment.bukkit.utils.AdventureUtils
 import org.sayandevelopment.bukkit.utils.AdventureUtils.sendMessage
 
