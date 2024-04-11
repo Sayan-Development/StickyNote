@@ -1,4 +1,4 @@
-package ir.syrent.origin.paper.command
+package org.sayandevelopment.bukkit.command
 
 import org.sayandevelopment.bukkit.command.interfaces.SenderExtension
 import net.kyori.adventure.audience.Audience
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.sayandevelopment.bukkit.utils.AdventureUtils
 import org.sayandevelopment.bukkit.utils.AdventureUtils.sendMessage
 
-open class OriginSenderExtension(
+open class StickySender(
     private var commandSender: CommandSender
 ): SenderExtension {
 
@@ -20,7 +20,10 @@ open class OriginSenderExtension(
     override fun player(): Player? {
         if (commandSender is Player) return (commandSender as Player).player
 
-        commandSender.sendMessage(onlinePlayersMessage)
+        if (onlinePlayersMessage != Component.empty()) {
+            commandSender.sendMessage(onlinePlayersMessage)
+        }
+
         return null
     }
 
@@ -36,7 +39,7 @@ open class OriginSenderExtension(
         return commandSender
     }
 
-    override fun sentOnlyPlayersMessage(message: Component) {
+    override fun onlyPlayersComponent(message: Component) {
         onlinePlayersMessage = message
     }
 

@@ -40,5 +40,5 @@ interface SenderExtension {
      *
      * @param message The message to send.
      */
-    fun sentOnlyPlayersMessage(message: Component)
+    fun onlyPlayersComponent(message: Component)
 }

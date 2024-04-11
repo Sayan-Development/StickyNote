@@ -1,6 +1,5 @@
 package org.sayandevelopment.bukkit.command
 
-import ir.syrent.origin.paper.command.OriginSenderExtension
 import org.sayandevelopment.bukkit.command.interfaces.CommandExtension
 import org.sayandevelopment.bukkit.command.interfaces.SenderExtension
 import net.kyori.adventure.text.Component
@@ -28,7 +27,7 @@ abstract class StickyCommand(
     var exceptionHandler: MinecraftExceptionHandler<SenderExtension>
 
     init {
-        val originSenderMapper = { commandSender: CommandSender -> OriginSenderExtension(commandSender) }
+        val originSenderMapper = { commandSender: CommandSender -> StickySender(commandSender) }
         val backwardsMapper = { sayanSenderExtension: SenderExtension -> sayanSenderExtension.sender() }
         val audienceMapper = { sayanSenderExtension: SenderExtension -> AdventureUtils.audience.sender(sayanSenderExtension.sender()) }
 
@@ -45,12 +44,12 @@ abstract class StickyCommand(
         manager.registerBrigadier()
 
         help = MinecraftHelp.create(
-            "/${name} help",
+            name,
             manager,
             audienceMapper
         )
 
-        builder = manager.commandBuilder(name, *aliases).permission(constructBasePermission(name))
+        builder = manager.commandBuilder(name, *aliases)
     }
 
     override fun errorPrefix(): Component {
