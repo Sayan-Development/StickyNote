@@ -33,7 +33,7 @@ dependencies {
 
     implementation("org.reflections:reflections:0.10.2")
 
-//    compileOnly(project(":stickynote-core"))
+    compileOnly(project(":stickynote-core"))
 }
 
 tasks {
