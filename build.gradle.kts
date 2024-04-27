@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.2-SNAPSHOT"
+    version = "1.0.3-SNAPSHOT"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -21,12 +21,8 @@ allprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-    }
-}
 
-subprojects {
-    java {
-        disableAutoTargetJvm()
+        sourceCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -38,16 +34,16 @@ subprojects {
 
         shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name}.jar")
-            archiveClassifier.set("")
+//            archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
             from("LICENSE")
             minimize()
         }
 
-        jar {
+        /*jar {
             enabled = false
-        }
+        }*/
     }
 
     publishing {
