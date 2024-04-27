@@ -1,5 +1,6 @@
 package org.sayandevelopment.core.configuration
 
+import org.spongepowered.configurate.ScopedConfigurationNode
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
@@ -7,12 +8,12 @@ import java.io.File
 import java.nio.file.Path
 
 abstract class Config(
-    val directory: File,
+    val file: File,
     val builder: YamlConfigurationLoader.Builder
 ) {
 
-    constructor(directory: File) : this(
-        directory,
+    constructor(file: File) : this(
+        file,
         YamlConfigurationLoader.builder()
             .nodeStyle(NodeStyle.BLOCK)
             .defaultOptions { options ->
@@ -20,7 +21,7 @@ abstract class Config(
                     builder.registerAnnotatedObjects(objectMapperFactory())
                 }
             }
-            .file(directory)
+            .file(file)
     )
 
     constructor(path: Path) : this(path.toFile())

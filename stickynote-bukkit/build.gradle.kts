@@ -2,7 +2,7 @@ import me.kcra.takenaka.generator.accessor.AccessorType
 import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.1.1"
+    id("me.kcra.takenaka.accessor") version "1.1.2"
 }
 
 repositories {
@@ -19,9 +19,8 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
 
-    implementation("me.kcra.takenaka.accessor:me.kcra.takenaka.accessor.gradle.plugin:1.1.1")
-    implementation(accessorRuntime())
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
+    implementation(accessorRuntime())
 
     implementation("net.kyori:adventure-api:4.16.0")
     implementation("net.kyori:adventure-text-minimessage:4.16.0")
@@ -34,7 +33,7 @@ dependencies {
 
     implementation("org.reflections:reflections:0.10.2")
 
-    compileOnly(project(":stickynote-core"))
+//    compileOnly(project(":stickynote-core"))
 }
 
 tasks {

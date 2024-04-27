@@ -26,14 +26,14 @@ interface SenderExtension {
      *
      * @param sender The command sender to set.
      */
-    fun sender(sender: CommandSender)
+    fun bukkitSender(sender: CommandSender)
 
     /**
      * Retrieves the command sender associated with this sender instance.
      *
      * @return The command sender associated with this sender instance.
      */
-    fun sender(): CommandSender
+    fun bukkitSender(): CommandSender
 
     /**
      * Sends a message to the sender if they are not a player.

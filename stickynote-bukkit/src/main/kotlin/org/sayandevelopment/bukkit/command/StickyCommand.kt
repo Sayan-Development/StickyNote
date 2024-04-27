@@ -28,8 +28,8 @@ abstract class StickyCommand(
 
     init {
         val originSenderMapper = { commandSender: CommandSender -> StickySender(commandSender) }
-        val backwardsMapper = { sayanSenderExtension: SenderExtension -> sayanSenderExtension.sender() }
-        val audienceMapper = { sayanSenderExtension: SenderExtension -> AdventureUtils.audience.sender(sayanSenderExtension.sender()) }
+        val backwardsMapper = { sayanSenderExtension: SenderExtension -> sayanSenderExtension.bukkitSender() }
+        val audienceMapper = { sayanSenderExtension: SenderExtension -> AdventureUtils.audience.sender(sayanSenderExtension.bukkitSender()) }
 
         manager = PaperCommandManager(
             plugin,

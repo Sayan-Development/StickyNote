@@ -31,11 +31,11 @@ open class StickySender(
         return AdventureUtils.audience.sender(commandSender)
     }
 
-    override fun sender(sender: CommandSender) {
+    override fun bukkitSender(sender: CommandSender) {
         commandSender = sender
     }
 
-    override fun sender(): CommandSender {
+    override fun bukkitSender(): CommandSender {
         return commandSender
     }
 
