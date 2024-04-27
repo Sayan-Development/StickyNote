@@ -27,6 +27,7 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
 
     override fun connect() {
         try {
+            Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.path)
         } catch (e: SQLException) {
             logger.severe(e.message)
