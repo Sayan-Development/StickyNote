@@ -5,7 +5,7 @@ import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Logger
 
-class SQLiteDatabase protected constructor(dbFile: File, logger: Logger) : SQLiteExecutor(dbFile, logger) {
+class SQLiteDatabase(dbFile: File, logger: Logger) : SQLiteExecutor(dbFile, logger) {
     override fun connect() {
         super.connect()
         startQueue()
