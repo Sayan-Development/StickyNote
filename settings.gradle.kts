@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
 
-        // Used for the gradle plugin
+        // Takenaka
         maven("https://repo.screamingsandals.org/public")
     }
 }
