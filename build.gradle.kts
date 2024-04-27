@@ -85,8 +85,8 @@ subprojects {
                 url = uri("https://repo.sayandevelopment.org/snapshots/")
 
                 credentials {
-                    username = System.getenv("repo.sayan.user") ?: project.findProperty("repo.sayan.user") as String
-                    password = System.getenv("repo.sayan.token") ?: project.findProperty("repo.sayan.token") as String
+                    username = System.getenv("REPO_SAYAN_USER") ?: project.findProperty("repo.sayan.user") as String
+                    password = System.getenv("REPO_SAYAN_TOKEN") ?: project.findProperty("repo.sayan.token") as String
                 }
             }
         }
