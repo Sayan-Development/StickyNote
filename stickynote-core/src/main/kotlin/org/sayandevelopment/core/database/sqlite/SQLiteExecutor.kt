@@ -73,12 +73,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
     protected fun tick() {
         for (priority in Priority.entries) {
             val queries = queue[priority] ?: continue
-            if (queries.isEmpty()) continue
-
-            val query = queries.first()
+            val query = queries.firstOrNull() ?: continue
 
             if (executeQuerySync(query).statusCode == Query.StatusCode.FINISHED) {
-                queries.removeFirst()
+                queries.removeFirstOrNull()
             }
             break
         }
