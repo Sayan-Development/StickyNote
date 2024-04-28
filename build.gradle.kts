@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.9-SNAPSHOT"
+    version = "1.0.30-SNAPSHOT"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -19,24 +19,40 @@ allprojects {
     }
 
     java {
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+
         withJavadocJar()
         withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_17
     }
-}
 
-subprojects {
+    kotlin {
+        jvmToolchain(17)
+    }
+
     tasks {
+        withType<JavaCompile> {
+            options.encoding = "UTF-8"
+        }
+
+        compileKotlin {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+
         build {
             dependsOn(shadowJar)
         }
 
         shadowJar {
-            archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name}.jar")
+            archiveFileName.set("${rootProject.name}-${version}-${this@allprojects.name.removePrefix("stickynote-")}.jar")
 //            archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
+            exclude("**/*.kotlin_metadata")
+            exclude("**/*.kotlin_module")
+            exclude("**/*.kotlin_builtins")
+            relocate("net.kyori", "org.sayandevelopment.lib.net.kyori")
             from("LICENSE")
             minimize()
         }
@@ -48,9 +64,8 @@ subprojects {
 
     publishing {
         publications {
-            create<MavenPublication>("mavenJava") {
-                artifact(this@subprojects.tasks["shadowJar"])
-//                from(components["java"])
+            create<MavenPublication>("shadow") {
+                from(components["java"])
                 pom {
                     name.set("stickynote")
                     description.set("A modular Kotlin library for Minecraft: JE")
