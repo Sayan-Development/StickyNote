@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.30-SNAPSHOT"
+    version = "1.0.32-SNAPSHOT"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -19,25 +19,13 @@ allprojects {
     }
 
     java {
-        toolchain.languageVersion = JavaLanguageVersion.of(17)
-
         withJavadocJar()
         withSourcesJar()
-    }
-
-    kotlin {
-        jvmToolchain(17)
     }
 
     tasks {
         withType<JavaCompile> {
             options.encoding = "UTF-8"
-        }
-
-        compileKotlin {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
         }
 
         build {
