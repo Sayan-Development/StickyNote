@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.8-SNAPSHOT"
+    version = "1.0.9-SNAPSHOT"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -49,7 +49,8 @@ subprojects {
     publishing {
         publications {
             create<MavenPublication>("mavenJava") {
-                from(components["java"])
+                artifact(this@subprojects.tasks["shadowJar"])
+//                from(components["java"])
                 pom {
                     name.set("stickynote")
                     description.set("A modular Kotlin library for Minecraft: JE")

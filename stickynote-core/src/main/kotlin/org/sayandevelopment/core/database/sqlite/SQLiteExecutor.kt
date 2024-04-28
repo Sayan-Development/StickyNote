@@ -85,4 +85,5 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
     protected abstract fun onQueryFail(query: Query)
 
     protected abstract fun onQueryRemoveDueToFail(query: Query)
+
 }
