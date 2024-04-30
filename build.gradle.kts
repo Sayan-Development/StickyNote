@@ -17,9 +17,10 @@ allprojects {
     repositories {
         mavenCentral()
     }
+}
 
+subprojects {
     java {
-        disableAutoTargetJvm()
         withJavadocJar()
         withSourcesJar()
     }
@@ -34,7 +35,7 @@ allprojects {
         }
 
         shadowJar {
-            archiveFileName.set("${rootProject.name}-${version}-${this@allprojects.name.removePrefix("stickynote-")}.jar")
+            archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
@@ -57,8 +58,7 @@ allprojects {
     publishing {
         publications {
             create<MavenPublication>("shadow") {
-                this@allprojects.shadow.component(this)
-//                from(components["java"])
+                this@subprojects.shadow.component(this)
                 pom {
                     name.set("stickynote")
                     description.set("A modular Kotlin library for Minecraft: JE")
