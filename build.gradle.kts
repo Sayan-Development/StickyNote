@@ -1,15 +1,17 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "1.9.22"
-    `java-library`
+    `java`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.3-SNAPSHOT"
 
-    plugins.apply("java-library")
+    plugins.apply("java")
     plugins.apply("maven-publish")
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
@@ -34,7 +36,7 @@ subprojects {
             dependsOn(shadowJar)
         }
 
-        shadowJar {
+        withType<ShadowJar> {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
@@ -42,7 +44,7 @@ subprojects {
             relocate("net.kyori", "org.sayandevelopment.stickynote.lib.kyori")
             relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.zaxxer")
             relocate("org.spongepowered", "org.sayandevelopment.stickynote.lib.spongepowered")
-            relocate("org.self4j", "org.sayandevelopment.stickynote.lib.self4j")
+            relocate("org.slf4j", "org.sayandevelopment.stickynote.lib.slf4j")
             relocate("org.reflections", "org.sayandevelopment.stickynote.lib.reflections")
             relocate("org.jetbrains", "org.sayandevelopment.stickynote.lib.jetbrains")
             relocate("org.incendo", "org.sayandevelopment.stickynote.lib.incendo")
@@ -58,6 +60,7 @@ subprojects {
     publishing {
         publications {
             create<MavenPublication>("shadow") {
+                from(components["java"])
                 this@subprojects.shadow.component(this)
                 pom {
                     name.set("stickynote")
