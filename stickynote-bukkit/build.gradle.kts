@@ -22,18 +22,18 @@ dependencies {
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
     implementation(accessorRuntime())
 
-    implementation("net.kyori:adventure-api:4.16.0")
-    implementation("net.kyori:adventure-text-minimessage:4.16.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
+    api("net.kyori:adventure-api:4.16.0")
+    api("net.kyori:adventure-text-minimessage:4.16.0")
+    api("net.kyori:adventure-platform-bukkit:4.3.2")
 
-    implementation("org.incendo:cloud-core:2.0.0-SNAPSHOT")
-    implementation("org.incendo:cloud-paper:2.0.0-SNAPSHOT")
-    implementation("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
-    implementation("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
+    api("org.incendo:cloud-core:2.0.0-SNAPSHOT")
+    api("org.incendo:cloud-paper:2.0.0-SNAPSHOT")
+    api("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
+    api("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
 
-    implementation("org.reflections:reflections:0.10.2")
+    api("org.reflections:reflections:0.10.2")
 
-    compileOnly(project(":stickynote-core"))
+    api(project(":stickynote-core"))
 }
 
 tasks {

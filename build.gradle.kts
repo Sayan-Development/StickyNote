@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.32-SNAPSHOT"
+    version = "1.0.42-SNAPSHOT"
 
     plugins.apply("java")
     plugins.apply("maven-publish")
@@ -34,20 +34,24 @@ allprojects {
 
         shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@allprojects.name.removePrefix("stickynote-")}.jar")
-//            archiveClassifier.set("")
-            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
+            archiveClassifier.set("")
+//            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
-            exclude("**/*.kotlin_metadata")
-            exclude("**/*.kotlin_module")
-            exclude("**/*.kotlin_builtins")
-            relocate("net.kyori", "org.sayandevelopment.lib.net.kyori")
+            relocate("net.kyori", "org.sayandevelopment.stickynote.lib.net.kyori")
+            relocate("kotlin", "org.sayandevelopment.stickynote.lib.kotlin")
+            relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.com.zaxxer")
+            relocate("org.spongepowered", "org.sayandevelopment.stickynote.lib.org.spongepowered")
+            relocate("org.self4j", "org.sayandevelopment.stickynote.lib.org.self4j")
+            relocate("org.reflections", "org.sayandevelopment.stickynote.lib.org.reflections")
+            relocate("org.jetbrains", "org.sayandevelopment.stickynote.lib.org.jetbrains")
+            relocate("org.incendo", "org.sayandevelopment.stickynote.lib.org.incendo")
             from("LICENSE")
             minimize()
         }
 
-        /*jar {
+        jar {
             enabled = false
-        }*/
+        }
     }
 
     publishing {
