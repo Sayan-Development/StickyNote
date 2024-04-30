@@ -22,8 +22,6 @@ dependencies {
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
     implementation(accessorRuntime())
 
-    api("net.kyori:adventure-api:4.16.0")
-    api("net.kyori:adventure-text-minimessage:4.16.0")
     api("net.kyori:adventure-platform-bukkit:4.3.2")
 
     api("org.incendo:cloud-core:2.0.0-SNAPSHOT")
@@ -33,7 +31,7 @@ dependencies {
 
     api("org.reflections:reflections:0.10.2")
 
-    api(project(":stickynote-core"))
+    compileOnly(project(":stickynote-core"))
 }
 
 tasks {

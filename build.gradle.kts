@@ -1,15 +1,15 @@
 plugins {
     kotlin("jvm") version "1.9.22"
-    java
+    `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.42-SNAPSHOT"
+    version = "1.0.0-SNAPSHOT"
 
-    plugins.apply("java")
+    plugins.apply("java-library")
     plugins.apply("maven-publish")
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
@@ -19,6 +19,7 @@ allprojects {
     }
 
     java {
+        disableAutoTargetJvm()
         withJavadocJar()
         withSourcesJar()
     }
@@ -35,16 +36,15 @@ allprojects {
         shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@allprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set("")
-//            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
+            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
-            relocate("net.kyori", "org.sayandevelopment.stickynote.lib.net.kyori")
-            relocate("kotlin", "org.sayandevelopment.stickynote.lib.kotlin")
-            relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.com.zaxxer")
-            relocate("org.spongepowered", "org.sayandevelopment.stickynote.lib.org.spongepowered")
-            relocate("org.self4j", "org.sayandevelopment.stickynote.lib.org.self4j")
-            relocate("org.reflections", "org.sayandevelopment.stickynote.lib.org.reflections")
-            relocate("org.jetbrains", "org.sayandevelopment.stickynote.lib.org.jetbrains")
-            relocate("org.incendo", "org.sayandevelopment.stickynote.lib.org.incendo")
+            relocate("net.kyori", "org.sayandevelopment.stickynote.lib.kyori")
+            relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.zaxxer")
+            relocate("org.spongepowered", "org.sayandevelopment.stickynote.lib.spongepowered")
+            relocate("org.self4j", "org.sayandevelopment.stickynote.lib.self4j")
+            relocate("org.reflections", "org.sayandevelopment.stickynote.lib.reflections")
+            relocate("org.jetbrains", "org.sayandevelopment.stickynote.lib.jetbrains")
+            relocate("org.incendo", "org.sayandevelopment.stickynote.lib.incendo")
             from("LICENSE")
             minimize()
         }
@@ -57,7 +57,8 @@ allprojects {
     publishing {
         publications {
             create<MavenPublication>("shadow") {
-                from(components["java"])
+                this@allprojects.shadow.component(this)
+//                from(components["java"])
                 pom {
                     name.set("stickynote")
                     description.set("A modular Kotlin library for Minecraft: JE")
