@@ -2,16 +2,16 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "1.9.22"
-    `java`
+    `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "org.sayandevelopment"
-    version = "1.0.3-SNAPSHOT"
+    version = "1.0.0-SNAPSHOT"
 
-    plugins.apply("java")
+    plugins.apply("java-library")
     plugins.apply("maven-publish")
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
@@ -60,7 +60,6 @@ subprojects {
     publishing {
         publications {
             create<MavenPublication>("shadow") {
-                from(components["java"])
                 this@subprojects.shadow.component(this)
                 pom {
                     name.set("stickynote")
