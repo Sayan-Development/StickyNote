@@ -67,7 +67,7 @@ subprojects {
                 setPom(this)
             }
             create<MavenPublication>("shadow") {
-                this@subprojects.shadow.component(this)
+                artifact(tasks["shadowJar"])
                 setPom(this)
             }
         }
