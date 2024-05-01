@@ -28,20 +28,15 @@ subprojects {
     }
 
     tasks {
-        withType<JavaCompile> {
-            options.encoding = "UTF-8"
+        jar {
+            archiveClassifier.set("unshaded")
         }
 
-        build {
-            dependsOn(shadowJar)
-        }
-
-        withType<ShadowJar> {
+        shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
-            archiveClassifier.set("")
+            archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
-            mergeServiceFiles()
             exclude("**/*.kotlin_metadata")
             exclude("**/*.kotlin_builtins")
             relocate("net.kyori", "org.sayandevelopment.stickynote.lib.kyori")
@@ -56,16 +51,14 @@ subprojects {
         }
     }
 
-    val javaComponent = components["java"] as AdhocComponentWithVariants
-    println(configurations.asMap.keys)
-    javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
-        skip()
-    }
-
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(javaComponent)
+                from(components["java"])
+                setPom(this)
+            }
+            create<MavenPublication>("shadow") {
+                this@subprojects.shadow.component(this)
                 setPom(this)
             }
         }
