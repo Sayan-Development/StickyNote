@@ -54,20 +54,18 @@ subprojects {
             from("LICENSE")
             minimize()
         }
+    }
 
-        jar {
-            enabled = false
-        }
+    val javaComponent = components["java"] as AdhocComponentWithVariants
+    println(configurations.asMap.keys)
+    javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
+        skip()
     }
 
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(components["java"])
-                setPom(this)
-            }
-            create<MavenPublication>("shadow") {
-                artifact(tasks["shadowJar"])
+                from(javaComponent)
                 setPom(this)
             }
         }
