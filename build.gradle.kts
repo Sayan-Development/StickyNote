@@ -41,6 +41,9 @@ subprojects {
             archiveClassifier.set("")
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             exclude("META-INF/**")
+            mergeServiceFiles()
+            exclude("**/*.kotlin_metadata")
+            exclude("**/*.kotlin_builtins")
             relocate("net.kyori", "org.sayandevelopment.stickynote.lib.kyori")
             relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.zaxxer")
             relocate("org.spongepowered", "org.sayandevelopment.stickynote.lib.spongepowered")
@@ -59,36 +62,13 @@ subprojects {
 
     publishing {
         publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+                setPom(this)
+            }
             create<MavenPublication>("shadow") {
                 this@subprojects.shadow.component(this)
-                pom {
-                    name.set("stickynote")
-                    description.set("A modular Kotlin library for Minecraft: JE")
-                    url.set("https://github.com/sayan-development/stickynote")
-                    licenses {
-                        license {
-                            name.set("GNU General Public License v3.0")
-                            url.set("https://github.com/sayan-development/stickynote/blob/master/LICENSE")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("mohamad82")
-                            name.set("mohamad")
-                            email.set("")
-                        }
-                        developer {
-                            id.set("syrent")
-                            name.set("abbas")
-                            email.set("syrent2356@gmail.com")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git:github.com/sayan-development/stickynote.git")
-                        developerConnection.set("scm:git:ssh://github.com/sayan-development/stickynote.git")
-                        url.set("https://github.com/sayan-development/stickynote/tree/master")
-                    }
-                }
+                setPom(this)
             }
         }
 
@@ -106,3 +86,33 @@ subprojects {
     }
 }
 
+fun setPom(publication: MavenPublication) {
+    publication.pom {
+        name.set("stickynote")
+        description.set("A modular Kotlin library for Minecraft: JE")
+        url.set("https://github.com/sayan-development/stickynote")
+        licenses {
+            license {
+                name.set("GNU General Public License v3.0")
+                url.set("https://github.com/sayan-development/stickynote/blob/master/LICENSE")
+            }
+        }
+        developers {
+            developer {
+                id.set("mohamad82")
+                name.set("mohamad")
+                email.set("")
+            }
+            developer {
+                id.set("syrent")
+                name.set("abbas")
+                email.set("syrent2356@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:github.com/sayan-development/stickynote.git")
+            developerConnection.set("scm:git:ssh://github.com/sayan-development/stickynote.git")
+            url.set("https://github.com/sayan-development/stickynote/tree/master")
+        }
+    }
+}
