@@ -51,7 +51,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
                 query.statement.startsWith("DELETE") ||
                 query.statement.startsWith("CREATE") ||
                 query.statement.startsWith("ALTER")
-            ) preparedStatement.executeUpdate()
+            ) {
+                preparedStatement.executeUpdate()
+                preparedStatement.close()
+            }
             else resultSet = preparedStatement.executeQuery()
 
             if (resultSet != null) {
