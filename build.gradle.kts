@@ -9,7 +9,7 @@ plugins {
 }
 
 allprojects {
-    group = "org.sayandevelopment"
+    group = "org.sayandev"
     version = "1.0.0"
 
     plugins.apply("java-library")
@@ -37,11 +37,11 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-            relocate("com.zaxxer", "org.sayandevelopment.stickynote.lib.zaxxer")
-            relocate("org.slf4j", "org.sayandevelopment.stickynote.lib.slf4j")
-            relocate("org.reflections", "org.sayandevelopment.stickynote.lib.reflections")
-            relocate("org.jetbrains", "org.sayandevelopment.stickynote.lib.jetbrains")
-            relocate("org.incendo", "org.sayandevelopment.stickynote.lib.incendo")
+            relocate("com.zaxxer", "org.sayandev.stickynote.lib.zaxxer")
+            relocate("org.slf4j", "org.sayandev.stickynote.lib.slf4j")
+            relocate("org.reflections", "org.sayandev.stickynote.lib.reflections")
+            relocate("org.jetbrains", "org.sayandev.stickynote.lib.jetbrains")
+            relocate("org.incendo", "org.sayandev.stickynote.lib.incendo")
             from("LICENSE")
         }
     }
