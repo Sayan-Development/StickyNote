@@ -7,6 +7,10 @@ dependencies {
 
     api("com.mysql:mysql-connector-j:8.4.0")
 
+    implementation("org.apache.maven:maven-resolver-provider:3.9.6")
+    implementation("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
+    implementation("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
+
     implementation("com.zaxxer:HikariCP:5.1.0")
 
     compileOnlyApi("com.google.guava:guava:31.1-jre")

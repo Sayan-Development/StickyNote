@@ -4,6 +4,7 @@ import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.serialize.TypeSerializer
+import org.spongepowered.configurate.util.MapFactories
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
@@ -26,6 +27,7 @@ abstract class Config(
                 options.serializers { builder ->
                     builder.registerAnnotatedObjects(objectMapperFactory())
                 }
+                options.mapFactory(MapFactories.sortedNatural())
             }
             .file(File(directory, name)),
     )
