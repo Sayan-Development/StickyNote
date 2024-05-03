@@ -88,7 +88,7 @@ subprojects {
         repositories {
             maven {
                 name = "sayandevelopment-repo"
-                url = uri("https://repo.sayandevelopment.org/snapshots/")
+                url = uri("https://repo.sayandev.org/snapshots/")
 
                 credentials {
                     username = System.getenv("REPO_SAYAN_USER") ?: project.findProperty("repo.sayan.user") as String
