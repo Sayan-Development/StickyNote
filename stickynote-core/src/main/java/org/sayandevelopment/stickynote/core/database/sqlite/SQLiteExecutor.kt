@@ -10,7 +10,6 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.*
 import java.util.logging.Logger
 
 abstract class SQLiteExecutor protected constructor(protected val dbFile: File, private val logger: Logger) : Database() {
@@ -18,7 +17,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
 
     init {
         try {
-            if (!dbFile.exists()) dbFile.createNewFile()
+            if (!dbFile.exists()) {
+                dbFile.parentFile.mkdirs()
+                dbFile.createNewFile()
+            }
         } catch (e: IOException) {
             logger.severe("Failed to create the sqlite database file. Stacktrace:")
             e.printStackTrace()

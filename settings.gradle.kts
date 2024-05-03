@@ -11,3 +11,4 @@ rootProject.name = "StickyNote"
 
 include("stickynote-core")
 include("stickynote-bukkit")
+include("stickynote-paper")

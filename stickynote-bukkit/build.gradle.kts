@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.5-R0.1-SNAPSHOT")
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
     implementation(accessorRuntime())
