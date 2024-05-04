@@ -1,12 +1,13 @@
 package org.sayandev.stickynote.core.configuration
 
+import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
+import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.serialize.TypeSerializer
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
 import java.nio.file.Path
-import java.util.logging.Logger
 
 abstract class Config(
     @Transient val directory: File,
@@ -33,12 +34,8 @@ abstract class Config(
     @Transient var yaml = builder.build()
     @Transient var config = yaml.load()
 
-    init {
-        load()
-    }
-
-    open fun load() {
-        createFile()
+    fun load() {
+        save()
         reload()
     }
 
@@ -49,16 +46,21 @@ abstract class Config(
         yaml.save(config)
     }
 
-    fun createFile() {
+    fun createFile(): Boolean {
         if (!file.exists()) {
             directory.mkdirs()
             file.createNewFile()
+            return true
         }
+        return false
     }
 
     open fun reload() {
         yaml = builder.build()
-        config = yaml.load()
+        config = yaml.load(ConfigurationOptions.defaults().apply {
+            shouldCopyDefaults(true)
+        })
+        config.set(config)
     }
 
     companion object {

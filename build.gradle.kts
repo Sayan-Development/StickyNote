@@ -1,7 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
     `java-library`
     `maven-publish`
     id("io.github.goooler.shadow") version "8.1.7"
@@ -23,8 +24,8 @@ allprojects {
 
 subprojects {
     java {
-        withJavadocJar()
         withSourcesJar()
+        withJavadocJar()
     }
 
     tasks {
