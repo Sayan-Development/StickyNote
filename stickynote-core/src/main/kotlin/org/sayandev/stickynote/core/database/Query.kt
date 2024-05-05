@@ -79,6 +79,7 @@ class Query private constructor(val statement: String) {
     }
 
     companion object {
+        @JvmStatic
         fun query(statement: String): Query {
             return Query(statement)
         }

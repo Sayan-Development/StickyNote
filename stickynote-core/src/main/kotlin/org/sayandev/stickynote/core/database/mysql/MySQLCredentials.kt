@@ -2,6 +2,7 @@ package org.sayandev.stickynote.core.database.mysql
 
 class MySQLCredentials private constructor(val url: String, val username: String, val password: String) {
     companion object {
+        @JvmStatic
         fun mySQLCredentials(
             address: String,
             port: Int,
@@ -17,6 +18,7 @@ class MySQLCredentials private constructor(val url: String, val username: String
             )
         }
 
+        @JvmStatic
         fun mySQLCredentials(url: String, username: String, password: String): MySQLCredentials {
             return MySQLCredentials(url, username, password)
         }

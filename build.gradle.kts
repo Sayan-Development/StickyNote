@@ -41,7 +41,6 @@ subprojects {
             relocate("org.slf4j", "org.sayandev.stickynote.lib.slf4j")
             relocate("org.reflections", "org.sayandev.stickynote.lib.reflections")
             relocate("org.jetbrains", "org.sayandev.stickynote.lib.jetbrains")
-            relocate("org.incendo", "org.sayandev.stickynote.lib.incendo")
             from("LICENSE")
         }
     }

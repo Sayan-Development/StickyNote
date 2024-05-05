@@ -1,12 +1,12 @@
 dependencies {
-    api("org.spongepowered:configurate-yaml:4.1.2")
-    api("org.spongepowered:configurate-extra-kotlin:4.1.2")
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
+    implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
 
-    api("net.kyori:adventure-api:4.16.0")
-    api("net.kyori:adventure-text-minimessage:4.16.0")
+    implementation("net.kyori:adventure-api:4.16.0")
+    implementation("net.kyori:adventure-text-minimessage:4.16.0")
 
-    api("com.google.guava:guava:31.1-jre")
-    api(kotlin("reflect"))
+    compileOnly("com.google.guava:guava:31.1-jre")
+    compileOnly(kotlin("reflect"))
 
-    api("com.zaxxer:HikariCP:5.1.0")
+    implementation("com.zaxxer:HikariCP:5.1.0")
 }

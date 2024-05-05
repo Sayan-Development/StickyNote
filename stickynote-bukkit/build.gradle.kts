@@ -17,19 +17,19 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
     implementation(accessorRuntime())
 
-    api("net.kyori:adventure-platform-bukkit:4.3.2")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
 
-    api("org.incendo:cloud-core:2.0.0-SNAPSHOT")
-    api("org.incendo:cloud-paper:2.0.0-SNAPSHOT")
-    api("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
-    api("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-core:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-paper:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
+    implementation("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
 
-    api("org.reflections:reflections:0.10.2")
+    implementation("org.reflections:reflections:0.10.2")
 
     compileOnly(project(":stickynote-core"))
 }
@@ -37,6 +37,10 @@ dependencies {
 tasks {
     sourcesJar {
         dependsOn(generateAccessors)
+    }
+
+    shadowJar {
+        relocate("org.incendo", "org.sayandev.stickynote.lib.incendo")
     }
 }
 

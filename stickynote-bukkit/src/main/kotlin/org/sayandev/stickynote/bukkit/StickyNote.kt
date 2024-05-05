@@ -11,101 +11,101 @@ import java.util.concurrent.Future
 
 object StickyNote {
 
-    private val threadFactory = ThreadFactoryBuilder().setNameFormat("sticky-note-${org.sayandev.stickynote.bukkit.plugin.name}-async-thread-%d").build()
+    private val threadFactory = ThreadFactoryBuilder().setNameFormat("sticky-note-${plugin.name}-async-thread-%d").build()
     private val asyncExecutor = Executors.newFixedThreadPool(
-        org.sayandev.stickynote.bukkit.plugin.exclusiveThreads,
-        org.sayandev.stickynote.bukkit.StickyNote.threadFactory
+        plugin.exclusiveThreads,
+        threadFactory
     )
 
     @JvmStatic
     var debug = false
 
     @JvmStatic
-    val logger = LoggerFactory.getLogger("stickynote")
+    val logger = plugin().logger
 
     @JvmStatic
     fun log(message: String) {
-        org.sayandev.stickynote.bukkit.StickyNote.logger.info(message)
+        logger.info(message)
     }
 
     @JvmStatic
     fun log(message: () -> String) {
-        org.sayandev.stickynote.bukkit.StickyNote.log(message())
+        log(message())
     }
 
     @JvmStatic
     fun warn(message: String) {
-        org.sayandev.stickynote.bukkit.StickyNote.logger.warn(message)
+        logger.warning(message)
     }
 
     @JvmStatic
     fun warn(message: () -> String) {
-        org.sayandev.stickynote.bukkit.StickyNote.warn(message())
+        warn(message())
     }
 
     @JvmStatic
     fun error(message: String) {
-        org.sayandev.stickynote.bukkit.StickyNote.logger.error(message)
+        logger.severe(message)
     }
 
     @JvmStatic
     fun error(message: () -> String) {
-        org.sayandev.stickynote.bukkit.StickyNote.error(message())
+        error(message())
     }
 
     @JvmStatic
     fun debug(message: String) {
-        if (org.sayandev.stickynote.bukkit.StickyNote.debug) {
-            org.sayandev.stickynote.bukkit.StickyNote.logger.debug(message)
+        if (debug) {
+            logger.info("[DEBUG] $message")
         }
     }
 
     @JvmStatic
     fun debug(message: () -> String) {
-        if (org.sayandev.stickynote.bukkit.StickyNote.debug) {
-            org.sayandev.stickynote.bukkit.StickyNote.debug(message())
+        if (debug) {
+            debug(message())
         }
     }
 
     @JvmStatic
     fun runSync(runnable: Runnable) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTask(org.sayandev.stickynote.bukkit.plugin, runnable)
+        plugin.server.scheduler.runTask(plugin, runnable)
     }
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTaskLater(org.sayandev.stickynote.bukkit.plugin, runnable, delay)
+        plugin.server.scheduler.runTaskLater(plugin, runnable, delay)
     }
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long, period: Long) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTaskTimer(org.sayandev.stickynote.bukkit.plugin, runnable, delay, period)
+        plugin.server.scheduler.runTaskTimer(plugin, runnable, delay, period)
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTaskAsynchronously(org.sayandev.stickynote.bukkit.plugin, runnable)
+        plugin.server.scheduler.runTaskAsynchronously(plugin, runnable)
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTaskLaterAsynchronously(org.sayandev.stickynote.bukkit.plugin, runnable, delay)
+        plugin.server.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay)
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long, period: Long) {
-        org.sayandev.stickynote.bukkit.plugin.server.scheduler.runTaskTimerAsynchronously(org.sayandev.stickynote.bukkit.plugin, runnable, delay, period)
+        plugin.server.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period)
     }
 
     @JvmStatic
     fun runEAsync(runnable: Runnable): Future<*> {
-        return org.sayandev.stickynote.bukkit.StickyNote.asyncExecutor.submit(runnable)
+        return asyncExecutor.submit(runnable)
     }
 
     @JvmStatic
     fun registerListener(listener: Listener) {
-        org.sayandev.stickynote.bukkit.plugin.server.pluginManager.registerEvents(listener,
-            org.sayandev.stickynote.bukkit.plugin
+        plugin.server.pluginManager.registerEvents(listener,
+            plugin
         )
     }
 
@@ -116,115 +116,115 @@ object StickyNote {
 
     @JvmStatic
     fun unregisterAllListeners() {
-        HandlerList.unregisterAll(org.sayandev.stickynote.bukkit.plugin)
+        HandlerList.unregisterAll(plugin)
     }
 
     @JvmStatic
     fun hasPlugin(name: String): Boolean {
-        return org.sayandev.stickynote.bukkit.plugin.server.pluginManager.getPlugin(name) != null
+        return plugin.server.pluginManager.getPlugin(name) != null
     }
 
     @JvmStatic
     fun hasPlugins(vararg name: String): Boolean {
-        return name.all { org.sayandev.stickynote.bukkit.StickyNote.hasPlugin(it) }
+        return name.all { hasPlugin(it) }
     }
 
     @JvmStatic
-    fun plugin() = org.sayandev.stickynote.bukkit.plugin
+    fun plugin() = plugin
 
     @JvmStatic
-    fun server() = org.sayandev.stickynote.bukkit.plugin.server
+    fun server() = plugin.server
 
     @JvmStatic
-    fun pluginDirectory() = org.sayandev.stickynote.bukkit.plugin.dataFolder
+    fun pluginDirectory() = plugin.dataFolder
 
     @JvmStatic
-    fun onlinePlayers(): MutableCollection<out Player> = org.sayandev.stickynote.bukkit.plugin.server.onlinePlayers
+    fun onlinePlayers(): MutableCollection<out Player> = plugin.server.onlinePlayers
 
     @JvmStatic
     fun shutdown() {
-        org.sayandev.stickynote.bukkit.StickyNote.unregisterAllListeners()
-        org.sayandev.stickynote.bukkit.StickyNote.asyncExecutor.shutdown()
+        unregisterAllListeners()
+        asyncExecutor.shutdown()
     }
 
 }
 
 fun runSync(runnable: Runnable) {
-    org.sayandev.stickynote.bukkit.StickyNote.runSync(runnable)
+    runSync(runnable)
 }
 
 fun runSync(runnable: Runnable, delay: Long) {
-    org.sayandev.stickynote.bukkit.StickyNote.runSync(runnable, delay)
+    runSync(runnable, delay)
 }
 
 fun runSync(runnable: Runnable, delay: Long, period: Long) {
-    org.sayandev.stickynote.bukkit.StickyNote.runSync(runnable, delay, period)
+    runSync(runnable, delay, period)
 }
 
 fun runAsync(runnable: Runnable) {
-    org.sayandev.stickynote.bukkit.StickyNote.runAsync(runnable)
+    runAsync(runnable)
 }
 
 fun runAsync(runnable: Runnable, delay: Long) {
-    org.sayandev.stickynote.bukkit.StickyNote.runAsync(runnable, delay)
+    runAsync(runnable, delay)
 }
 
 fun runAsync(runnable: Runnable, delay: Long, period: Long) {
-    org.sayandev.stickynote.bukkit.StickyNote.runAsync(runnable, delay, period)
+    runAsync(runnable, delay, period)
 }
 
 fun runEAsync(runnable: Runnable): Future<*> {
-    return org.sayandev.stickynote.bukkit.StickyNote.runEAsync(runnable)
+    return runEAsync(runnable)
 }
 
 fun registerListener(listener: Listener) {
-    org.sayandev.stickynote.bukkit.StickyNote.registerListener(listener)
+    registerListener(listener)
 }
 
 fun unregisterListener(listener: Listener) {
-    org.sayandev.stickynote.bukkit.StickyNote.unregisterListener(listener)
+    unregisterListener(listener)
 }
 
 fun log(message: String) {
-    org.sayandev.stickynote.bukkit.StickyNote.log(message)
+    log(message)
 }
 
 fun log(message: () -> String) {
-    org.sayandev.stickynote.bukkit.StickyNote.log(message)
+    log(message)
 }
 
 fun warn(message: String) {
-    org.sayandev.stickynote.bukkit.StickyNote.warn(message)
+    warn(message)
 }
 
 fun warn(message: () -> String) {
-    org.sayandev.stickynote.bukkit.StickyNote.warn(message)
+    warn(message)
 }
 
 fun error(message: String) {
-    org.sayandev.stickynote.bukkit.StickyNote.error(message)
+    error(message)
 }
 
 fun error(message: () -> String) {
-    org.sayandev.stickynote.bukkit.StickyNote.error(message)
+    error(message)
 }
 
 fun debug(message: String) {
-    org.sayandev.stickynote.bukkit.StickyNote.debug(message)
+    debug(message)
 }
 
 fun debug(message: () -> String) {
-    org.sayandev.stickynote.bukkit.StickyNote.debug(message)
+    debug(message)
 }
 
 fun hasPlugin(name: String): Boolean {
-    return org.sayandev.stickynote.bukkit.StickyNote.hasPlugin(name)
+    return hasPlugin(name)
 }
 
 fun hasPlugins(vararg name: String): Boolean {
-    return org.sayandev.stickynote.bukkit.StickyNote.hasPlugins(*name)
+    return hasPlugins(*name)
 }
 
-val server = org.sayandev.stickynote.bukkit.StickyNote.server()
-val pluginDirectory = org.sayandev.stickynote.bukkit.StickyNote.pluginDirectory()
-val onlinePlayers = org.sayandev.stickynote.bukkit.StickyNote.onlinePlayers()
+val server = StickyNote.server()
+val pluginDirectory = StickyNote.pluginDirectory()
+val onlinePlayers = StickyNote.onlinePlayers()
