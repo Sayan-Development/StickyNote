@@ -37,6 +37,7 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
+            relocate("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered")
             relocate("com.zaxxer", "org.sayandev.stickynote.lib.zaxxer")
             relocate("org.slf4j", "org.sayandev.stickynote.lib.slf4j")
             relocate("org.reflections", "org.sayandev.stickynote.lib.reflections")
