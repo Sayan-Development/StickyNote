@@ -28,6 +28,15 @@ subprojects {
         withJavadocJar()
     }
 
+    val relocations = mapOf(
+        "org.spongepowered" to "org.sayandev.stickynote.lib.spongepowered",
+        "com.zaxxer" to "org.sayandev.stickynote.lib.zaxxer",
+        "org.slf4j" to "org.sayandev.stickynote.lib.slf4j",
+        "org.reflections" to "org.sayandev.stickynote.lib.reflections",
+        "org.jetbrains" to "org.sayandev.stickynote.lib.jetbrains",
+        "net.kyori" to "org.sayandev.stickynote.lib.kyori",
+    )
+
     tasks {
         jar {
             archiveClassifier.set("unshaded")
@@ -37,12 +46,24 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-            relocate("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered")
-            relocate("com.zaxxer", "org.sayandev.stickynote.lib.zaxxer")
-            relocate("org.slf4j", "org.sayandev.stickynote.lib.slf4j")
-            relocate("org.reflections", "org.sayandev.stickynote.lib.reflections")
-            relocate("org.jetbrains", "org.sayandev.stickynote.lib.jetbrains")
+//            exclude("**/META-INF")
+            relocations.forEach { from, to ->
+                relocate(from, to)
+            }
             from("LICENSE")
+        }
+    }
+
+    tasks.named<Jar>("sourcesJar") {
+        relocations.forEach { (from, to) ->
+            val filePattern = Regex("(.*)${from.replace('.', '/')}((?:/|$).*)")
+            val textPattern = Regex.fromLiteral(from)
+            eachFile {
+                filter {
+                    it.replaceFirst(textPattern, to)
+                }
+                path = path.replaceFirst(filePattern, "$1${to.replace('.', '/')}$2")
+            }
         }
     }
 
@@ -74,13 +95,15 @@ subprojects {
                 attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
                 attribute(DocsType.DOCS_TYPE_ATTRIBUTE, project.objects.named(DocsType.SOURCES))
             }
+            outgoing.artifact(tasks.named("sourcesJar"))
         }
     }
 
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(components["java"])
+//                from(components["java"])
+                shadow.component(this)
                 setPom(this)
             }
         }

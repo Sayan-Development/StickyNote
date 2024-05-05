@@ -150,79 +150,79 @@ object StickyNote {
 }
 
 fun runSync(runnable: Runnable) {
-    runSync(runnable)
+    StickyNote.runSync(runnable)
 }
 
 fun runSync(runnable: Runnable, delay: Long) {
-    runSync(runnable, delay)
+    StickyNote.runSync(runnable, delay)
 }
 
 fun runSync(runnable: Runnable, delay: Long, period: Long) {
-    runSync(runnable, delay, period)
+    StickyNote.runSync(runnable, delay, period)
 }
 
 fun runAsync(runnable: Runnable) {
-    runAsync(runnable)
+    StickyNote.runAsync(runnable)
 }
 
 fun runAsync(runnable: Runnable, delay: Long) {
-    runAsync(runnable, delay)
+    StickyNote.runAsync(runnable, delay)
 }
 
 fun runAsync(runnable: Runnable, delay: Long, period: Long) {
-    runAsync(runnable, delay, period)
+    StickyNote.runAsync(runnable, delay, period)
 }
 
 fun runEAsync(runnable: Runnable): Future<*> {
-    return runEAsync(runnable)
+    return StickyNote.runEAsync(runnable)
 }
 
 fun registerListener(listener: Listener) {
-    registerListener(listener)
+    StickyNote.registerListener(listener)
 }
 
 fun unregisterListener(listener: Listener) {
-    unregisterListener(listener)
+    StickyNote.unregisterListener(listener)
 }
 
 fun log(message: String) {
-    log(message)
+    StickyNote.log(message)
 }
 
 fun log(message: () -> String) {
-    log(message)
+    StickyNote.log(message)
 }
 
 fun warn(message: String) {
-    warn(message)
+    StickyNote.warn(message)
 }
 
 fun warn(message: () -> String) {
-    warn(message)
+    StickyNote.warn(message)
 }
 
 fun error(message: String) {
-    error(message)
+    StickyNote.error(message)
 }
 
 fun error(message: () -> String) {
-    error(message)
+    StickyNote.error(message)
 }
 
 fun debug(message: String) {
-    debug(message)
+    StickyNote.debug(message)
 }
 
 fun debug(message: () -> String) {
-    debug(message)
+    StickyNote.debug(message)
 }
 
 fun hasPlugin(name: String): Boolean {
-    return hasPlugin(name)
+    return StickyNote.hasPlugin(name)
 }
 
 fun hasPlugins(vararg name: String): Boolean {
-    return hasPlugins(*name)
+    return StickyNote.hasPlugins(*name)
 }
 
 val server = StickyNote.server()
