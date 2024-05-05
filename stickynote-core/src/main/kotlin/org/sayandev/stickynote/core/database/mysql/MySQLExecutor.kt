@@ -75,9 +75,9 @@ abstract class MySQLExecutor(
     }
 
     private fun executeQuerySync(query: Query): QueryResult {
-        val connection = createConnection()
+//        val connection = createConnection()
         try {
-            val preparedStatement = query.createPreparedStatement(connection)
+            val preparedStatement = query.createPreparedStatement(hikari?.connection)
             var resultSet: ResultSet? = null
 
             if (query.statement.startsWith("INSERT") ||
@@ -95,7 +95,7 @@ abstract class MySQLExecutor(
                 query.complete(resultSet)
             }
 
-            closeConnection(connection)
+//            closeConnection(connection)
 
             return QueryResult(StatusCode.FINISHED, resultSet)
         } catch (e: SQLException) {
@@ -104,13 +104,13 @@ abstract class MySQLExecutor(
 
             query.increaseFailedAttempts()
             if (query.failedAttempts > failAttemptRemoval) {
-                closeConnection(connection)
+//                closeConnection(connection)
                 onQueryRemoveDueToFail(query)
 
                 return QueryResult(StatusCode.FINISHED, null)
             }
 
-            closeConnection(connection)
+//            closeConnection(connection)
 
             return QueryResult(StatusCode.FAILED, null)
         }
