@@ -5,11 +5,10 @@ import org.sayandev.stickynote.core.database.Query
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadFactory
 
-class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int, val driverClass: String) : MySQLExecutor(credentials, poolingSize, THREAD_FACTORY) {
-    constructor(credentials: MySQLCredentials, poolingSize: Int): this(credentials, poolingSize, "com.mysql.cj.jdbc.Driver")
+class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int) : MySQLExecutor(credentials, poolingSize, THREAD_FACTORY) {
 
     override fun connect() {
-        super.connect(driverClass)
+        super.connect()
         startQueue()
     }
 
