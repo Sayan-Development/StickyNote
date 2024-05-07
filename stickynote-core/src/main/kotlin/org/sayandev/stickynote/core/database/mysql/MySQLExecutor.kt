@@ -1,7 +1,7 @@
 package org.sayandev.stickynote.core.database.mysql
 
 import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.pool.HikariPool
 import org.sayandev.stickynote.core.database.Database
 import org.sayandev.stickynote.core.database.Priority
 import org.sayandev.stickynote.core.database.Query
@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
-import java.util.logging.Logger
 import kotlin.math.max
 
 abstract class MySQLExecutor(
@@ -25,7 +24,8 @@ abstract class MySQLExecutor(
 
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
 
-    protected var hikari: HikariDataSource? = null
+    protected lateinit var hikari: HikariPool
+    protected lateinit var connection: Connection
     protected var poolingUsed: Int = 0
 
     protected fun connect(driverClassName: String) {
@@ -36,7 +36,8 @@ abstract class MySQLExecutor(
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
 
-        this.hikari = HikariDataSource(hikariConfig)
+        this.hikari = HikariPool(hikariConfig)
+        connection = hikari.connection
     }
 
     protected fun tick() {
@@ -76,13 +77,8 @@ abstract class MySQLExecutor(
     }
 
     private fun executeQuerySync(query: Query): QueryResult {
-        Logger.getGlobal().warning("Creating connection.")
-        val connection = createConnection()
-        Logger.getGlobal().warning("Created connection: ${connection}")
         try {
-            Logger.getGlobal().warning("Creating prepared statement")
-            val preparedStatement = query.createPreparedStatement(hikari?.connection)
-            Logger.getGlobal().warning("Created prepared statement: ${preparedStatement}")
+            val preparedStatement = query.createPreparedStatement(connection)
             var resultSet: ResultSet? = null
 
             if (query.statement.startsWith("INSERT") ||
@@ -91,25 +87,14 @@ abstract class MySQLExecutor(
                 query.statement.startsWith("CREATE") ||
                 query.statement.startsWith("ALTER")
             ) {
-                Logger.getGlobal().warning("Executing update")
                 preparedStatement.executeUpdate()
-                Logger.getGlobal().warning("Executed update")
-                Logger.getGlobal().warning("Closing statement")
                 preparedStatement.close()
-                Logger.getGlobal().warning("Closed statement")
             }
             else resultSet = preparedStatement.executeQuery()
-            Logger.getGlobal().warning("Executed query: ${resultSet}")
 
             if (resultSet != null) {
-                Logger.getGlobal().warning("Completing result")
                 query.complete(resultSet)
-                Logger.getGlobal().warning("Completed result: ${resultSet}")
             }
-
-            Logger.getGlobal().warning("Closing connection")
-            closeConnection(connection)
-            Logger.getGlobal().warning("Closed connection")
 
             return QueryResult(StatusCode.FINISHED, resultSet)
         } catch (e: SQLException) {
@@ -118,13 +103,11 @@ abstract class MySQLExecutor(
 
             query.increaseFailedAttempts()
             if (query.failedAttempts > failAttemptRemoval) {
-                closeConnection(connection)
                 onQueryRemoveDueToFail(query)
 
                 return QueryResult(StatusCode.FINISHED, null)
             }
 
-            closeConnection(connection)
 
             return QueryResult(StatusCode.FAILED, null)
         }
@@ -141,7 +124,7 @@ abstract class MySQLExecutor(
     }
 
     private fun createConnection(): Connection {
-        return hikari?.connection ?: throw NullPointerException("Can't create connection while HikariDataSource (hikari) is null")
+        return hikari.connection ?: throw NullPointerException("Can't create connection while HikariDataSource (hikari) is null")
     }
 
     private fun closeConnection(connection: Connection) {

@@ -30,7 +30,7 @@ class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int) : MySQLExec
 
     override fun shutdown() {
         queue.clear()
-        hikari?.close()
+        hikari.shutdown()
     }
 
     private fun startQueue() {
