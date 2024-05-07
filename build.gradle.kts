@@ -1,18 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.9.23"
-    `java-library`
     `maven-publish`
     id("io.github.goooler.shadow") version "8.1.7"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.7"
+    version = "1.0.9"
 
-    plugins.apply("java-library")
     plugins.apply("maven-publish")
     plugins.apply("kotlin")
     plugins.apply("io.github.goooler.shadow")
@@ -28,13 +25,12 @@ allprojects {
 subprojects {
     java {
         withSourcesJar()
-        withJavadocJar()
     }
 
     val relocations = mapOf(
         "org.spongepowered" to "org.sayandev.stickynote.lib.spongepowered",
         "com.zaxxer" to "org.sayandev.stickynote.lib.zaxxer",
-        "org.slf4j" to "org.sayandev.stickynote.lib.slf4j",
+//        "org.slf4j" to "org.sayandev.stickynote.lib.slf4j",
         "org.reflections" to "org.sayandev.stickynote.lib.reflections",
         "org.jetbrains" to "org.sayandev.stickynote.lib.jetbrains",
         "net.kyori" to "org.sayandev.stickynote.lib.kyori",
@@ -45,13 +41,19 @@ subprojects {
             archiveClassifier.set("unshaded")
         }
 
-        withType<ShadowJar> {
+        build {
+            dependsOn(shadowJar)
+        }
+
+        shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
             relocations.forEach { (from, to) ->
                 relocate(from, to)
             }
+            this@subprojects.configurations.implementation.get().isCanBeResolved = true
+            configurations = listOf(this@subprojects.configurations.implementation.get())
             from("LICENSE")
         }
     }
@@ -78,7 +80,7 @@ subprojects {
                 attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
                 attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
             }
-            outgoing.artifact(tasks.named("shadowJar"))
+            outgoing.artifact(tasks["shadowJar"])
         }
         "runtimeElements" {
             attributes {
@@ -88,7 +90,7 @@ subprojects {
                 attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
                 attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
             }
-            outgoing.artifact(tasks.named("shadowJar"))
+            outgoing.artifact(tasks["shadowJar"])
         }
         "mainSourceElements" {
             attributes {
@@ -104,8 +106,8 @@ subprojects {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-//                from(components["java"])
                 shadow.component(this)
+                artifact(tasks["sourcesJar"])
                 setPom(this)
             }
         }
