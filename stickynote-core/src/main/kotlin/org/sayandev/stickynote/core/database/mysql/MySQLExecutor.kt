@@ -95,7 +95,7 @@ abstract class MySQLExecutor(
                 preparedStatement.executeUpdate()
                 Logger.getGlobal().warning("Executed update")
                 Logger.getGlobal().warning("Closing statement")
-//                preparedStatement.close()
+                preparedStatement.close()
                 Logger.getGlobal().warning("Closed statement")
             }
             else resultSet = preparedStatement.executeQuery()
