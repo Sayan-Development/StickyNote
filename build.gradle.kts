@@ -10,7 +10,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.6"
+    version = "1.0.7"
 
     plugins.apply("java-library")
     plugins.apply("maven-publish")
@@ -19,6 +19,9 @@ allprojects {
 
     repositories {
         mavenCentral()
+
+        // Configurate
+        maven("https://repo.spongepowered.org/maven/")
     }
 }
 
@@ -46,8 +49,7 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-//            exclude("**/META-INF")
-            relocations.forEach { from, to ->
+            relocations.forEach { (from, to) ->
                 relocate(from, to)
             }
             from("LICENSE")

@@ -4,8 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.slf4j.LoggerFactory
-import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
