@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.11"
+    version = "1.0.12"
 
     plugins.apply("maven-publish")
     plugins.apply("kotlin")

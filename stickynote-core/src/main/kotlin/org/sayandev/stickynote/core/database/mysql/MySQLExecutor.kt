@@ -19,7 +19,8 @@ import kotlin.math.max
 abstract class MySQLExecutor(
     private val credentials: MySQLCredentials,
     protected val poolingSize: Int,
-    threadFactory: ThreadFactory
+    threadFactory: ThreadFactory,
+    val verifyCertificate: Boolean
 ) : Database() {
 
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
@@ -31,7 +32,7 @@ abstract class MySQLExecutor(
     override fun connect() {
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = credentials.url
-//        hikariConfig.driverClassName = driverClassName
+        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString());
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
