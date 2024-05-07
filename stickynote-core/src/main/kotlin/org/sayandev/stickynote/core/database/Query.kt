@@ -5,6 +5,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
+import java.util.logging.Logger
 
 class Query private constructor(val statement: String) {
     private val statementValues: MutableMap<Int, Any> = HashMap()
@@ -60,14 +61,20 @@ class Query private constructor(val statement: String) {
     }
 
     fun createPreparedStatement(connection: Connection?): PreparedStatement {
+        Logger.getGlobal().warning("Preparing statement: ${statement}")
         val preparedStatement = connection?.prepareStatement(statement) ?: throw NullPointerException("Can't prepare statement while connection is null")
+        Logger.getGlobal().warning("Prepared statement")
 
         for (index in statementValues.keys) {
             val value = statementValues[index]
+            Logger.getGlobal().warning("setting key in index: ${index} with value: ${value}")
 
+            Logger.getGlobal().warning("setting object")
             preparedStatement.setObject(index, value)
+            Logger.getGlobal().warning("set object")
         }
 
+        Logger.getGlobal().warning("Returning prepared statement")
         return preparedStatement
     }
 
