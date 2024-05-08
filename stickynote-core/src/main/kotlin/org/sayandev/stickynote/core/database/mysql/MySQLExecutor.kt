@@ -32,7 +32,9 @@ abstract class MySQLExecutor(
     override fun connect() {
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = credentials.url
-        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString());
+        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString())
+        hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
+        hikariConfig.addDataSourceProperty("encoding", "UTF-8")
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize

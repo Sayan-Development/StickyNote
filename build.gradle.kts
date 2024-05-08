@@ -1,16 +1,16 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     kotlin("jvm") version "1.9.23"
     `maven-publish`
+    `java-library`
     id("io.github.goooler.shadow") version "8.1.7"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.12"
+    version = "1.0.13"
 
     plugins.apply("maven-publish")
+    plugins.apply("java-library")
     plugins.apply("kotlin")
     plugins.apply("io.github.goooler.shadow")
 
@@ -27,15 +27,6 @@ subprojects {
         withSourcesJar()
     }
 
-    val relocations = mapOf(
-        "org.spongepowered" to "org.sayandev.stickynote.lib.spongepowered",
-        "com.zaxxer" to "org.sayandev.stickynote.lib.zaxxer",
-//        "org.slf4j" to "org.sayandev.stickynote.lib.slf4j",
-        "org.reflections" to "org.sayandev.stickynote.lib.reflections",
-        "org.jetbrains" to "org.sayandev.stickynote.lib.jetbrains",
-        "net.kyori" to "org.sayandev.stickynote.lib.kyori",
-    )
-
     tasks {
         jar {
             archiveClassifier.set("unshaded")
@@ -49,9 +40,6 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-            relocations.forEach { (from, to) ->
-                relocate(from, to)
-            }
             this@subprojects.configurations.implementation.get().isCanBeResolved = true
             configurations = listOf(this@subprojects.configurations.implementation.get())
             from("LICENSE")
@@ -59,7 +47,7 @@ subprojects {
     }
 
     tasks.named<Jar>("sourcesJar") {
-        relocations.forEach { (from, to) ->
+        getRelocations().forEach { (from, to) ->
             val filePattern = Regex("(.*)${from.replace('.', '/')}((?:/|$).*)")
             val textPattern = Regex.fromLiteral(from)
             eachFile {

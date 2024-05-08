@@ -10,5 +10,15 @@ repositories {
 }
 
 dependencies {
-    api(project(":stickynote-bukkit"))
+    implementation(project(":stickynote-bukkit")) { isTransitive = false }
+}
+
+tasks {
+    shadowJar {
+        for (relocation in getRelocations().filter { !it.relocatePlatforms.contains(Platform.PAPER) }) {
+            exclude(relocation.to.replace(".", "/") + "/**")
+            exclude(relocation.from.replace(".", "/") + "/**")
+        }
+        applyShadowRelocation(Platform.PAPER)
+    }
 }

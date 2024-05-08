@@ -31,7 +31,7 @@ dependencies {
 
     implementation("com.github.cryptomorin:XSeries:9.10.0") { isTransitive = false }
 
-//    implementation("org.reflections:reflections:0.10.2")
+    implementation("org.reflections:reflections:0.10.2")
 
     compileOnly(project(":stickynote-core"))
 }
@@ -42,7 +42,10 @@ tasks {
     }
 
     shadowJar {
-        relocate("org.incendo", "org.sayandev.stickynote.lib.incendo")
+        for (relocation in getRelocations().filter { !it.relocatePlatforms.contains(Platform.BUKKIT) }) {
+            exclude(relocation.from.replace(".", "/") + "/**")
+        }
+        applyShadowRelocation(Platform.BUKKIT)
     }
 }
 
