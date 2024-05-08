@@ -6,6 +6,9 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadFactory
 
 class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int, verifyCertificate: Boolean, val driverClass: String) : MySQLExecutor(credentials, poolingSize, THREAD_FACTORY, verifyCertificate) {
+    constructor(credentials: MySQLCredentials, poolingSize: Int, verifyCertificate: Boolean): this(credentials, poolingSize, verifyCertificate, "com.mysql.cj.jdbc.Driver")
+    constructor(credentials: MySQLCredentials, poolingSize: Int, driverClass: String): this(credentials, poolingSize, true, driverClass)
+    constructor(credentials: MySQLCredentials, poolingSize: Int): this(credentials, poolingSize, true, "com.mysql.cj.jdbc.Driver")
 
     override fun connect() {
         super.connect(driverClass)
