@@ -29,6 +29,8 @@ dependencies {
     implementation("org.incendo:cloud-minecraft-extras:2.0.0-SNAPSHOT")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0-SNAPSHOT")
 
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
+
     implementation("com.github.cryptomorin:XSeries:9.10.0") { isTransitive = false }
 
     implementation("org.reflections:reflections:0.10.2")
