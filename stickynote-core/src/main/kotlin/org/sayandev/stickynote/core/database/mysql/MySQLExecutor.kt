@@ -29,9 +29,10 @@ abstract class MySQLExecutor(
     protected lateinit var connection: Connection
     protected var poolingUsed: Int = 0
 
-    override fun connect() {
+    protected fun connect(driverClassName: String) {
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = credentials.url
+        hikariConfig.driverClassName = driverClassName
         hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString())
         hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
         hikariConfig.addDataSourceProperty("encoding", "UTF-8")
