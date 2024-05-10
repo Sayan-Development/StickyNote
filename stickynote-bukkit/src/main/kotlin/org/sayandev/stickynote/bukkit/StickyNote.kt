@@ -11,7 +11,7 @@ object StickyNote {
 
     private val threadFactory = ThreadFactoryBuilder().setNameFormat("sticky-note-${plugin.name}-async-thread-%d").build()
     private val asyncExecutor = Executors.newFixedThreadPool(
-        plugin.exclusiveThreads,
+        wrappedPlugin.exclusiveThreads,
         threadFactory
     )
 

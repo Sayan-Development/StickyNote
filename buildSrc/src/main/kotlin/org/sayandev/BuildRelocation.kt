@@ -12,7 +12,8 @@ fun getProjectRelocations(): List<BuildRelocation> {
         BuildRelocation("net.kyori", "org.sayandev.stickynote.lib.kyori", listOf(Platform.CORE, Platform.BUKKIT)),
         BuildRelocation("com.cryptomorin", "org.sayandev.stickynote.lib.xseries", listOf(Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("org.incendo", "org.sayandev.stickynote.lib.incendo", listOf(Platform.BUKKIT, Platform.PAPER)),
-        BuildRelocation("com.github.stefvanschie.inventoryframework", "org.sayandev.stickynote.lib.inventoryframework", listOf(Platform.BUKKIT, Platform.PAPER))
+        BuildRelocation("com.github.stefvanschie.inventoryframework", "org.sayandev.stickynote.lib.inventoryframework", listOf(Platform.BUKKIT, Platform.PAPER)),
+        BuildRelocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
     )
 }
 

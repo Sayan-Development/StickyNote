@@ -14,6 +14,9 @@ repositories {
 
     // cloud
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+
+    // libby
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
