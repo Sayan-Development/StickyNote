@@ -10,17 +10,16 @@ import org.sayandev.stickynote.core.database.QueryResult
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
+import java.util.concurrent.*
 import kotlin.math.max
 
 abstract class MySQLExecutor(
     private val credentials: MySQLCredentials,
     protected val poolingSize: Int,
     threadFactory: ThreadFactory,
-    val verifyCertificate: Boolean
+    val verifyCertificate: Boolean,
+    val keepaliveTime: Long?,
+    val connectionTimeout: Long?
 ) : Database() {
 
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
@@ -33,12 +32,29 @@ abstract class MySQLExecutor(
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = credentials.url
         hikariConfig.driverClassName = driverClassName
-        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString())
-        hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
-        hikariConfig.addDataSourceProperty("encoding", "UTF-8")
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
+        if (keepaliveTime != null) {
+            hikariConfig.keepaliveTime = keepaliveTime
+        }
+        if (connectionTimeout != null) {
+            hikariConfig.connectionTimeout = connectionTimeout
+        }
+
+        hikariConfig.addDataSourceProperty("socketTimeout", TimeUnit.SECONDS.toMillis(30).toString());
+
+        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString())
+        hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
+        hikariConfig.addDataSourceProperty("encoding", "UTF-8")
+        hikariConfig.addDataSourceProperty("useUnicode", "true");
+
+        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
+        hikariConfig.addDataSourceProperty("jdbcCompliantTruncation", "false");
+
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "275");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         this.hikari = HikariPool(hikariConfig)
         connection = hikari.connection

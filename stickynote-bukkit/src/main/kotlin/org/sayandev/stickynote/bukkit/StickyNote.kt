@@ -16,6 +16,22 @@ object StickyNote {
     )
 
     @JvmStatic
+    fun isFolia(): Boolean = try {
+        Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
+        true
+    } catch (e: Exception) {
+        false
+    }
+
+    @JvmStatic
+    fun isPaper(): Boolean = try {
+        Class.forName("io.papermc.paperclip.Main")
+        true
+    } catch (e: Exception) {
+        false
+    }
+
+    @JvmStatic
     var debug = false
 
     @JvmStatic

@@ -22,8 +22,8 @@ object AdventureUtils {
     }
 
     @JvmStatic
-    fun CommandSender.sendActionbar(content: Component) {
-        audience.sender(this).sendActionBar(content)
+    fun Player.sendActionbar(content: Component) {
+        audience.player(this).sendActionBar(content)
     }
 
     @JvmStatic
