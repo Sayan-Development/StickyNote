@@ -1,7 +1,6 @@
 package org.sayandev.stickynote.bukkit.command.interfaces
 
 import net.kyori.adventure.text.Component
-import org.sayandev.stickynote.bukkit.StickyNote
 
 /**
  * Interface for defining commands.
