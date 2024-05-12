@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.bukkit
 
+import org.bukkit.permissions.PermissionAttachment
 import org.bukkit.plugin.java.JavaPlugin
 
 lateinit var wrappedPlugin: WrappedStickyNotePlugin

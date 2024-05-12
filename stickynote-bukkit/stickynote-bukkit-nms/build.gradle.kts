@@ -1,11 +1,15 @@
 import me.kcra.takenaka.generator.accessor.AccessorType
 import me.kcra.takenaka.generator.accessor.CodeLanguage
 import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
+import java.net.InetSocketAddress
+import java.net.SocketAddress
 import java.time.Instant
 import java.util.BitSet
 import java.util.EnumSet
 import java.util.Optional
 import java.util.UUID
+import java.util.function.Function
+import java.util.function.UnaryOperator
 
 plugins {
     id("me.kcra.takenaka.accessor") version "1.1.3"
@@ -533,52 +537,88 @@ accessors {
         fieldInferred("latency", "1.16.5")
     }
     mapClass(Player) {
-
+        methodInferred("setEntityOnShoulder", "1.20.4", CompoundTag)
+        methodInferred("setShoulderEntityRight", "1.20.4", CompoundTag)
+        methodInferred("setShoulderEntityLeft", "1.20.4", CompoundTag)
+        methodInferred("getGameProfile", "1.20.4")
+        methodInferred("playSound", "1.20.4", SoundEvent, Float::class, Float::class)
+        fieldInferred("containerMenu", "1.20.4")
+        fieldInferred("DATA_PLAYER_MODE_CUSTOMISATION", "1.20.4")
     }
     mapClass(ServerLevel) {
-
-    }
-    mapClass(ServerLevelAccessor) {
-
+        methodInferred("getSeed", "1.20.4")
+        methodInferred("addFreshEntity", "1.20.4", Entity)
     }
     mapClass(ServerPlayerGameMode) {
         constructor(ServerLevel)
-        constructor(Level)
     }
     mapClass(Level) {
-
-    }
-    mapClass(LevelWriter) {
-
+        methodInferred("getChunkAt", "1.20.4", BlockPos)
+        methodInferred("getChunk", "1.20.4", Int::class, Int::class)
+        // TODO
+//        methodInferred("c", "1.8.8", BlockPos)
+        methodInferred("getBlockState", "1.20.4", BlockPos)
+        methodInferred("getLightEngine", "1.20.4")
+        methodInferred("dimension", "1.20.4")
+        methodInferred("dimensionType", "1.20.4")
+        methodInferred("dimensionTypeId", "1.20.4")
+        methodInferred("getBlockEntity", "1.20.4", BlockPos)
+        methodInferred("getCurrentDifficultyAt", "1.20.4", BlockPos)
     }
     mapClass(LevelChunk) {
-
+        methodInferred("getBlockState", "1.18.2", BlockPos)
+        methodInferred("getFluidState", "1.18.2", BlockPos)
+        methodInferred("setBlockState", "1.18.2", BlockPos, BlockState, Boolean::class)
+        methodInferred("getBlockEntityNbtForSaving", "1.18.2", BlockPos)
+        methodInferred("getLevel", "1.18.2")
     }
     mapClass(ChunkAccess) {
-
+        methodInferred("getPos", "1.20.4")
     }
     mapClass(ChunkStatus) {
-
+        fieldInferred("EMPTY", "1.18.2")
+        fieldInferred("FULL", "1.18.2")
+        fieldInferred("BIOMES", "1.18.2")
+        methodInferred("byName", "1.18.2", String::class)
     }
     mapClass(LevelLightEngine) {
-
+        methodInferred("checkBlock", "1.20.4", BlockPos)
     }
-    mapClass(Packet) {
-
+    mapClass(Player) {
+        methodInferred("setEntityOnShoulder", "1.20.4", CompoundTag)
+        methodInferred("setShoulderEntityRight", "1.20.4", CompoundTag)
+        methodInferred("setShoulderEntityLeft", "1.20.4", CompoundTag)
+        methodInferred("getGameProfile", "1.20.4")
+        methodInferred("playSound", "1.20.4", SoundEvent, Float::class, Float::class)
+        fieldInferred("containerMenu", "1.20.4")
+        fieldInferred("DATA_PLAYER_MODE_CUSTOMISATION", "1.20.4")
+    }
+    mapClass(ServerLevel) {
+        methodInferred("getSeed", "1.20.4")
+        methodInferred("addFreshEntity", "1.20.4", Entity)
     }
     mapClass(ServerGamePacketListenerImpl) {
+        constructor(MinecraftServer, Connection, ServerPlayer, CommonListenerCookie)
         methodInferred("send", "1.16.5", Packet)
         fieldInferred("connection", "1.16.5")
     }
     mapClass(ServerCommonPacketListenerImpl) {
         fieldInferred("connection", "1.20.4")
         method(Void.TYPE, "send", Packet)
+        methodInferred("latency", "1.20.4")
     }
     mapClass(Connection) {
+        constructor(PacketFlow)
+        methodInferred("disconnect", "1.20.4", Component)
+        methodInferred("connectToServer", "1.19.2", InetSocketAddress::class, Boolean::class)
+        methodInferred("connectToLocalServer", "1.20.4", SocketAddress::class)
+        methodInferred("getAverageReceivedPackets", "1.20.4")
+        methodInferred("getAverageSentPackets", "1.20.4")
         fieldInferred("channel", "1.20.4")
+        fieldInferred("address", "1.20.4")
     }
     mapClass(MinecraftServer) {
-
+        methodInferred("registryAccess", "1.20.4")
     }
     mapClass(GameType) {
         enumConstant(
@@ -589,407 +629,1063 @@ accessors {
         )
     }
     mapClass(MobSpawnType) {
-
+        enumConstant(
+            "NATURAL",
+            "CHUNK_GENERATION",
+            "SPAWNER",
+            "STRUCTURE",
+            "BREEDING",
+            "MOB_SUMMONED",
+            "JOCKEY",
+            "EVENT",
+            "CONVERSION",
+            "REINFORCEMENT",
+            "TRIGGERED",
+            "BUCKET",
+            "SPAWN_EGG",
+            "COMMAND",
+            "DISPENSER",
+            "PATROL",
+        )
     }
     mapClass(Pose) {
-
+        enumConstant(
+            "STANDING",
+            "FALL_FLYING",
+            "SLEEPING",
+            "SWIMMING",
+            "SPIN_ATTACK",
+            "CROUCHING",
+            "LONG_JUMPING",
+            "DYING",
+        )
     }
     mapClass(Vec3) {
-
+        constructor(Double::class, Double::class, Double::class)
+        methodInferred("x", "1.20.4")
+        methodInferred("y", "1.20.4")
+        methodInferred("z", "1.20.4")
     }
     mapClass(Vec3i) {
-
-    }
-    mapClass(Rotations) {
-
+        methodInferred("getX", "1.20.4")
+        methodInferred("getY", "1.20.4")
+        methodInferred("getZ", "1.20.4")
     }
     mapClass(Mob) {
-
+        methodInferred("finalizeSpawn", "1.20.4", ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData, CompoundTag)
     }
     mapClass(Entity) {
+        constructor(EntityType, Level)
+        methodInferred("getType", "1.20.4")
+        methodInferred("getId", "1.20.4")
+        methodInferred("setId", "1.20.4", Int::class)
+        methodInferred("setPose", "1.20.4", Pose)
+        methodInferred("hasPose", "1.20.4", Pose)
+        methodInferred("isCrouching", "1.20.4")
+        methodInferred("setPos", "1.20.4", Double::class, Double::class, Double::class)
+        methodInferred("setRot", "1.20.4", Float::class, Float::class)
+        methodInferred("setGlowingTag", "1.20.4", Boolean::class) //1.17 and higher
+        methodInferred("hasGlowingTag", "1.20.4")
+        methodInferred("setGlowing", "1.16.5", Boolean::class) //1.16.5 and below
+        methodInferred("isGlowing", "1.16.5")
+        methodInferred("setCustomName", "1.20.4", Component)
+        methodInferred("getCustomName", "1.20.4")
+        methodInferred("setCustomNameVisible", "1.20.4", Boolean::class)
+        methodInferred("isCustomNameVisible", "1.20.4")
+        methodInferred("setInvisible", "1.20.4", Boolean::class)
+        methodInferred("isInvisible", "1.20.4")
+        methodInferred("setInvulnerable", "1.20.4", Boolean::class)
+        methodInferred("setIsInPowderSnow", "1.20.4", Boolean::class)
+        methodInferred("setItemSlot", "1.20.4", EquipmentSlot, ItemStack)
+        methodInferred("setNoGravity", "1.20.4", Boolean::class)
+        methodInferred("isNoGravity", "1.20.4")
+        methodInferred("setOnGround", "1.20.4", Boolean::class)
+        methodInferred("isOnGround", "1.16.5")
+        methodInferred("setSprinting", "1.20.4", Boolean::class)
+        methodInferred("isSprinting", "1.20.4")
+        methodInferred("setSwimming", "1.20.4", Boolean::class)
+        methodInferred("isSwimming", "1.20.4")
+        methodInferred("setTicksFrozen", "1.20.4", Int::class) //1.17 and higher
+        methodInferred("getTicksFrozen", "1.20.4") //1.17 and higher
+        methodInferred("setUUID", "1.20.4", UUID::class)
         methodInferred("getUUID", "1.20.4")
+        methodInferred("getEntityData", "1.20.4")
+        methodInferred("setSharedFlag", "1.20.4", Int::class, Boolean::class)
+        methodInferred("getSharedFlag", "1.20.4", Int::class)
+        methodInferred("moveTo", "1.20.4", Double::class, Double::class, Double::class)
+        fieldInferred("position", "1.20.4")
+        fieldInferred("locX", "1.8.8")
+        fieldInferred("locY", "1.8.8")
+        fieldInferred("locZ", "1.8.8")
+        fieldInferred("DATA_CUSTOM_NAME", "1.20.4")
+        fieldInferred("DATA_CUSTOM_NAME_VISIBLE", "1.20.4")
+        fieldInferred("DATA_SILENT", "1.20.4")
+        fieldInferred("DATA_NO_GRAVITY", "1.20.4")
+        fieldInferred("DATA_POSE", "1.20.4")
+        fieldInferred("DATA_TICKS_FROZEN", "1.20.4")
     }
     mapClass(LivingEntity) {
-
-    }
-    mapClass(BlockEntity) {
-
+        methodInferred("setArrowCount", "1.20.4", Int::class)
+        methodInferred("getArrowCount", "1.20.4")
+        methodInferred("setSleepingPos", "1.20.4", BlockPos)
+        methodInferred("getSleepingPos", "1.20.4")
+        methodInferred("removeEffectParticles", "1.20.4")
+        methodInferred("setStingerCount", "1.20.4", Int::class)
+        methodInferred("getStingerCount", "1.20.4")
+        methodInferred("triggerItemUseEffects", "1.20.4", ItemStack, Int::class)
+        methodInferred("startUsingItem", "1.20.4", InteractionHand)
+        methodInferred("stopUsingItem", "1.20.4")
+        methodInferred("getUseItem", "1.20.4")
+        methodInferred("getUseItemRemainingTicks", "1.20.4")
+        methodInferred("setLivingEntityFlag", "1.20.4", Int::class, Boolean::class)
+        fieldInferred("useItem", "1.20.4")
+        fieldInferred("DATA_LIVING_ENTITY_FLAGS", "1.20.4")
+        fieldInferred("DATA_HEALTH_ID", "1.20.4")
+        fieldInferred("DATA_EFFECT_COLOR_ID", "1.20.4")
+        fieldInferred("DATA_EFFECT_AMBIENCE_ID", "1.20.4")
+        fieldInferred("DATA_ARROW_COUNT_ID", "1.20.4")
+        fieldInferred("DATA_STINGER_COUNT_ID", "1.20.4")
+        fieldInferred("SLEEPING_POS_ID", "1.20.4")
     }
     mapClass(SpawnerBlockEntity) {
-
+        methodInferred("getSpawner", "1.20.4")
     }
     mapClass(BaseSpawner) {
-
+        fieldInferred("nextSpawnData", "1.20.4")
     }
     mapClass(SpawnData) {
-
+        methodInferred("getEntityToSpawn", "1.20.4")
     }
     mapClass(EntityType) {
-
+        methodInferred("loadEntityRecursive", "1.20.4", CompoundTag, Level, Function::class)
+        enumConstant(
+            "ALLAY",
+            "AREA_EFFECT_CLOUD",
+            "ARMOR_STAND",
+            "ARROW",
+            "AXOLOTL",
+            "BAT",
+            "BEE",
+            "BLAZE",
+            "BLOCK_DISPLAY",
+            "BOAT",
+            "BREEZE",
+            "CAMEL",
+            "CAT",
+            "CAVE_SPIDER",
+            "CHEST_BOAT",
+            "CHEST_MINECART",
+            "CHICKEN",
+            "COD",
+            "COMMAND_BLOCK_MINECART",
+            "COW",
+            "CREEPER",
+            "DOLPHIN",
+            "DONKEY",
+            "DRAGON_FIREBALL",
+            "DROWNED",
+            "EGG",
+            "ELDER_GUARDIAN",
+            "END_CRYSTAL",
+            "ENDER_DRAGON",
+            "ENDER_PEARL",
+            "ENDERMAN",
+            "ENDERMITE",
+            "EVOKER",
+            "EVOKER_FANGS",
+            "EXPERIENCE_BOTTLE",
+            "EXPERIENCE_ORB",
+            "EYE_OF_ENDER",
+            "FALLING_BLOCK",
+            "FIREWORK_ROCKET",
+            "FOX",
+            "FROG",
+            "FURNACE_MINECART",
+            "GHAST",
+            "GIANT",
+            "GLOW_ITEM_FRAME",
+            "GLOW_SQUID",
+            "GOAT",
+            "GUARDIAN",
+            "HOGLIN",
+            "HOPPER_MINECART",
+            "HORSE",
+            "HUSK",
+            "ILLUSIONER",
+            "INTERACTION",
+            "IRON_GOLEM",
+            "ITEM",
+            "ITEM_DISPLAY",
+            "ITEM_FRAME",
+            "FIREBALL",
+            "LEASH_KNOT",
+            "LIGHTNING_BOLT",
+            "LLAMA",
+            "LLAMA_SPIT",
+            "MAGMA_CUBE",
+            "MARKER",
+            "MINECART",
+            "MOOSHROOM",
+            "MULE",
+            "OCELOT",
+            "PAINTING",
+            "PANDA",
+            "PARROT",
+            "PHANTOM",
+            "PIG",
+            "PIGLIN",
+            "PIGLIN_BRUTE",
+            "PILLAGER",
+            "POLAR_BEAR",
+            "POTION",
+            "PUFFERFISH",
+            "RABBIT",
+            "RAVAGER",
+            "SALMON",
+            "SHEEP",
+            "SHULKER",
+            "SHULKER_BULLET",
+            "SILVERFISH",
+            "SKELETON",
+            "SKELETON_HORSE",
+            "SLIME",
+            "SMALL_FIREBALL",
+            "SNIFFER",
+            "SNOW_GOLEM",
+            "SNOWBALL",
+            "SPAWNER_MINECART",
+            "SPECTRAL_ARROW",
+            "SPIDER",
+            "SQUID",
+            "STRAY",
+            "STRIDER",
+            "TADPOLE",
+            "TEXT_DISPLAY",
+            "TNT",
+            "TNT_MINECART",
+            "TRADER_LLAMA",
+            "TRIDENT",
+            "TROPICAL_FISH",
+            "TURTLE",
+            "VEX",
+            "VILLAGER",
+            "VINDICATOR",
+            "WANDERING_TRADER",
+            "WARDEN",
+            "WIND_CHARGE",
+            "WITCH",
+            "WITHER",
+            "WITHER_SKELETON",
+            "WITHER_SKULL",
+            "WOLF",
+            "ZOGLIN",
+            "ZOMBIE",
+            "ZOMBIE_HORSE",
+            "ZOMBIE_VILLAGER",
+            "ZOMBIFIED_PIGLIN",
+            "PLAYER",
+            "FISHING_BOBBER",
+        )
     }
     mapClass(EquipmentSlot) {
-
+        enumConstant(
+            "MAINHAND",
+            "OFFHAND",
+            "FEET",
+            "LEGS",
+            "CHEST",
+            "HEAD",
+        )
     }
     mapClass(InteractionHand) {
-
+        enumConstant(
+            "MAIN_HAND",
+            "OFF_HAND"
+        )
     }
     mapClass(BlockPos) {
-
+        constructor(Int::class, Int::class, Int::class)
+        constructor(Double::class, Double::class, Double::class)
+        constructor(Vec3)
     }
     mapClass(ChunkPos) {
-
+        constructor(Int::class, Int::class)
+        methodInferred("getMiddleBlockX", "1.20.4")
+        methodInferred("getMiddleBlockZ", "1.20.4")
+        methodInferred("getMinBlockX", "1.20.4")
+        methodInferred("getMinBlockZ", "1.20.4")
+        methodInferred("getMaxBlockX", "1.20.4")
+        methodInferred("getMaxBlockZ", "1.20.4")
+        methodInferred("getBlockX", "1.20.4", Int::class)
+        methodInferred("getBlockZ", "1.20.4", Int::class)
     }
     mapClass(Direction) {
-
+        methodInferred("getName", "1.20.4")
+        enumConstant(
+            "DOWN",
+            "UP",
+            "NORTH",
+            "SOUTH",
+            "WEST",
+            "EAST"
+        )
     }
     mapClass(BlockState) {
-
-    }
-    mapClass(BlockBehaviour) {
-
+        methodInferred("getBlock", "1.12.2")
     }
     mapClass(BlockStateBase) {
-
+        methodInferred("getBlock", "1.20.4")
     }
-    mapClass(Blocks) {
-
+    mapClass(Rotations) {
+        constructor(Float::class, Float::class, Float::class)
+        methodInferred("getX", "1.20.4")
+        methodInferred("getY", "1.20.4")
+        methodInferred("getZ", "1.20.4")
+        methodInferred("getWrappedX", "1.20.4")
+        methodInferred("getWrappedY", "1.20.4")
+        methodInferred("getWrappedZ", "1.20.4")
     }
     mapClass(Block) {
-
+        fieldInferred("stepSound", "1.8.8")
+        methodInferred("byItem", "1.20.4", Item)
+        methodInferred("getById", "1.8.8", Int::class)
+        methodInferred("getSoundType", "1.20.4", BlockState)
+        methodInferred("defaultBlockState", "1.20.4")
+        methodInferred("getId", "1.20.4", BlockState)
     }
     mapClass(Component) {
-
+        methodInferred("getStyle", "1.20.4")
+        methodInferred("getContents", "1.20.4")
+        methodInferred("getString", "1.20.4")
+        methodInferred("getSiblings", "1.20.4")
+        methodInferred("plainCopy", "1.20.4")
+        methodInferred("copy", "1.20.4")
     }
     mapClass(ComponentSerializer) {
-
+        methodInferred("fromJsonLenient", "1.20.4", String::class)
     }
     mapClass(Item) {
-
+        methodInferred("getItemCategory", "1.18.2")
     }
     mapClass(ItemStack) {
-
+        constructor(CompoundTag)
+        fieldInferred("EMPTY", "1.20.4")
+        fieldInferred("TAG_ENCH", "1.20.4")
+        fieldInferred("TAG_DISPLAY", "1.20.4")
+        fieldInferred("TAG_DISPLAY_NAME", "1.20.4")
+        fieldInferred("TAG_LORE", "1.20.4")
+        fieldInferred("TAG_DAMAGE", "1.20.4")
+        fieldInferred("TAG_COLOR", "1.20.4")
+        fieldInferred("TAG_UNBREAKABLE", "1.20.4")
+        fieldInferred("TAG_REPAIR_COST", "1.20.4")
+        fieldInferred("TAG_CAN_DESTROY_BLOCK_LIST", "1.20.4")
+        fieldInferred("TAG_CAN_PLACE_ON_BLOCK_LIST", "1.20.4")
+        fieldInferred("TAG_HIDE_FLAGS", "1.20.4")
+        // TODO
+//        methodInferred("createStack", "1.8.8", CompoundTag)
+        methodInferred("of", "1.20.4", CompoundTag)
+        methodInferred("getTag", "1.20.4")
+        methodInferred("getOrCreateTag", "1.20.4")
+        methodInferred("setTag", "1.20.4", CompoundTag)
+        methodInferred("getHoverName", "1.20.4")
+        methodInferred("getDisplayName", "1.20.4")
+        methodInferred("getItem", "1.20.4")
+        methodInferred("save", "1.20.4", CompoundTag)
     }
     mapClass(Potion) {
-
-    }
-    mapClass(Potions) {
-
+        fieldInferred("name", "1.20.4")
     }
     mapClass(PotionUtils) {
-
+        methodInferred("getMobEffects", "1.20.4", ItemStack)
+        methodInferred("getColor", "1.20.4", ItemStack)
+        methodInferred("getPotion", "1.20.4", ItemStack)
+        methodInferred("getPotion", "1.20.4", CompoundTag)
+        methodInferred("setPotion", "1.20.4", ItemStack, Potion)
     }
     mapClass(SynchedEntityData) {
-
+        constructor(Entity)
+        fieldInferred("itemsById", "1.20.4")
+        methodInferred("packDirty", "1.20.4") //1.19.3 and higher
+        methodInferred("getNonDefaultValues", "1.20.4") //1.19.3 and higher
+        methodInferred("define", "1.20.4", EntityDataAccessor, Object::class)
+        methodInferred("defineId", "1.20.4", Class::class, EntityDataSerializer)
+        methodInferred("set", "1.20.4", EntityDataAccessor, Object::class)
+        methodInferred("get", "1.20.4", EntityDataAccessor)
+        methodInferred("getItem", "1.20.4", EntityDataAccessor)
+        // TODO
+//        methodInferred("a", "1.8.8", Int::class, Object::class)
+        methodInferred("add", "1.8.8", Int::class, Int::class)
+        methodInferred("watch", "1.8.8", Int::class, Object::class)
     }
     mapClass(DataItem) {
-
+        constructor(EntityDataAccessor, Object::class)
+        fieldInferred("initialValue", "1.20.4")
+        methodInferred("getAccessor", "1.20.4")
+        methodInferred("setValue", "1.20.4", Object::class)
+        methodInferred("getValue", "1.20.4")
+        methodInferred("isSetToDefault", "1.20.4")
+        methodInferred("value", "1.20.4")
     }
     mapClass(Tag) {
-
+        fieldInferred("OBJECT_HEADER", "1.20.4")
+        fieldInferred("ARRAY_HEADER", "1.20.4")
+        fieldInferred("OBJECT_REFERENCE", "1.20.4")
+        fieldInferred("STRING_SIZE", "1.20.4")
+        fieldInferred("TAG_END", "1.20.4")
+        fieldInferred("TAG_BYTE", "1.20.4")
+        fieldInferred("TAG_SHORT", "1.20.4")
+        fieldInferred("TAG_INT", "1.20.4")
+        fieldInferred("TAG_LONG", "1.20.4")
+        fieldInferred("TAG_FLOAT", "1.20.4")
+        fieldInferred("TAG_DOUBLE", "1.20.4")
+        fieldInferred("TAG_BYTE_ARRAY", "1.20.4")
+        fieldInferred("TAG_STRING", "1.20.4")
+        fieldInferred("TAG_LIST", "1.20.4")
+        fieldInferred("TAG_COMPOUND", "1.20.4")
+        fieldInferred("TAG_INT_ARRAY", "1.20.4")
+        fieldInferred("TAG_LONG_ARRAY", "1.20.4")
+        fieldInferred("TAG_ANY_NUMERIC", "1.20.4")
+        fieldInferred("MAX_DEPTH", "1.20.4")
     }
     mapClass(CompoundTag) {
-
+        constructor()
+        methodInferred("getAllKeys", "1.20.4")
+        methodInferred("size", "1.20.4")
+        methodInferred("put", "1.20.4", String::class, Tag)
+        methodInferred("putString", "1.20.4", String::class, String::class)
+        methodInferred("get", "1.20.4", String::class)
+        methodInferred("getList", "1.20.4", String::class, Int::class)
+        methodInferred("getString", "1.20.4", String::class)
+        methodInferred("getCompound", "1.20.4", String::class)
+        methodInferred("remove", "1.20.4", String::class)
+        methodInferred("copy", "1.20.4")
     }
     mapClass(ListTag) {
-
+        constructor(List::class, Byte::class)
+        constructor()
     }
     mapClass(StringTag) {
-
+        constructor(String::class)
     }
     mapClass(TagParser) {
-
+        methodInferred("parseTag", "1.20.4", String::class)
     }
     mapClass(EntityDataSerializer) {
-
+        methodInferred("createAccessor", "1.20.4", Int::class)
     }
     mapClass(EntityDataSerializers) {
-
+        fieldInferred("BYTE", "1.20.4")
+        fieldInferred("INT", "1.20.4")
+        fieldInferred("FLOAT", "1.20.4")
+        fieldInferred("STRING", "1.20.4")
+        fieldInferred("COMPONENT", "1.20.4")
+        fieldInferred("OPTIONAL_COMPONENT", "1.20.4")
+        fieldInferred("ITEM_STACK", "1.20.4")
+        fieldInferred("BLOCK_STATE", "1.20.4")
+        fieldInferred("BOOLEAN", "1.20.4")
+        fieldInferred("PARTICLE", "1.20.4")
+        fieldInferred("ROTATIONS", "1.20.4")
+        fieldInferred("BLOCK_POS", "1.20.4")
+        fieldInferred("OPTIONAL_BLOCK_POS", "1.20.4")
+        fieldInferred("DIRECTION", "1.20.4")
+        fieldInferred("OPTIONAL_UUID", "1.20.4")
+        fieldInferred("COMPOUND_TAG", "1.20.4")
+        fieldInferred("VILLAGER_DATA", "1.20.4")
+        fieldInferred("OPTIONAL_UNSIGNED_INT", "1.20.4")
+        fieldInferred("POSE", "1.20.4")
     }
     mapClass(EntityDataAccessor) {
-
+        methodInferred("getId", "1.20.4")
     }
     mapClass(ResourceLocation) {
-
+        constructor(String::class)
+        constructor(String::class, String::class)
+        methodInferred("getPath", "1.20.4")
+        methodInferred("getNamespace", "1.20.4")
     }
     mapClass(ResourceKey) {
-
+        methodInferred("create", "1.20.4", ResourceKey, ResourceLocation)
     }
     mapClass(Advancement) {
-
+        methodInferred("getDisplay", "1.19.2")
+        methodInferred("getRewards", "1.19.2")
+        methodInferred("getCriteria", "1.19.2")
+        methodInferred("criteria", "1.20.4")
+        methodInferred("getId", "1.19.2")
+        methodInferred("getRequirements", "1.19.2")
+        methodInferred("requirements", "1.20.4")
+        methodInferred("getChatComponent", "1.19.2")
+        methodInferred("fromJson", "1.20.2", "com.google.gson.JsonObject", DeserializationContext)
+        methodInferred("serializeToJson", "1.20.2")
+        fieldInferred("CODEC", "1.20.4")
     }
     mapClass(AdvancementHolder) {
-
+        constructor(ResourceLocation, Advancement)
     }
     mapClass(AdvancementBuilder) {
-
+        methodInferred("advancement", "1.19.2")
+        methodInferred("parent", "1.19.2", Advancement)
+        methodInferred("parent", "1.19.2", ResourceLocation)
+        methodInferred("serializeToJson", "1.19.2")
+        methodInferred("fromJson", "1.19.2", "com.google.gson.JsonObject", DeserializationContext)
+        methodInferred("build", "1.20.1", ResourceLocation) //1.12 - 1.20.1
     }
     mapClass(AdvancementProgress) {
-
+        constructor()
+        methodInferred("update", "1.19.4", Map::class, "java.lang.String[][]")
+        methodInferred("update", "1.20.2", AdvancementRequirements)
+        methodInferred("isDone", "1.20.2")
+        methodInferred("grantProgress", "1.20.2", String::class)
+        methodInferred("revokeProgress", "1.20.2", String::class)
+        methodInferred("getRemainingCriteria", "1.20.2")
     }
     mapClass(AdvancementRequirements) {
-
+        constructor("java.lang.String[][]")
+        methodInferred("requirements", "1.20.2")
     }
     mapClass(ServerAdvancementManager) {
-
+        fieldInferred("GSON", "1.20.4")
     }
     mapClass(DeserializationContext) {
-
+        constructor(ResourceLocation, PredicateManager)
+        constructor(ResourceLocation, LootDataManager)
     }
     mapClass(PredicateManager) {
-
+        constructor()
     }
     mapClass(LootDataManager) {
-
+        constructor()
     }
     mapClass(GsonHelper) {
-
+        methodInferred("fromJson", "1.18.2", "com.google.gson.Gson", String::class, Class::class)
     }
     mapClass(CreativeModeTab) {
-
+        fieldInferred("langId", "1.18.2")
     }
     mapClass(AbstractContainerMenu) {
-
+        methodInferred("sendAllDataToRemote", "1.20.4")
+        fieldInferred("containerId", "1.20.4")
     }
     mapClass(MenuType) {
-
+        enumConstant(
+            "GENERIC_9x1",
+            "GENERIC_9x2",
+            "GENERIC_9x3",
+            "GENERIC_9x4",
+            "GENERIC_9x5",
+            "GENERIC_9x6",
+        )
     }
     mapClass(DimensionType) {
-
-    }
-    mapClass(ParticleOptions) {
-
-    }
-    mapClass(DifficultyInstance) {
-
-    }
-    mapClass(SpawnGroupData) {
-
+        fieldInferred("DEFAULT_OVERWORLD", "1.18.2")
+        fieldInferred("DEFAULT_NETHER", "1.18.2")
+        fieldInferred("DEFAULT_END", "1.18.2")
     }
     mapClass(ChatType) {
-
+        enumConstant(
+            "CHAT",
+            "SYSTEM",
+            "GAME_INFO"
+        )
     }
     mapClass(VillagerData) {
-
+        constructor(VillagerType, VillagerProfession, Int::class)
+        methodInferred("getType", "1.19.2")
+        methodInferred("getProfession", "1.19.2")
     }
     mapClass(VillagerType) {
-
+        enumConstant(
+            "DESERT",
+            "JUNGLE",
+            "PLAINS",
+            "SAVANNA",
+            "SNOW",
+            "SWAMP",
+            "TAIGA",
+        )
     }
     mapClass(VillagerProfession) {
-
+        enumConstant(
+            "NONE",
+            "ARMORER",
+            "BUTCHER",
+            "CARTOGRAPHER",
+            "CLERIC",
+            "FARMER",
+            "FISHERMAN",
+            "FLETCHER",
+            "LEATHERWORKER",
+            "LIBRARIAN",
+            "MASON",
+            "NITWIT",
+            "SHEPHERD",
+            "TOOLSMITH",
+            "WEAPONSMITH",
+        )
     }
     mapClass(ChatFormatting) {
-
+        enumConstant(
+            "BLACK",
+            "DARK_BLUE",
+            "DARK_GREEN",
+            "DARK_AQUA",
+            "DARK_RED",
+            "DARK_PURPLE",
+            "GOLD",
+            "GRAY",
+            "DARK_GRAY",
+            "BLUE",
+            "GREEN",
+            "AQUA",
+            "RED",
+            "LIGHT_PURPLE",
+            "YELLOW",
+            "WHITE",
+            "OBFUSCATED",
+            "BOLD",
+            "STRIKETHROUGH",
+            "UNDERLINE",
+            "ITALIC",
+            "RESET",
+        )
     }
     mapClass(BoatType) {
-
+        enumConstant(
+            "OAK",
+            "SPRUCE",
+            "BIRCH",
+            "JUNGLE",
+            "ACACIA",
+            "DARK_OAK"
+        )
     }
     mapClass(Registry) {
-
+        // TODO: Doesn't work
+//        fieldInferred("BIOME_REGISTRY", "1.19")
+//        fieldInferred("PARTICLE_TYPE", "1.18.2")
+//        fieldInferred("BLOCK", "1.18.2")
+//        methodInferred("getOrThrow", "1.18.2", ResourceKey)
+//        methodInferred("get", "1.18.2", ResourceKey)
+//        methodInferred("get", "1.18.2", ResourceLocation)
+//        methodInferred("register", "1.18.2", Registry, ResourceLocation, Object::class)
+//        methodInferred("register", "1.18.2", Registry, ResourceKey, Object::class)
     }
-    /*mapClass(BuiltInRegistries) {
-
-    }*/
     mapClass(MappedRegistry) {
-
+        fieldInferred("frozen", "1.18.2")
     }
     mapClass(WritableRegistry) {
-
+        methodInferred("register", "1.18.2", ResourceKey, Object::class, Lifecycle)
     }
     mapClass(RegistryAccess) {
-
+        methodInferred("ownedRegistryOrThrow", "1.18.2", ResourceKey)
     }
-    /*mapClass(BuiltinRegistries) {
-
-    }*/
+    mapClass(BuiltinRegistries) {
+        fieldInferred("BIOME", "1.18.2")
+        methodInferred("register", "1.18.2", Registry, ResourceKey, Object::class)
+    }
     mapClass(CoreBuiltInRegistries) {
-
+        fieldInferred("PARTICLE_TYPE", "1.20.4")
+        fieldInferred("BLOCK", "1.20.4")
     }
     mapClass(Holder) {
-
+        methodInferred("direct", "1.20.4", Object::class)
     }
     mapClass(Biome) {
-
+        fieldInferred("generationSettings", "1.18.2")
+        fieldInferred("mobSettings", "1.18.2")
+        methodInferred("getPrecipitation", "1.18.2")
+        methodInferred("getBiomeCategory", "1.18.2")
+        methodInferred("getSpecialEffects", "1.18.2")
     }
     mapClass(BiomeBuilder) {
-
-    }
-    mapClass(BiomeCategory) {
-
-    }
-    mapClass(BiomePrecipitation) {
-
+        constructor()
+        methodInferred("from", "1.18.2", Biome)
+        methodInferred("precipitation", "1.18.2", BiomePrecipitation)
+        methodInferred("biomeCategory", "1.18.2", BiomeCategory)
+        methodInferred("temperature", "1.18.2", Float::class)
+        methodInferred("downfall", "1.18.2", Float::class)
+        methodInferred("specialEffects", "1.18.2", BiomeSpecialEffects)
+        methodInferred("mobSpawnSettings", "1.18.2", MobSpawnSettings)
+        methodInferred("generationSettings", "1.18.2", BiomeGenerationSettings)
+        methodInferred("temperatureAdjustment", "1.18.2", TemperatureModifier)
+        methodInferred("build", "1.18.2")
     }
     mapClass(TemperatureModifier) {
-
-    }
-    mapClass(BiomeGenerationSettings) {
-
+        enumConstant(
+            "NONE",
+            "FROZEN"
+        )
     }
     mapClass(BiomeSpecialEffects) {
-
+        methodInferred("getFogColor", "1.18.2")
+        methodInferred("getWaterColor", "1.18.2")
+        methodInferred("getWaterFogColor", "1.18.2")
+        methodInferred("getSkyColor", "1.18.2")
+        methodInferred("getFoliageColorOverride", "1.18.2")
+        methodInferred("getGrassColorOverride", "1.18.2")
+        methodInferred("getGrassColorModifier", "1.18.2")
+        methodInferred("getAmbientParticleSettings", "1.18.2")
+        methodInferred("getAmbientLoopSoundEvent", "1.18.2")
+        methodInferred("getAmbientMoodSettings", "1.18.2")
+        methodInferred("getAmbientAdditionsSettings", "1.18.2")
+        methodInferred("getBackgroundMusic", "1.18.2")
     }
     mapClass(BiomeSpecialEffectsBuilder) {
-
+        constructor()
+        methodInferred("fogColor", "1.18.2", Int::class)
+        methodInferred("waterColor", "1.18.2", Int::class)
+        methodInferred("waterFogColor", "1.18.2", Int::class)
+        methodInferred("skyColor", "1.18.2", Int::class)
+        methodInferred("foliageColorOverride", "1.18.2", Int::class)
+        methodInferred("grassColorModifier", "1.18.2", BiomeSpecialEffectsGrassColorModifier)
+        methodInferred("grassColorOverride", "1.18.2", Int::class)
+        methodInferred("build", "1.18.2")
     }
     mapClass(BiomeSpecialEffectsGrassColorModifier) {
-
-    }
-    mapClass(MobSpawnSettings) {
-
+        enumConstant(
+            "NONE",
+            "DARK_FOREST",
+            "SWAMP"
+        )
     }
     mapClass(SoundEvent) {
-
+        methodInferred("getLocation", "1.20.4")
     }
     mapClass(SoundType) {
-
-    }
-    mapClass(ChatSender) {
-
-    }
-    mapClass(CryptSaltSignaturePair) {
-
+        fieldInferred("breakSound", "1.20.4")
+        fieldInferred("stepSound", "1.20.4")
+        fieldInferred("placeSound", "1.20.4")
+        fieldInferred("hitSound", "1.20.4")
+        fieldInferred("fallSound", "1.20.4")
     }
     mapClass(PlayerChatMessage) {
-
-    }
-    mapClass(ProfilePublicKey) {
-
+        methodInferred("serverContent", "1.19.2")
+        methodInferred("signedContent", "1.20.4")
+        methodInferred("signature", "1.20.4")
+        methodInferred("unsignedContent", "1.20.4")
     }
     mapClass(NonNullList) {
-
+        constructor(List::class, Object::class)
+        methodInferred("create",  "1.20.4")
+        methodInferred("withSize",  "1.20.4", Int::class, Object::class)
+        methodInferred("get",  "1.20.4", Int::class)
+        methodInferred("set",  "1.20.4", Int::class, Object::class)
+        methodInferred("add",  "1.20.4", Int::class, Object::class)
+        methodInferred("remove",  "1.20.4", Int::class)
+        methodInferred("size",  "1.20.4")
+        methodInferred("clear",  "1.20.4")
     }
     mapClass(MobEffectInstance) {
         constructor(MobEffect, Int::class, Int::class, Boolean::class, Boolean::class, Boolean::class)
         fieldInferred("effect", "1.20.4")
+        methodInferred("getEffect", "1.20.4")
+        methodInferred("getDuration", "1.20.4")
+        methodInferred("getAmplifier", "1.20.4")
+        methodInferred("isAmbient", "1.20.4")
+        methodInferred("isVisible", "1.20.4")
+        methodInferred("showIcon", "1.20.4")
     }
     mapClass(MobEffect) {
+        methodInferred("getDescriptionId", "1.20.4")
+        methodInferred("getDisplayName", "1.20.4")
+        methodInferred("getCategory", "1.20.4")
+        methodInferred("getColor", "1.20.4")
         methodInferred("byId", "1.16.5", Int::class)
     }
     mapClass(Scoreboard) {
-
+        constructor()
+        methodInferred("hasObjective", "1.20.1", String::class)
+        methodInferred("getOrCreateObjective", "1.16.5", String::class)
+        methodInferred("getObjective", "1.16.5", String::class)
+        methodInferred("addObjective", "1.16.5", String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
+        methodInferred("getOrCreatePlayerScore", "1.16.5", String::class, Objective)
+        methodInferred("getTrackedPlayers", "1.16.5")
+        methodInferred("resetPlayerScore", "1.16.5", String::class, Objective)
+        methodInferred("removeObjective", "1.16.5", Objective)
     }
     mapClass(PlayerTeam) {
-
+        constructor(Scoreboard, String::class)
+        fieldInferred("scoreboard", "1.16.5")
+        fieldInferred("name", "1.16.5")
+        fieldInferred("players", "1.16.5")
+        fieldInferred("displayName", "1.16.5")
+        fieldInferred("playerPrefix", "1.16.5")
+        fieldInferred("playerSuffix", "1.16.5")
+        fieldInferred("allowFriendlyFire", "1.16.5")
+        fieldInferred("seeFriendlyInvisibles", "1.16.5")
+        fieldInferred("nameTagVisibility", "1.16.5")
+        fieldInferred("deathMessageVisibility", "1.16.5")
+        fieldInferred("color", "1.16.5")
+        fieldInferred("collisionRule", "1.16.5")
+        fieldInferred("displayNameStyle", "1.16.5")
     }
     mapClass(Team) {
-
+        // TODO: Wasn't in ruom
     }
     mapClass(CollisionRule) {
-
+        enumConstant(
+            "ALWAYS",
+            "NEVER",
+            "PUSH_OTHER_TEAMS",
+            "PUSH_OWN_TEAM"
+        )
     }
     mapClass(Visibility) {
-
+        enumConstant(
+            "ALWAYS",
+            "NEVER",
+            "HIDE_FOR_OTHER_TEAMS",
+            "HIDE_FOR_OWN_TEAM"
+        )
     }
     mapClass(DyeColor) {
-
+        enumConstant(
+            "WHITE",
+            "ORANGE",
+            "MAGENTA",
+            "LIGHT_BLUE",
+            "YELLOW",
+            "LIME",
+            "PINK",
+            "GRAY",
+            "LIGHT_GRAY",
+            "CYAN",
+            "PURPLE",
+            "BLUE",
+            "BROWN",
+            "GREEN",
+            "RED",
+            "BLACK",
+        )
+        methodInferred("getName", "1.20.4")
+        methodInferred("getFireworkColor", "1.20.4")
+        methodInferred("byId", "1.20.4", Int::class)
     }
     mapClass(SignText) {
-        //constructor(Array<Component>::class, Array<Component>::class, DyeColor, Boolean::class)
+        constructor("${Component}[]", "${Component}[]", DyeColor, Boolean::class)
+        methodInferred("emptyMessages", "1.20.4")
+        methodInferred("hasGlowingText", "1.20.4")
+        methodInferred("setHasGlowingText", "1.20.4", Boolean::class)
+        methodInferred("getColor", "1.20.4")
+        methodInferred("setColor", "1.20.4", DyeColor)
+        methodInferred("getMessage", "1.20.4", Int::class, Boolean::class)
+        methodInferred("setMessage", "1.20.4", Int::class, Component)
     }
     mapClass(ParticleType) {
-
+        // TODO: Warn't in ruom
     }
     mapClass(PositionSource) {
-
+        // TODO: Wasn't in ruom
     }
     mapClass(BlockPositionSource) {
-
+        constructor(BlockPos)
     }
     mapClass(EntityPositionSource) {
-
+        constructor(Int::class)
+        constructor(Entity, Float::class)
     }
     mapClass(VibrationPath) {
-
+        constructor(BlockPos, PositionSource, Int::class)
     }
     mapClass(DustParticleOptions) {
-
+        constructor(Float::class, Float::class, Float::class, Float::class)
+        constructor("org.joml.Vector3f", Float::class)
+        constructor(Vector3f, Float::class)
     }
     mapClass(DustColorTransitionOptions) {
-
+        constructor(Vector3f, Vector3f, Float::class)
+        constructor("org.joml.Vector3f", "org.joml.Vector3f", Float::class)
     }
     mapClass(BlockParticleOption) {
-
+        constructor(ParticleType, BlockState)
     }
     mapClass(ItemParticleOption) {
-
+        constructor(ParticleType, ItemStack)
     }
     mapClass(VibrationParticleOption) {
-
+        constructor(VibrationPath)
+        constructor(PositionSource, Int::class)
     }
     mapClass(ShriekParticleOption) {
-
+        constructor(Int::class)
     }
     mapClass(SculkChargeParticleOptions) {
-
-    }
-    mapClass(Vector3f) {
-
+        constructor(Float::class)
     }
     mapClass(Objective) {
-
+        constructor(Scoreboard, String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
     }
     mapClass(ObjectiveCriteria) {
-
+        fieldInferred("TRIGGER", "1.20.4")
+        fieldInferred("HEALTH", "1.20.4")
+        fieldInferred("FOOD", "1.20.4")
+        fieldInferred("AIR", "1.20.4")
+        fieldInferred("ARMOR", "1.20.4")
+        fieldInferred("EXPERIENCE", "1.20.4")
+        fieldInferred("LEVEL", "1.20.4")
+        fieldInferred("TEAM_KILL", "1.20.4")
+        fieldInferred("KILLED_BY_TEAM", "1.20.4")
     }
     mapClass(ObjectiveCriteriaRenderType) {
-
+        fieldInferred("INTEGER", "1.16.5")
+        fieldInferred("HEARTS", "1.16.5")
     }
     mapClass(ServerScoreboardMethod) {
-
-    }
-    mapClass(RemoteChatSessionData) {
-
+        enumConstant(
+            "CHANGE",
+            "REMOVE"
+        )
     }
     mapClass(ClientInformation) {
-
+        methodInferred("createDefault", "1.20.4")
+    }
+    mapClass(PacketFlow) {
+        enumConstant(
+            "CLIENTBOUND",
+            "SERVERBOUND"
+        )
+    }
+    mapClass(CommonListenerCookie) {
+        constructor(GameProfile, Int::class, ClientInformation)
     }
     mapClass(CrossbowItem) {
-
+        methodInferred("isCharged", "1.16.5", ItemStack)
+        methodInferred("setCharged", "1.16.5", ItemStack, Boolean::class)
+        methodInferred("getChargedProjectiles", "1.16.5", ItemStack)
+        methodInferred("clearChargedProjectiles", "1.16.5", ItemStack)
+        methodInferred("getChargeDuration", "1.16.5", ItemStack)
+        methodInferred("getStartSound", "1.16.5", Int::class)
+        methodInferred("getPowerForTime", "1.16.5", Int::class, ItemStack)
     }
     mapClass(ArmorStand) {
-
+        constructor(EntityType, Level)
+        methodInferred("setHeadPose", "1.16.5", Rotations)
+        methodInferred("setBodyPose", "1.16.5", Rotations)
+        methodInferred("setLeftArmPose", "1.16.5", Rotations)
+        methodInferred("setRightArmPose", "1.16.5", Rotations)
+        methodInferred("setLeftLegPose", "1.18", Rotations)
+        methodInferred("setRightLegPose", "1.18", Rotations)
+        methodInferred("setMarker", "1.16.5", Boolean::class)
+        methodInferred("setNoBasePlate", "1.16.5", Boolean::class)
+        methodInferred("setShowArms", "1.16.5", Boolean::class)
+        methodInferred("setSmall", "1.16.5", Boolean::class)
+        methodInferred("setYBodyRot", "1.16.5", Float::class)
+        methodInferred("setYHeadRot", "1.16.5", Float::class)
+        methodInferred("getHeadPose", "1.16.5")
+        methodInferred("getBodyPose", "1.16.5")
+        methodInferred("getLeftArmPose", "1.18")
+        methodInferred("getRightArmPose", "1.18")
+        methodInferred("getLeftLegPose", "1.18")
+        methodInferred("getRightLegPose", "1.18")
+        methodInferred("isMarker", "1.16.5")
+        methodInferred("isNoBasePlate", "1.16.5")
+        methodInferred("isShowArms", "1.16.5")
+        methodInferred("isSmall", "1.16.5")
+        // TODO
+//        methodInferred("spigot:setGravity:1.8.8", "1.16.5", Boolean::class)
+//        methodInferred("spigot:hasGravity:1.8.8", "1.16.5")
     }
     mapClass(Arrow) {
-
+        constructor(EntityType, Level)
+        methodInferred("setEffectsFromItem", "1.20.4", ItemStack)
+        methodInferred("makeParticle", "1.16.5", Int::class)
+        methodInferred("getColor", "1.16.5")
+        methodInferred("setFixedColor", "1.16.5", Int::class)
     }
     mapClass(ThrownPotion) {
+        constructor(EntityType, Level)
         constructor(LevelSpigot)
+        fieldInferred("DATA_ITEM_STACK", "1.15.2")
     }
     mapClass(ThrownTrident) {
-
+        constructor(EntityType, Level)
+        constructor(Level, LivingEntity, ItemStack)
+        fieldInferred("tridentItem", "1.16.5")
+        fieldInferred("clientSideReturnTridentTickCount", "1.16.5")
+        fieldInferred("ID_LOYALTY", "1.16.5")
+        fieldInferred("ID_FOIL", "1.16.5")
     }
     mapClass(ThrowableItemProjectile) {
-
+        methodInferred("setItem", "1.16.5", ItemStack)
+        methodInferred("getItemRaw", "1.16.5")
+        fieldInferred("DATA_ITEM_STACK", "1.16.5")
     }
     mapClass(ItemEntity) {
-
+        constructor(Level, Double::class, Double::class, Double::class, ItemStack)
+        methodInferred("setItem", "1.16.5", ItemStack)
+        methodInferred("getItem", "1.16.5")
+        fieldInferred("DATA_ITEM", "1.16.5")
     }
     mapClass(FallingBlockEntity) {
-
+        constructor(Level, Double::class, Double::class, Double::class, BlockState)
+        methodInferred("setStartPos", "1.16.5", BlockPos)
+        methodInferred("getBlockState", "1.16.5")
+        methodInferred("getAddEntityPacket", "1.16.5")
+        fieldInferred("blockState", "1.16.5")
     }
     mapClass(AreaEffectCloud) {
-
+        constructor(Level, Double::class, Double::class, Double::class)
+        methodInferred("setRadius", "1.16.5", Float::class)
+        methodInferred("getRadius", "1.16.5")
+        methodInferred("getColor", "1.16.5")
+        methodInferred("setFixedColor", "1.16.5", Int::class)
+        methodInferred("getParticle", "1.16.5")
+        methodInferred("setParticle", "1.16.5", ParticleOptions)
+        methodInferred("setWaiting", "1.16.5", Boolean::class)
+        methodInferred("getPotion", "1.20.4")
     }
     mapClass(FishingHook) {
-
+        constructor(EntityType, Level)
+        methodInferred("setOwner", "1.20.4", Entity)
+        methodInferred("getAddEntityPacket", "1.16.5")
+        fieldInferred("DATA_HOOKED_ENTITY", "1.16.5")
+        fieldInferred("DATA_BITING", "1.16.5")
     }
     mapClass(FireworkRocketEntity) {
-
+        constructor(EntityType, Level)
+        methodInferred("hasExplosion", "1.16.5")
+        methodInferred("isAttachedToEntity", "1.16.5")
+        fieldInferred("DATA_ID_FIREWORKS_ITEM", "1.16.5")
+        fieldInferred("DATA_ATTACHED_TO_TARGET", "1.16.5")
+        fieldInferred("DATA_SHOT_AT_ANGLE", "1.16.5")
     }
     mapClass(LightningBolt) {
-
+        constructor(EntityType, Level)
     }
     mapClass(SignBlockEntity) {
-
+        methodInferred("updateText", "1.20.4", UnaryOperator::class, Boolean::class)
+        methodInferred("getMessage", "1.19.2", Int::class, Boolean::class)
+        method(Void.TYPE, "setMessage", Int::class, Component, Component)
+        method(Void.TYPE, "setMessage", Int::class, Component)
+        methodInferred("getUpdatePacket", "1.19.2")
+        methodInferred("hasGlowingText", "1.19.2")
+        methodInferred("setHasGlowingText", "1.19.2", Boolean::class)
+        methodInferred("markUpdated", "1.19.2")
+        fieldInferred("messages", "1.19.2")
     }
     mapClass(Villager) {
-
+        constructor(EntityType, Level)
+        fieldInferred("DATA_VILLAGER_DATA", "1.16.5")
     }
     mapClass(Boat) {
-
+        constructor(EntityType, Level)
+        methodInferred("setDamage", "1.16.5", Float::class)
+        methodInferred("getDamage", "1.16.5")
+        methodInferred("setHurtTime", "1.16.5", Int::class)
+        methodInferred("getHurtTime", "1.16.5")
+        methodInferred("setBubbleTime", "1.16.5", Int::class)
+        methodInferred("getBubbleTime", "1.16.5")
+        methodInferred("setHurtDir", "1.16.5", Int::class)
+        methodInferred("getHurtDir", "1.16.5")
+        methodInferred("setType", "1.16.5", BoatType)
+        methodInferred("getBoatType", "1.16.5")
+        fieldInferred("DATA_ID_PADDLE_LEFT", "1.16.5")
+        fieldInferred("DATA_ID_PADDLE_RIGHT", "1.16.5")
     }
     mapClass(Creeper) {
-
+        fieldInferred("DATA_SWELL_DIR", "1.16.5")
+        fieldInferred("DATA_IS_POWERED", "1.16.5")
+        fieldInferred("DATA_IS_IGNITED", "1.16.5")
     }
 
 }
