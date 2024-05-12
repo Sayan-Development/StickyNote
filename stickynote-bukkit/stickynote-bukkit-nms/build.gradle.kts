@@ -1,6 +1,7 @@
 import me.kcra.takenaka.generator.accessor.AccessorType
 import me.kcra.takenaka.generator.accessor.CodeLanguage
 import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
+import java.time.Instant
 import java.util.BitSet
 import java.util.EnumSet
 import java.util.Optional
@@ -18,7 +19,7 @@ repositories {
 dependencies {
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.4")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.6")
     implementation(accessorRuntime())
 }
 
@@ -34,6 +35,7 @@ accessors {
     accessedNamespaces("spigot")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
+    versionRange("1.8.8", "1.20.4")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketEntry = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Entry"
@@ -87,7 +89,6 @@ accessors {
     val ServerboundInteractPacketActionType = "net.minecraft.network.protocol.game.ServerboundInteractPacket\$ActionType"
     val ServerboundInteractPacketActionInteractAt = "net.minecraft.network.protocol.game.ServerboundInteractPacket\$InteractionAtLocationAction"
     val ServerboundInteractPacketActionInteract = "net.minecraft.network.protocol.game.ServerboundInteractPacket\$InteractionAction"
-    val ServerboundChatPreviewPacket = "net.minecraft.network.protocol.game.ServerboundChatPreviewPacket"
     val ServerboundKeepAlivePacket = "net.minecraft.network.protocol.game.ServerboundKeepAlivePacket"
     val ServerboundClientInformationPacket = "net.minecraft.network.protocol.game.ServerboundClientInformationPacket"
     val ServerPlayer = "net.minecraft.server.level.ServerPlayer"
@@ -208,7 +209,7 @@ accessors {
     val Visibility = "net.minecraft.world.scores.Team\$Visibility"
     val DyeColor = "net.minecraft.world.item.DyeColor"
     val SignText = "net.minecraft.world.level.block.entity.SignText"
-    val EnumParticle = "spigot:EnumParticle"
+    val EnumParticle = "net.minecraft.server.VVV.EnumParticle"
     val ParticleType = "net.minecraft.core.particles.ParticleType"
     val PositionSource = "net.minecraft.world.level.gameevent.PositionSource"
     val BlockPositionSource = "net.minecraft.world.level.gameevent.BlockPositionSource"
@@ -228,6 +229,10 @@ accessors {
     val ServerScoreboardMethod = "net.minecraft.server.ServerScoreboard\$Method"
     val RemoteChatSessionData = "net.minecraft.network.chat.RemoteChatSession\$Data"
     val ClientInformation = "net.minecraft.server.level.ClientInformation"
+    val PacketFlow = "net.minecraft.network.protocol.PacketFlow"
+    val CommonListenerCookie = "net.minecraft.server.network.CommonListenerCookie"
+    val GameProfile = "com.mojang.authlib.GameProfile"
+    val Lifecycle = "com.mojang.serialization.Lifecycle"
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
     val Arrow = "net.minecraft.world.entity.projectile.Arrow"
@@ -319,7 +324,7 @@ accessors {
     mapClass(ClientboundSetEntityDataPacket) {
         constructor(Int::class, SynchedEntityData, Boolean::class)
         constructor(Int::class, List::class) //1.19.3 and higher
-        methodInferred("getId", "1.16.5")
+        methodInferred("id", "1.20.4")
     }
     mapClass(ClientboundSetEquipmentPacket) {
         constructor(Int::class, List::class)
@@ -401,11 +406,10 @@ accessors {
     mapClass(ClientboundChatPacket) {
         constructor(Component, ChatType, UUID::class)
         constructor(Component, ChatType)
-        //TODO (removed in 1.12.0) constructor(Component, Byte::class)
-        //methodInferred("getMessage", "1.16.5")
-        //methodInferred("getType", "1.16.5")
-        //methodInferred("getSender", "1.16.5")
-        //fieldInferred("message", "1.16.5")
+        methodInferred("getMessage", "1.16.5")
+        methodInferred("getType", "1.16.5")
+        methodInferred("getSender", "1.16.5")
+        fieldInferred("message", "1.16.5")
     }
     mapClass(ClientboundSetPlayerTeamPacket) {
         constructor(String::class, Int::class, Optional::class, Collection::class)
@@ -422,37 +426,52 @@ accessors {
         fieldInferred("options", "1.16.5")
     }
     mapClass(ClientboundSetPlayerTeamPacketParameters) {
-
+        constructor(PlayerTeam)
     }
     mapClass(ClientboundSetDisplayChatPreviewPacket) {
-
+        constructor(Boolean::class)
+        //TODO (removed) methodInferred("enabled", "1.16.5")
     }
     mapClass(ClientboundChatPreviewPacket) {
-
+        constructor(Int::class, Component)
+        //TODO (removed) methodInferred("queryId", "1.20.4")
+        //TODO (removed) methodInferred("preview", "1.20.4")
     }
     mapClass(ClientboundPlayerChatPacket) {
-
+        constructor(Component, Optional::class, Int::class, ChatSender, Instant::class, CryptSaltSignaturePair)
+        //methodInferred("getMessage")
+        //fieldInferred("signedContent", "1.20.4")
+        //fieldInferred("unsignedContent", "1.20.4")
+        //fieldInferred("typeId", "1.20.4")
+        //fieldInferred("sender", "1.20.4")
+        //fieldInferred("timeStamp", "1.20.4")
+        //fieldInferred("saltSignature", "1.20.4")
     }
     mapClass(ClientboundSystemChatPacket) {
-
+        methodInferred("content", "1.20.4")
+        //methodInferred("typeId", "1.16.5")
     }
     mapClass(ClientboundSetCameraPacket) {
-
+        fieldInferred("cameraId", "1.20.4")
     }
     mapClass(ClientboundContainerSetContentPacket) {
-
+        constructor(Int::class, Int::class, NonNullList, ItemStack)
+        fieldInferred("items", "1.20.4")
     }
     mapClass(ClientboundLevelParticlesPacket) {
-
+        constructor(EnumParticle, Boolean::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Int::class, IntArray::class) //1.8.8 - 1.12.2
+        constructor(ParticleOptions, Boolean::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Int::class) //1.13 - 1.14.4
+        constructor(ParticleOptions, Boolean::class, Double::class, Double::class, Double::class, Float::class, Float::class, Float::class, Float::class, Int::class) //1.15 and above
     }
     mapClass(ClientboundSetDisplayObjectivePacket) {
-
+        constructor(Int::class, Objective)
+        methodInferred("getObjectiveName", "1.20.4")
     }
     mapClass(ClientboundSetObjectivePacket) {
-
+        constructor(Objective, Int::class)
     }
     mapClass(ClientboundSetScorePacket) {
-
+        constructor(ServerScoreboardMethod, String::class, String::class, Int::class)
     }
     mapClass(ClientboundUpdateMobEffectPacket) {
         constructor(Int::class, MobEffectInstance)
@@ -461,31 +480,57 @@ accessors {
         constructor(Int::class, MobEffect)
     }
     mapClass(ServerboundPlayerActionPacket) {
-
+        methodInferred("getPos", "1.20.4")
+        methodInferred("getDirection", "1.20.4")
+        methodInferred("getAction", "1.20.4")
     }
     mapClass(ServerboundPlayerActionPacketAction) {
-
+        enumConstant(
+            "START_DESTROY_BLOCK",
+            "ABORT_DESTROY_BLOCK",
+            "STOP_DESTROY_BLOCK",
+            "DROP_ALL_ITEMS",
+            "DROP_ITEM",
+            "RELEASE_USE_ITEM",
+            "SWAP_ITEM_WITH_OFFHAND",
+        )
     }
     mapClass(ServerboundInteractPacket) {
-
+        fieldInferred("entityId", "1.20.4")
+        fieldInferred("action", "1.20.4")
+        fieldInferred("usingSecondaryAction", "1.20.4")
+        fieldInferred("location", "1.16.5")
+        fieldInferred("hand", "1.16.5")
     }
     mapClass(ServerboundInteractPacketAction) {
-
+        methodInferred("getType", "1.20.4")
+        fieldInferred("INTERACT", "1.16.5")
+        fieldInferred("ATTACK", "1.16.5")
+        fieldInferred("INTERACT_AT", "1.16.5")
     }
     mapClass(ServerboundInteractPacketActionType) {
-
+        enumConstant(
+            "INTERACT",
+            "ATTACK",
+            "INTERACT_AT"
+        )
     }
     mapClass(ServerboundInteractPacketActionInteractAt) {
-
+        fieldInferred("hand", "1.20.4")
+        fieldInferred("location", "1.20.4")
     }
     mapClass(ServerboundInteractPacketActionInteract) {
-
-    }
-    mapClass(ServerboundChatPreviewPacket) {
-
+        fieldInferred("hand", "1.20.4")
     }
     mapClass(ServerPlayer) {
-        field(ServerGamePacketListenerImpl, "connection")
+        constructor(MinecraftServer, ServerLevel, GameProfile)
+        constructor(MinecraftServer, ServerLevel, GameProfile, ServerPlayerGameMode)
+        constructor(MinecraftServer, ServerLevel, GameProfile, ProfilePublicKey)
+        constructor(MinecraftServer, ServerLevel, GameProfile, ClientInformation) //1.20.2 and above
+        methodInferred("setCamera", "1.20.4", Entity)
+        methodInferred("refreshContainer", "1.16.5", AbstractContainerMenu)
+        fieldInferred("connection", "1.20.4")
+        fieldInferred("latency", "1.16.5")
     }
     mapClass(Player) {
 
@@ -497,7 +542,8 @@ accessors {
 
     }
     mapClass(ServerPlayerGameMode) {
-
+        constructor(ServerLevel)
+        constructor(Level)
     }
     mapClass(Level) {
 
