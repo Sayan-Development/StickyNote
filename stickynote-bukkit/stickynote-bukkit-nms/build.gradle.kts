@@ -12,12 +12,14 @@ import java.util.function.Function
 import java.util.function.UnaryOperator
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.1.3"
+    id("me.kcra.takenaka.accessor") version "1.1.4-SNAPSHOT"
 }
 
 repositories {
     // Takenaka
     maven("https://repo.screamingsandals.org/public")
+    // Takenaka - SNAPSHOT
+    maven("https://repo.screamingsandals.org/snapshots")
 }
 
 dependencies {
@@ -137,6 +139,7 @@ accessors {
     val Blocks = "net.minecraft.world.level.block.Blocks"
     val Block = "net.minecraft.world.level.block.Block"
     val Component = "net.minecraft.network.chat.Component"
+    val IChatBaseComponent = "net.minecraft.server.VVV.IChatBaseComponent"
     val ComponentSerializer = "net.minecraft.network.chat.Component\$Serializer"
     val Item = "net.minecraft.world.item.Item"
     val ItemStack = "net.minecraft.world.item.ItemStack"
@@ -263,7 +266,7 @@ accessors {
         methodInferred("entries", "1.20.4")
     }
     mapClass(ClientboundPlayerInfoUpdatePacketEntry) {
-        constructor(UUID::class, "com.mojang.authlib.GameProfile", Boolean::class, Int::class, GameType, Component, RemoteChatSessionData)
+        constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, RemoteChatSessionData)
     }
     mapClass(ClientboundPlayerInfoRemovePacket) {
         constructor(List::class)
@@ -278,6 +281,7 @@ accessors {
             "UPDATE_LATENCY",
             "UPDATE_DISPLAY_NAME"
         )
+        fieldInferred("REMOVE_PLAYER", "1.19")
     }
     mapClass(ClientboundAddEntityPacket) {
         constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3)
@@ -285,17 +289,16 @@ accessors {
         constructor(Entity)
         methodInferred("getId", "1.20.4")
     }
-    /* REMOVED
     mapClass(ClientboundAddPlayerPacket) {
         constructor(Player)
-        methodInferred("getEntityId", "1.16.5")
-        methodInferred("getPlayerId", "1.16.5")
-        methodInferred("getX", "1.20.4")
-        methodInferred("getY", "1.20.4")
-        methodInferred("getZ", "1.20.4")
-        methodInferred("getyRot", "1.20.4")
-        methodInferred("getxRot", "1.20.4")
-    }*/
+        methodInferred("getEntityId", "1.20.1")
+        methodInferred("getPlayerId", "1.20.1")
+        methodInferred("getX", "1.20.1")
+        methodInferred("getY", "1.20.1")
+        methodInferred("getZ", "1.20.1")
+        methodInferred("getyRot", "1.20.1")
+        methodInferred("getxRot", "1.20.1")
+    }
     mapClass(ClientboundRotateHeadPacket) {
         constructor(Entity, Byte::class)
         methodInferred("getEntity", "1.20.4", Level)
@@ -398,7 +401,7 @@ accessors {
     }
     mapClass(ClientboundOpenScreenPacket) {
         constructor(Int::class, MenuType, Component)
-        //TODO (removed in 1.14.0): constructor(Int::class, String::class, Component, Int::class)
+        constructor(Int::class, String::class, IChatBaseComponent, Int::class)
     }
     mapClass(ClientboundRespawnPacket) {
         constructor(DimensionType, ResourceKey, Long::class, GameType, GameType, Boolean::class, Boolean::class, Boolean::class)
@@ -410,6 +413,7 @@ accessors {
     mapClass(ClientboundChatPacket) {
         constructor(Component, ChatType, UUID::class)
         constructor(Component, ChatType)
+        constructor(IChatBaseComponent, Byte::class)
         methodInferred("getMessage", "1.16.5")
         methodInferred("getType", "1.16.5")
         methodInferred("getSender", "1.16.5")
@@ -936,6 +940,7 @@ accessors {
     mapClass(BlockStateBase) {
         methodInferred("getBlock", "1.20.4")
     }
+    mapClass(Blocks)
     mapClass(Rotations) {
         constructor(Float::class, Float::class, Float::class)
         methodInferred("getX", "1.20.4")
@@ -1013,7 +1018,7 @@ accessors {
         methodInferred("get", "1.20.4", EntityDataAccessor)
         methodInferred("getItem", "1.20.4", EntityDataAccessor)
         // TODO
-//        methodInferred("a", "1.8.8", Int::class, Object::class)
+        methodInferred("func_75682_a", "1.8.8", Int::class, Object::class)
         methodInferred("add", "1.8.8", Int::class, Int::class)
         methodInferred("watch", "1.8.8", Int::class, Object::class)
     }
