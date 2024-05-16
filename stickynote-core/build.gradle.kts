@@ -12,6 +12,8 @@ dependencies {
 
     implementation("com.mysql:mysql-connector-j:8.4.0")
 
+    implementation("org.reflections:reflections:0.10.2")
+
     /*api("org.apache.maven:maven-resolver-provider:3.9.6")
     api("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
     api("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")

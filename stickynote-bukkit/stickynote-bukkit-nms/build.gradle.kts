@@ -1284,14 +1284,14 @@ accessors {
     mapClass(RegistryAccess) {
         methodInferred("ownedRegistryOrThrow", "1.18.2", ResourceKey)
     }
-    mapClass(BuiltinRegistries) {
+    /*mapClass(BuiltinRegistries) {
         fieldInferred("BIOME", "1.18.2")
         methodInferred("register", "1.18.2", Registry, ResourceKey, Object::class)
     }
     mapClass(CoreBuiltInRegistries) {
         fieldInferred("PARTICLE_TYPE", "1.20.4")
         fieldInferred("BLOCK", "1.20.4")
-    }
+    }*/
     mapClass(Holder) {
         methodInferred("direct", "1.20.4", Object::class)
     }

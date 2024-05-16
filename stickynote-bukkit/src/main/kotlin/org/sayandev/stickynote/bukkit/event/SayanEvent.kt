@@ -3,7 +3,6 @@ package org.sayandev.stickynote.bukkit.event
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.BlockBreakEvent
 import org.sayandev.stickynote.bukkit.plugin
 
 inline fun <reified T: Event> registerListener(
