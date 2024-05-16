@@ -95,13 +95,7 @@ object PacketUtils {
             val entries: MutableList<Any> = ArrayList<Any>(
                 ClientboundPlayerInfoUpdatePacketAccessor.METHOD_ENTRIES!!.invoke(infoPacket) as List<*>
             )
-            val ping =
-                if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
-                    ServerCommonPacketListenerImplAccessor.METHOD_LATENCY!!
-                        .invoke(ServerPlayerAccessor.FIELD_CONNECTION!!.get(serverPlayer)) as Int
-                } else {
-                    ServerPlayerAccessor.FIELD_LATENCY!!.get(serverPlayer) as Int
-                }
+            val ping = NMSUtils.getPing(serverPlayer)
 
             entries.add(
                 ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_0!!.newInstance(

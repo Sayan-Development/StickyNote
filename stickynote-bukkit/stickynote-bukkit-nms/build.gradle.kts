@@ -150,6 +150,7 @@ accessors {
     val DataItem = "net.minecraft.network.syncher.SynchedEntityData\$DataItem"
     val Tag = "net.minecraft.nbt.Tag"
     val CompoundTag = "net.minecraft.nbt.CompoundTag"
+    val NBTTagCompound = "net.minecraft.server.VVV.NBTTagCompound"
     val ListTag = "net.minecraft.nbt.ListTag"
     val StringTag = "net.minecraft.nbt.StringTag"
     val TagParser = "net.minecraft.nbt.TagParser"
@@ -559,8 +560,7 @@ accessors {
     mapClass(Level) {
         methodInferred("getChunkAt", "1.20.4", BlockPos)
         methodInferred("getChunk", "1.20.4", Int::class, Int::class)
-        // TODO
-//        methodInferred("c", "1.8.8", BlockPos)
+        methodInferred("func_175703_c", "1.8.8", "net.minecraft.util.BlockPos")
         methodInferred("getBlockState", "1.20.4", BlockPos)
         methodInferred("getLightEngine", "1.20.4")
         methodInferred("dimension", "1.20.4")
@@ -986,8 +986,7 @@ accessors {
         fieldInferred("TAG_CAN_DESTROY_BLOCK_LIST", "1.20.4")
         fieldInferred("TAG_CAN_PLACE_ON_BLOCK_LIST", "1.20.4")
         fieldInferred("TAG_HIDE_FLAGS", "1.20.4")
-        // TODO
-//        methodInferred("createStack", "1.8.8", CompoundTag)
+        methodInferred("createStack", "1.10.2", NBTTagCompound)
         methodInferred("of", "1.20.4", CompoundTag)
         methodInferred("getTag", "1.20.4")
         methodInferred("getOrCreateTag", "1.20.4")
