@@ -14,6 +14,7 @@ fun getProjectRelocations(): List<BuildRelocation> {
         BuildRelocation("org.incendo", "org.sayandev.stickynote.lib.incendo", listOf(Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("com.github.stefvanschie.inventoryframework", "org.sayandev.stickynote.lib.inventoryframework", listOf(Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
+        BuildRelocation("com.google.gson", "org.sayandev.stickynote.lib.gson", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
     )
 }
 
