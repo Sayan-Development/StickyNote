@@ -5,7 +5,7 @@ repositories {
 
 dependencies {
     implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT")
-    implementation("org.spongepowered:configurate-extra-kotlin:4.2.0-SNAPSHOT")
+    api("org.spongepowered:configurate-extra-kotlin:4.2.0-SNAPSHOT")
 
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")

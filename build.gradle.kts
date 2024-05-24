@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.23"
+    version = "1.0.24"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
@@ -40,9 +40,9 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-            this@subprojects.configurations.implementation.get().isCanBeResolved = true
-            configurations = listOf(this@subprojects.configurations.implementation.get())
-            from("LICENSE")
+//            this@subprojects.configurations.implementation.get().isCanBeResolved = true
+//            configurations = listOf(this@subprojects.configurations.implementation.get())
+//            from("LICENSE")
         }
     }
 
@@ -59,7 +59,7 @@ subprojects {
         }
     }
 
-    configurations {
+    /*configurations {
         "apiElements" {
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
@@ -89,7 +89,7 @@ subprojects {
             }
             outgoing.artifact(tasks.named("sourcesJar"))
         }
-    }
+    }*/
 
     publishing {
         publications {

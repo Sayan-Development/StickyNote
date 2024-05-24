@@ -6,7 +6,7 @@ fun getProjectRelocations(): List<BuildRelocation> {
     return listOf(
         BuildRelocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered", listOf(Platform.CORE, Platform.BUKKIT)),
         BuildRelocation("com.zaxxer", "org.sayandev.stickynote.lib.zaxxer", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
-        BuildRelocation("org.slf4j", "org.sayandev.stickynote.lib.slf4j", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
+//        BuildRelocation("org.slf4j", "org.sayandev.stickynote.lib.slf4j", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("org.reflections", "org.sayandev.stickynote.lib.reflections", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("org.jetbrains", "org.sayandev.stickynote.lib.jetbrains", listOf(Platform.CORE, Platform.BUKKIT, Platform.PAPER)),
         BuildRelocation("net.kyori", "org.sayandev.stickynote.lib.kyori", listOf(Platform.CORE, Platform.BUKKIT)),

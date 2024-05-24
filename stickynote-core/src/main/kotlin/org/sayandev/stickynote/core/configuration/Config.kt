@@ -2,8 +2,7 @@ package org.sayandev.stickynote.core.configuration
 
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
-import org.spongepowered.configurate.serialize.TypeSerializer
+import org.spongepowered.configurate.serialize.TypeSerializerCollection
 import org.spongepowered.configurate.util.MapFactories
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
@@ -18,20 +17,13 @@ abstract class Config(
 
     @Transient val file = File(directory, name)
 
-    constructor(directory: File, name: String) : this(
+    constructor(directory: File, name: String, serializers: TypeSerializerCollection?) : this(
         directory,
         name,
-        YamlConfigurationLoader.builder()
-            .nodeStyle(NodeStyle.BLOCK)
-            .defaultOptions { options ->
-                options.serializers { builder ->
-                    builder.registerAnnotatedObjects(objectMapperFactory())
-                }
-                options.mapFactory(MapFactories.sortedNatural())
-            }
-            .file(File(directory, name)),
+        getConfigBuilder(File(directory, name), serializers),
     )
-    constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name)
+    constructor(directory: File, name: String) : this(directory, name, null)
+    constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name, null)
 
     @Transient var yaml = builder.build()
     @Transient var config = yaml.load()
@@ -66,21 +58,28 @@ abstract class Config(
     }
 
     companion object {
-        inline fun <reified T> fromConfig(file: File, vararg serializers: TypeSerializer<Any>): T? {
+        fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
                 .nodeStyle(NodeStyle.BLOCK)
                 .defaultOptions { options ->
                     options.serializers { builder ->
                         builder.registerAnnotatedObjects(objectMapperFactory())
-                        for (serializer in serializers) {
-                            builder.register(serializer::class.java, serializer)
+                        if (serializers != null) {
+                            builder.registerAll(serializers)
                         }
                     }
+//                    options.mapFactory(MapFactories.sortedNatural())
                 }
                 .file(file)
-                .build()
-                .load()
-            return yaml.get(T::class.java)
+            return yaml
+        }
+
+        inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
+            return getConfigBuilder(file, serializers).build().load().get(T::class.java)
+        }
+
+        inline fun <reified T> fromConfig(file: File): T? {
+            return fromConfig(file, null)
         }
     }
 
