@@ -1,6 +1,9 @@
 import me.kcra.takenaka.generator.accessor.AccessorType
 import me.kcra.takenaka.generator.accessor.CodeLanguage
 import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
+import org.sayandev.Module
+import org.sayandev.applyDependencies
+import org.sayandev.applyRepositories
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.time.Instant
@@ -20,10 +23,13 @@ repositories {
     maven("https://repo.screamingsandals.org/public")
     // Takenaka - SNAPSHOT
     maven("https://repo.screamingsandals.org/snapshots")
+
+    applyRepositories(Module.BUKKIT)
 }
 
 dependencies {
     compileOnly(project(":stickynote-bukkit"))
+    applyDependencies(Module.BUKKIT, false)
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.6")
     implementation(accessorRuntime())

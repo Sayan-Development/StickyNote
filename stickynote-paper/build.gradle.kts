@@ -1,24 +1,19 @@
+import org.sayandev.Module
+import org.sayandev.applyDependencies
+import org.sayandev.applyRepositories
+import org.sayandev.applyShadowRelocation
+
 repositories {
-    // Takenaka
-    maven("https://repo.screamingsandals.org/public")
-
-    // SpigotAPI
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-
-    // cloud
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    applyRepositories(Module.PAPER)
 }
 
 dependencies {
-    implementation(project(":stickynote-bukkit")) { isTransitive = false }
+    applyDependencies(Module.PAPER)
+    compileOnlyApi(project(":stickynote-bukkit"))
 }
 
 tasks {
     shadowJar {
-        for (relocation in getRelocations().filter { !it.relocatePlatforms.contains(Platform.PAPER) }) {
-            exclude(relocation.to.replace(".", "/") + "/**")
-            exclude(relocation.from.replace(".", "/") + "/**")
-        }
-        applyShadowRelocation(Platform.PAPER)
+        applyShadowRelocation(Module.PAPER)
     }
 }

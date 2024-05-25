@@ -1,3 +1,5 @@
+import org.sayandev.getRelocations
+
 plugins {
     kotlin("jvm") version "1.9.23"
     `maven-publish`
@@ -7,7 +9,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.24"
+    version = "1.0.25"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
@@ -16,9 +18,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-
-        // Configurate
-        maven("https://repo.spongepowered.org/maven/")
     }
 }
 
@@ -40,9 +39,6 @@ subprojects {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-//            this@subprojects.configurations.implementation.get().isCanBeResolved = true
-//            configurations = listOf(this@subprojects.configurations.implementation.get())
-//            from("LICENSE")
         }
     }
 
@@ -96,6 +92,7 @@ subprojects {
             create<MavenPublication>("maven") {
                 shadow.component(this)
                 artifact(tasks["sourcesJar"])
+//                artifact(tasks["java"])
                 setPom(this)
             }
         }
