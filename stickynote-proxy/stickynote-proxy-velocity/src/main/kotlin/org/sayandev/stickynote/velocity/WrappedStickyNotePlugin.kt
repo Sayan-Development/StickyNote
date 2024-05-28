@@ -10,19 +10,22 @@ import java.nio.file.Path
 import java.util.logging.Logger
 
 lateinit var wrappedPlugin: WrappedStickyNotePlugin
+lateinit var mainInstance: Any
 
 open class WrappedStickyNotePlugin @Inject constructor(
+    val instance: Any,
     val id: String,
     val server: ProxyServer,
     val logger: Logger,
     @DataDirectory val dataDirectory: Path,
-    val exclusiveThreads: Int
+    val exclusiveThreads: Int,
 ) {
-    @Inject constructor(id: String, server: ProxyServer, logger: Logger, @DataDirectory dataDirectory: Path) : this(id, server, logger, dataDirectory, 1)
+    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, @DataDirectory dataDirectory: Path) : this(instance, id, server, logger, dataDirectory, 1)
 
     lateinit var container: PluginContainer
 
     init {
+        mainInstance = instance
         wrappedPlugin = this
     }
 

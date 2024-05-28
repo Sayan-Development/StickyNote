@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object StickyNote {
 
-    private val threadFactory = ThreadFactoryBuilder().setNameFormat("sticky-note-${plugin.container.description.name.get()}-async-thread-%d").build()
+    private val threadFactory = ThreadFactoryBuilder().setNameFormat("sticky-note-async-thread-%d").build()
     private val asyncExecutor = Executors.newFixedThreadPool(wrappedPlugin.exclusiveThreads, threadFactory)
 
     @JvmStatic
@@ -25,9 +25,6 @@ object StickyNote {
 
     @JvmStatic
     val dataDirectory = plugin().dataDirectory
-
-    @JvmStatic
-    val container = plugin().container
 
     @JvmStatic
     fun log(message: String) {
@@ -100,12 +97,12 @@ object StickyNote {
 
     @JvmStatic
     fun registerListener(listener: Any) {
-        server.eventManager.register(plugin, listener)
+        server.eventManager.register(mainInstance, listener)
     }
 
     @JvmStatic
     fun unregisterListener(listener: EventHandler<*>) {
-        server.eventManager.unregister(plugin, listener)
+        server.eventManager.unregister(mainInstance, listener)
     }
 
     @JvmStatic

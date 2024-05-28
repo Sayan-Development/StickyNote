@@ -135,6 +135,15 @@ val mysqlConnector = Dependency(
     modules = listOf(/*Module.CORE, Module.BUKKIT*/)
 )
 
+val jedis = Dependency(
+    group = "redis.clients",
+    artifact = "jedis",
+    version = "5.0.0",
+    relocation = null /*Relocation("redis", "org.sayandev.stickynote.lib.jedis")*/,
+    type = Dependency.Type.API,
+    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER, Module.VELOCITY)
+)
+
 val reflections = Dependency(
     group = "org.reflections",
     artifact = "reflections",
@@ -230,6 +239,7 @@ val repositories = listOf(
             adventureTextMiniMessage,
             adventurePlatformBukkit,
             mysqlConnector,
+            jedis,
             reflections,
             hikari,
             guava,
