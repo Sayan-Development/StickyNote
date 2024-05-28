@@ -1,7 +1,7 @@
 import org.sayandev.getRelocations
 
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
     `maven-publish`
     `java-library`
     id("io.github.goooler.shadow") version "8.1.7"
@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.25"
+    version = "1.0.26"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")

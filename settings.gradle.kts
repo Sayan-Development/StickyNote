@@ -14,5 +14,7 @@ rootProject.name = "StickyNote"
 
 include("stickynote-core")
 include("stickynote-bukkit")
-include("stickynote-paper")
 include("stickynote-bukkit:stickynote-bukkit-nms")
+include("stickynote-paper")
+include("stickynote-proxy")
+include("stickynote-proxy:stickynote-proxy-velocity")

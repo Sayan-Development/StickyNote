@@ -24,6 +24,7 @@ data class Dependency(
         TEST_IMPLEMENTATION("testImplementation"),
         API("api"),
         COMPILE_ONLY_API("compileOnlyApi"),
+        ANNOTATION_PROCESSOR("annotationProcessor"),
     }
 
     enum class ShadeMethod {

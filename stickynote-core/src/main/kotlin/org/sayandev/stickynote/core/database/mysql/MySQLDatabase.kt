@@ -5,7 +5,7 @@ import org.sayandev.stickynote.core.database.Query
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadFactory
 
-class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int, verifyCertificate: Boolean, val driverClass: String, keepaliveTime: Long?, connectionTimeout: Long?) : MySQLExecutor(credentials, poolingSize, THREAD_FACTORY, verifyCertificate, keepaliveTime, connectionTimeout) {
+class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int, verifyCertificate: Boolean, val driverClass: String?, keepaliveTime: Long?, connectionTimeout: Long?) : MySQLExecutor(credentials, poolingSize, THREAD_FACTORY, verifyCertificate, keepaliveTime, connectionTimeout) {
     constructor(credentials: MySQLCredentials, poolingSize: Int, verifyCertificate: Boolean): this(credentials, poolingSize, verifyCertificate, "com.mysql.cj.jdbc.Driver", null, null)
     constructor(credentials: MySQLCredentials, poolingSize: Int, driverClass: String): this(credentials, poolingSize, true, driverClass, null, null)
     constructor(credentials: MySQLCredentials, poolingSize: Int): this(credentials, poolingSize, true, "com.mysql.cj.jdbc.Driver", null, null)

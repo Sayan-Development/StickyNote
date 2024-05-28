@@ -28,10 +28,12 @@ abstract class MySQLExecutor(
     protected lateinit var connection: Connection
     protected var poolingUsed: Int = 0
 
-    protected fun connect(driverClassName: String) {
+    protected fun connect(driverClassName: String?) {
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = credentials.url
-        hikariConfig.driverClassName = driverClassName
+        if (driverClassName != null) {
+            hikariConfig.driverClassName = driverClassName
+        }
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
