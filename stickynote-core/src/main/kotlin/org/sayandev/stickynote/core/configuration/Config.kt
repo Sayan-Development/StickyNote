@@ -79,11 +79,11 @@ abstract class Config(
             return getConfigBuilder(file, serializers).build().load().get(T::class.java)
         }
 
-        fun getConfig(file: File): CommentedConfigurationNode? {
+        fun getConfigFromFile(file: File): CommentedConfigurationNode? {
             return getConfigBuilder(file, null).build().load()
         }
 
-        fun getConfig(file: File, serializers: TypeSerializerCollection?): CommentedConfigurationNode? {
+        fun getConfigFromFile(file: File, serializers: TypeSerializerCollection?): CommentedConfigurationNode? {
             return getConfigBuilder(file, serializers).build().load()
         }
 
