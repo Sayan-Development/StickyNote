@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.core.configuration
 
+import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.serialize.TypeSerializerCollection
@@ -76,6 +77,14 @@ abstract class Config(
 
         inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
             return getConfigBuilder(file, serializers).build().load().get(T::class.java)
+        }
+
+        fun getConfig(file: File): CommentedConfigurationNode? {
+            return getConfigBuilder(file, null).build().load()
+        }
+
+        fun getConfig(file: File, serializers: TypeSerializerCollection?): CommentedConfigurationNode? {
+            return getConfigBuilder(file, serializers).build().load()
         }
 
         inline fun <reified T> fromConfig(file: File): T? {
