@@ -29,7 +29,7 @@ fun RepositoryHandler.applyRepositories(module: Module) {
 
 fun DependencyHandler.applyDependencies(module: Module, shade: Boolean = true) {
     getDependencies(module).forEach { dependency ->
-        this.add(dependency.type.configurationName, "${dependency.group}:${dependency.artifact}:${dependency.version}")
+        this.add(if (shade) dependency.type.configurationName else "compileOnly", "${dependency.group}:${dependency.artifact}:${dependency.version}")
     }
 }
 
