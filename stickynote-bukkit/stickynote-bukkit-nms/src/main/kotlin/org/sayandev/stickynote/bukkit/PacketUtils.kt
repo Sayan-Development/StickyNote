@@ -72,9 +72,9 @@ object PacketUtils {
                 ClientboundPlayerInfoRemovePacketAccessor.CONSTRUCTOR_0!!
                     .newInstance(listOf(EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer)))
             } else {
-                ClientboundPlayerInfoUpdatePacketAccessor.CONSTRUCTOR_1!!.newInstance(
-                    PlayerInfoAction.ADD_PLAYER.nmsObject!!.javaClass.cast(Enum) as EnumSet<*>,
-                    listOf(serverPlayer)
+                ClientboundPlayerInfoUpdatePacketAccessor.CONSTRUCTOR_0!!.newInstance(
+                    action.nmsObject!!,
+                    serverPlayer
                 )
             }
         } else {
@@ -103,7 +103,7 @@ object PacketUtils {
                     profile,
                     true,
                     ping,
-                    GameTypeAccessor::class.java.getField("FIELD_" + gameMode.name).get(null),
+                    GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
                     null,
                     null
                 )
