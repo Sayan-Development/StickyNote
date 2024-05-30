@@ -77,17 +77,17 @@ object StickyNote {
 
     @JvmStatic
     fun run(runnable: Runnable) {
-        scheduler().buildTask(plugin, runnable).schedule()
+        scheduler().buildTask(wrappedPlugin.container, runnable).schedule()
     }
 
     @JvmStatic
     fun run(runnable: Runnable, delay: Long, unit: TimeUnit) {
-        scheduler().buildTask(plugin, runnable).delay(delay, unit).schedule()
+        scheduler().buildTask(wrappedPlugin.container, runnable).delay(delay, unit).schedule()
     }
 
     @JvmStatic
     fun run(runnable: Runnable, delay: Long, delayUnit: TimeUnit, period: Long, periodUnit: TimeUnit) {
-        scheduler().buildTask(plugin, runnable).delay(delay, delayUnit).repeat(period, periodUnit).schedule()
+        scheduler().buildTask(wrappedPlugin.container, runnable).delay(delay, delayUnit).repeat(period, periodUnit).schedule()
     }
 
     @JvmStatic
@@ -134,7 +134,7 @@ object StickyNote {
     }
 
     @JvmStatic
-    fun plugin() = plugin
+    fun plugin() = wrappedPlugin
 }
 
 fun run(runnable: Runnable) {
