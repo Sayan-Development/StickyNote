@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":stickynote-bukkit"))
+    implementation(project(":stickynote-bukkit"))
     applyDependencies(Module.BUKKIT, false)
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.6")
@@ -637,6 +637,7 @@ accessors {
             "SPECTATOR",
             "ADVENTURE"
         )
+        methodInferred("byName", "1.20.4", String::class)
     }
     mapClass(MobSpawnType) {
         enumConstant(
