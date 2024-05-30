@@ -13,6 +13,7 @@ import java.sql.SQLException
 import java.util.logging.Logger
 
 abstract class SQLiteExecutor protected constructor(protected val dbFile: File, private val logger: Logger) : Database() {
+
     protected var connection: Connection? = null
 
     init {
@@ -29,8 +30,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
 
     override fun connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.path)
+            Class.forName("org.sqlite.JDBC")
+            if (this.connection == null) {
+                this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.path)
+            }
         } catch (e: SQLException) {
             logger.severe(e.message)
             e.printStackTrace()

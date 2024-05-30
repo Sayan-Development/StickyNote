@@ -49,7 +49,7 @@ class MySQLDatabase(credentials: MySQLCredentials, poolingSize: Int, verifyCerti
                     }
                 }
             }
-        }
+        }.start()
     }
 
     override fun onQueryFail(query: Query) {
