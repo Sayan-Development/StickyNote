@@ -216,6 +216,7 @@ accessors {
     val NonNullList = "net.minecraft.core.NonNullList"
     val MobEffectInstance = "net.minecraft.world.effect.MobEffectInstance"
     val MobEffect = "net.minecraft.world.effect.MobEffect"
+    val MobEffects = "net.minecraft.world.effect.MobEffects"
     val Scoreboard = "net.minecraft.world.scores.Scoreboard"
     val PlayerTeam = "net.minecraft.world.scores.PlayerTeam"
     val Team = "net.minecraft.world.scores.Team"
@@ -1271,13 +1272,12 @@ accessors {
         )
     }
     mapClass(Registry) {
-        // TODO: Doesn't work
 //        fieldInferred("BIOME_REGISTRY", "1.19")
 //        fieldInferred("PARTICLE_TYPE", "1.18.2")
 //        fieldInferred("BLOCK", "1.18.2")
 //        methodInferred("getOrThrow", "1.18.2", ResourceKey)
-//        methodInferred("get", "1.18.2", ResourceKey)
-//        methodInferred("get", "1.18.2", ResourceLocation)
+//        methodInferred("get", "1.20.4", ResourceKey)
+//        methodInferred("get", "1.20.4", ResourceLocation)
 //        methodInferred("register", "1.18.2", Registry, ResourceLocation, Object::class)
 //        methodInferred("register", "1.18.2", Registry, ResourceKey, Object::class)
     }
@@ -1402,6 +1402,41 @@ accessors {
         methodInferred("getCategory", "1.20.4")
         methodInferred("getColor", "1.20.4")
         methodInferred("byId", "1.16.5", Int::class)
+    }
+    mapClass(MobEffects) {
+        fieldInferred("MOVEMENT_SPEED", "1.20.4")
+        fieldInferred("MOVEMENT_SLOWDOWN", "1.20.4")
+        fieldInferred("DIG_SPEED", "1.20.4")
+        fieldInferred("DIG_SLOWDOWN", "1.20.4")
+        fieldInferred("DAMAGE_BOOST", "1.20.4")
+        fieldInferred("HEAL", "1.20.4")
+        fieldInferred("HARM", "1.20.4")
+        fieldInferred("JUMP", "1.20.4")
+        fieldInferred("CONFUSION", "1.20.4")
+        fieldInferred("REGENERATION", "1.20.4")
+        fieldInferred("DAMAGE_RESISTANCE", "1.20.4")
+        fieldInferred("FIRE_RESISTANCE", "1.20.4")
+        fieldInferred("WATER_BREATHING", "1.20.4")
+        fieldInferred("INVISIBILITY", "1.20.4")
+        fieldInferred("BLINDNESS", "1.20.4")
+        fieldInferred("NIGHT_VISION", "1.20.4")
+        fieldInferred("HUNGER", "1.20.4")
+        fieldInferred("WEAKNESS", "1.20.4")
+        fieldInferred("POISON", "1.20.4")
+        fieldInferred("WITHER", "1.20.4")
+        fieldInferred("HEALTH_BOOST", "1.20.4")
+        fieldInferred("ABSORPTION", "1.20.4")
+        fieldInferred("SATURATION", "1.20.4")
+        fieldInferred("GLOWING", "1.20.4")
+        fieldInferred("LEVITATION", "1.20.4")
+        fieldInferred("LUCK", "1.20.4")
+        fieldInferred("UNLUCK", "1.20.4")
+        fieldInferred("SLOW_FALLING", "1.20.4")
+        fieldInferred("CONDUIT_POWER", "1.20.4")
+        fieldInferred("DOLPHINS_GRACE", "1.20.4")
+        fieldInferred("BAD_OMEN", "1.20.4")
+        fieldInferred("HERO_OF_THE_VILLAGE", "1.20.4")
+        fieldInferred("DARKNESS", "1.20.4")
     }
     mapClass(Scoreboard) {
         constructor()
