@@ -5,7 +5,9 @@ import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
+import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.sayandev.stickynote.bukkit.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
@@ -13,6 +15,7 @@ import org.sayandev.stickynote.core.math.Vector3
 import org.sayandev.stickynote.nms.accessors.*
 import java.lang.reflect.Array
 import java.util.*
+import kotlin.reflect.full.memberProperties
 
 object PacketUtils {
 
@@ -118,6 +121,40 @@ object PacketUtils {
             e.printStackTrace()
             throw Error(e)
         }
+    }
+
+    @JvmStatic
+    fun getMobEffectPacket(effect: PotionEffect): Any {
+        val effectPacket = MobEffectInstanceAccessor.CONSTRUCTOR_0!!.newInstance(
+            getMobEffectByEffectType(effect.type),
+            effect.duration,
+            effect.amplifier,
+            effect.isAmbient,
+            effect.hasParticles(),
+            effect.hasIcon()
+        )
+        return effectPacket
+    }
+
+    @JvmStatic
+    fun getMobEffectByEffectType(effect: PotionEffectType): Any {
+        return if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) {
+            val memberProperty = MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
+            memberProperty.getter.call(MobEffectsAccessor)!!
+        } else {
+            MobEffectAccessor.METHOD_BY_ID!!.invoke(null, effect.id)
+        }
+    }
+
+    @JvmStatic
+    fun getUpdateMobEffectPacket(player: Player, effect: PotionEffect): Any {
+        val effectPacket = getMobEffectPacket(effect)
+        return ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, effectPacket)
+    }
+
+    @JvmStatic
+    fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
+        return ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, getMobEffectByEffectType(effect))
     }
 
     @JvmStatic

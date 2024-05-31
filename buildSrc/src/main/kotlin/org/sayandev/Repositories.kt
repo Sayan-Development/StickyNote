@@ -189,6 +189,15 @@ val gson = Dependency(
     modules = listOf(Module.CORE, Module.BUKKIT)
 )
 
+val kotlinReflect = Dependency(
+    group = "org.jetbrains.kotlin",
+    artifact = "kotlin-reflect",
+    version = "2.0.0",
+    relocation = null,
+    type = Dependency.Type.API,
+    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+)
+
 val repositories = listOf(
     Repository(
         id = "spongepowered",
@@ -245,6 +254,7 @@ val repositories = listOf(
             guava,
             guavaTestImplementation,
             gson,
+            kotlinReflect
         )
     ),
     /*Repository(
