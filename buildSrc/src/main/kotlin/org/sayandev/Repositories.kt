@@ -18,12 +18,21 @@ val configurateExtraKotlin = Dependency(
     modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
 )
 
+val foliaAPI = Dependency(
+    group = "dev.folia",
+    artifact = "folia-api",
+    version = "1.20.4-R0.1-SNAPSHOT",
+    relocation = null,
+    type = Dependency.Type.COMPILE_ONLY,
+    modules = listOf(Module.BUKKIT)
+)
+
 val velocityAPI = Dependency(
     group = "com.velocitypowered",
     artifact = "velocity-api",
     version = "3.3.0-SNAPSHOT",
     relocation = null,
-    type = Dependency.Type.COMPILE_ONLY,
+    type = Dependency.Type.COMPILE_ONLY_API,
     modules = listOf(Module.VELOCITY)
 )
 
@@ -43,6 +52,15 @@ val spigotAPI = Dependency(
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY,
     modules = listOf(Module.BUKKIT, Module.PAPER)
+)
+
+val bungeecordAPI = Dependency(
+    group = "net.md-5",
+    artifact = "bungeecord-api",
+    version = "1.19-R0.1-SNAPSHOT",
+    relocation = null,
+    type = Dependency.Type.COMPILE_ONLY,
+    modules = listOf(Module.BUNGEECORD)
 )
 
 val cloudCore = Dependency(
@@ -105,7 +123,7 @@ val adventureAPI = Dependency(
     version = "4.17.0",
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT)
+    modules = listOf(Module.CORE, Module.BUKKIT, Module.BUNGEECORD)
 )
 
 val adventureTextMiniMessage = Dependency(
@@ -114,7 +132,7 @@ val adventureTextMiniMessage = Dependency(
     version = "4.17.0",
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT)
+    modules = listOf(Module.CORE, Module.BUKKIT, Module.BUNGEECORD)
 )
 
 val adventurePlatformBukkit = Dependency(
@@ -124,6 +142,15 @@ val adventurePlatformBukkit = Dependency(
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
     modules = listOf(Module.BUKKIT)
+)
+
+val adventurePlatformBungeecord = Dependency(
+    group = "net.kyori",
+    artifact = "adventure-platform-bungeecord",
+    version = "4.3.2",
+    relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.BUNGEECORD)
 )
 
 val mysqlConnector = Dependency(
@@ -141,7 +168,7 @@ val jedis = Dependency(
     version = "5.0.0",
     relocation = null /*Relocation("redis", "org.sayandev.stickynote.lib.jedis")*/,
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER, Module.VELOCITY)
+    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER, Module.VELOCITY, Module.BUNGEECORD)
 )
 
 val reflections = Dependency(
@@ -211,6 +238,7 @@ val repositories = listOf(
         id = "papermc",
         repos = listOf("https://repo.papermc.io/repository/maven-public/"),
         dependencies = listOf(
+            foliaAPI,
             velocityAPI,
             velocityAPIAnnotation,
         )
@@ -219,17 +247,18 @@ val repositories = listOf(
         id = "spigotmc",
         repos = listOf("https://hub.spigotmc.org/nexus/content/repositories/snapshots/"),
         dependencies = listOf(
-            spigotAPI,
+            spigotAPI
         )
     ),
     Repository(
-        id = "cloud",
+        id = "sonatype-snapshots",
         repos = listOf("https://oss.sonatype.org/content/repositories/snapshots"),
         dependencies = listOf(
             cloudCore,
             cloudPaper,
             cloudMinecraftExtras,
             cloudKotlinExtension,
+            bungeecordAPI
         )
     ),
     Repository(
@@ -247,6 +276,7 @@ val repositories = listOf(
             adventureAPI,
             adventureTextMiniMessage,
             adventurePlatformBukkit,
+            adventurePlatformBungeecord,
             mysqlConnector,
             jedis,
             reflections,

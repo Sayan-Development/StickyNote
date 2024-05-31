@@ -4,5 +4,6 @@ enum class Module {
     CORE,
     BUKKIT,
     PAPER,
-    VELOCITY
+    VELOCITY,
+    BUNGEECORD
 }
