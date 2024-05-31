@@ -6,6 +6,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 object StickyNote {
 
@@ -83,32 +84,64 @@ object StickyNote {
 
     @JvmStatic
     fun runSync(runnable: Runnable) {
-        plugin.server.scheduler.runTask(plugin, runnable)
+        if (isFolia()) {
+            plugin.server.globalRegionScheduler.runDelayed(plugin, {
+                runnable.run()
+            }, 1)
+        } else {
+            plugin.server.scheduler.runTask(plugin, runnable)
+        }
     }
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long) {
-        plugin.server.scheduler.runTaskLater(plugin, runnable, delay)
+        if (isFolia()) {
+            plugin.server.globalRegionScheduler.runDelayed(plugin, {
+                runnable.run()
+            }, delay)
+        } else {
+            plugin.server.scheduler.runTaskLater(plugin, runnable, delay)
+        }
     }
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long, period: Long) {
-        plugin.server.scheduler.runTaskTimer(plugin, runnable, delay, period)
+        if (isFolia()) {
+            plugin.server.globalRegionScheduler.runAtFixedRate(plugin, {
+                runnable.run()
+            }, delay.coerceAtLeast(1), period)
+        } else {
+            plugin.server.scheduler.runTaskTimer(plugin, runnable, delay, period)
+        }
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable) {
-        plugin.server.scheduler.runTaskAsynchronously(plugin, runnable)
+        if (isFolia()) {
+            plugin.server.asyncScheduler.runNow(plugin) {
+                runnable.run()
+            }
+        } else {
+            plugin.server.scheduler.runTaskAsynchronously(plugin, runnable)
+        }
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long) {
-        plugin.server.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay)
+        if (isFolia()) {
+            plugin.server.asyncScheduler.runDelayed(plugin, { runnable.run() }, delay * 50, TimeUnit.MILLISECONDS)
+        } else {
+            plugin.server.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay)
+        }
     }
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long, period: Long) {
-        plugin.server.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period)
+        if (isFolia()) {
+            plugin.server.asyncScheduler.runAtFixedRate(plugin, { runnable.run() }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
+        } else {
+            plugin.server.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period)
+        }
     }
 
     @JvmStatic
