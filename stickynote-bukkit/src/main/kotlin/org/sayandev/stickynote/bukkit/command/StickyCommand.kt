@@ -10,6 +10,7 @@ import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
+import org.incendo.cloud.paper.LegacyPaperCommandManager
 import org.incendo.cloud.paper.PaperCommandManager
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
@@ -22,7 +23,7 @@ abstract class StickyCommand(
 
     private var errorPrefix = "<dark_gray>[</dark_gray><dark_red><bold>✘</bold></dark_red><dark_gray>]</dark_gray><gradient:dark_red:red>".component()
 
-    var manager: PaperCommandManager<SenderExtension>
+    var manager: LegacyPaperCommandManager<SenderExtension>
     var builder: Command.Builder<SenderExtension>
     var help: MinecraftHelp<SenderExtension>
     var exceptionHandler: MinecraftExceptionHandler<SenderExtension>
@@ -32,7 +33,7 @@ abstract class StickyCommand(
         val backwardsMapper = { sayanSenderExtension: SenderExtension -> sayanSenderExtension.bukkitSender() }
         val audienceMapper = { sayanSenderExtension: SenderExtension -> AdventureUtils.audience.sender(sayanSenderExtension.bukkitSender()) }
 
-        manager = PaperCommandManager(
+        manager = LegacyPaperCommandManager(
             plugin,
             ExecutionCoordinator.simpleCoordinator(),
             SenderMapper.create(stickySenderMapper, backwardsMapper),
