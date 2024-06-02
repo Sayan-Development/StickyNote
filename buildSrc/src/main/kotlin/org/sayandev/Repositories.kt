@@ -99,6 +99,15 @@ val cloudKotlinExtension = Dependency(
     modules = listOf(Module.BUKKIT, Module.PAPER)
 )
 
+val cloudAnnotations = Dependency(
+    group = "org.incendo",
+    artifact = "cloud-annotations",
+    version = "2.0.0-SNAPSHOT",
+    relocation = Relocation("org.incendo", "org.sayandev.stickynote.lib.incendo"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.BUKKIT, Module.PAPER)
+)
+
 val inventoryFramework = Dependency(
     group = "com.github.stefvanschie.inventoryframework",
     artifact = "IF",
@@ -258,6 +267,7 @@ val repositories = listOf(
             cloudPaper,
             cloudMinecraftExtras,
             cloudKotlinExtension,
+            cloudAnnotations,
             bungeecordAPI
         )
     ),
