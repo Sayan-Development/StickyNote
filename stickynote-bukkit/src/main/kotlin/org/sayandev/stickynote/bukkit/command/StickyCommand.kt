@@ -1,17 +1,19 @@
 package org.sayandev.stickynote.bukkit.command
 
-import org.sayandev.stickynote.bukkit.command.interfaces.CommandExtension
-import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
+import io.leangen.geantyref.TypeToken
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.incendo.cloud.Command
 import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.annotations.AnnotationParser
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.execution.ExecutionCoordinator
+import org.incendo.cloud.kotlin.coroutines.annotations.installCoroutineSupport
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
-import org.incendo.cloud.paper.PaperCommandManager
+import org.sayandev.stickynote.bukkit.command.interfaces.CommandExtension
+import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
@@ -27,6 +29,7 @@ abstract class StickyCommand(
     var builder: Command.Builder<SenderExtension>
     var help: MinecraftHelp<SenderExtension>
     var exceptionHandler: MinecraftExceptionHandler<SenderExtension>
+    var annotationParser: AnnotationParser<SenderExtension>
 
     init {
         val stickySenderMapper = { commandSender: CommandSender -> StickySender(commandSender) }
@@ -54,6 +57,10 @@ abstract class StickyCommand(
             manager,
             audienceMapper
         )
+
+        annotationParser = AnnotationParser(manager, TypeToken.get(SenderExtension::class.java))
+        annotationParser.installCoroutineSupport()
+//        annotationParser.parse(this)
 
         builder = manager.commandBuilder(name, *aliases)
     }
