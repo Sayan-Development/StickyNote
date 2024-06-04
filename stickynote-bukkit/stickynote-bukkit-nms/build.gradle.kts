@@ -44,10 +44,10 @@ tasks {
 @Suppress("LocalVariableName")
 accessors {
     basePackage("org.sayandev.stickynote.nms.accessors")
-    accessedNamespaces("spigot")
+    accessedNamespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.20.4")
+    versionRange("1.8.8", "1.20.6")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketEntry = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Entry"
@@ -113,7 +113,7 @@ accessors {
     val LevelWriter = "net.minecraft.world.level.LevelWriter"
     val LevelChunk = "net.minecraft.world.level.chunk.LevelChunk"
     val ChunkAccess = "net.minecraft.world.level.chunk.ChunkAccess"
-    val ChunkStatus = "net.minecraft.world.level.chunk.ChunkStatus"
+    val ChunkStatus = "net.minecraft.world.level.chunk.status.ChunkStatus"
     val LevelLightEngine = "net.minecraft.world.level.lighting.LevelLightEngine"
     val Packet = "net.minecraft.network.protocol.Packet"
     val ServerGamePacketListenerImpl = "net.minecraft.server.network.ServerGamePacketListenerImpl"
@@ -151,7 +151,7 @@ accessors {
     val ItemStack = "net.minecraft.world.item.ItemStack"
     val Potion = "net.minecraft.world.item.alchemy.Potion"
     val Potions = "net.minecraft.world.item.alchemy.Potions"
-    val PotionUtils = "net.minecraft.world.item.alchemy.PotionUtils"
+    val PotionContents = "net.minecraft.world.item.alchemy.PotionContents"
     val SynchedEntityData = "net.minecraft.network.syncher.SynchedEntityData"
     val DataItem = "net.minecraft.network.syncher.SynchedEntityData\$DataItem"
     val Tag = "net.minecraft.nbt.Tag"
@@ -491,9 +491,11 @@ accessors {
     }
     mapClass(ClientboundUpdateMobEffectPacket) {
         constructor(Int::class, MobEffectInstance)
+        constructor(Int::class, MobEffectInstance, Boolean::class)
     }
     mapClass(ClientboundRemoveMobEffectPacket) {
         constructor(Int::class, MobEffect)
+        constructor(Int::class, Holder)
     }
     mapClass(ServerboundPlayerActionPacket) {
         methodInferred("getPos", "1.20.4")
@@ -771,7 +773,7 @@ accessors {
     mapClass(EntityType) {
         methodInferred("loadEntityRecursive", "1.20.4", CompoundTag, Level, Function::class)
         enumConstant(
-            "ALLAY",
+            /*"ALLAY",
             "AREA_EFFECT_CLOUD",
             "ARMOR_STAND",
             "ARROW",
@@ -896,7 +898,7 @@ accessors {
             "ZOMBIE_VILLAGER",
             "ZOMBIFIED_PIGLIN",
             "PLAYER",
-            "FISHING_BOBBER",
+            "FISHING_BOBBER",*/
         )
     }
     mapClass(EquipmentSlot) {
@@ -1007,7 +1009,7 @@ accessors {
     mapClass(Potion) {
         fieldInferred("name", "1.20.4")
     }
-    mapClass(PotionUtils) {
+    mapClass(PotionContents) {
         methodInferred("getMobEffects", "1.20.4", ItemStack)
         methodInferred("getColor", "1.20.4", ItemStack)
         methodInferred("getPotion", "1.20.4", ItemStack)
@@ -1299,7 +1301,7 @@ accessors {
         fieldInferred("BLOCK", "1.20.4")
     }*/
     mapClass(Holder) {
-        methodInferred("direct", "1.20.4", Object::class)
+        methodInferred("direct", "1.20.6", Object::class)
     }
     mapClass(Biome) {
         fieldInferred("generationSettings", "1.18.2")
@@ -1388,6 +1390,7 @@ accessors {
     }
     mapClass(MobEffectInstance) {
         constructor(MobEffect, Int::class, Int::class, Boolean::class, Boolean::class, Boolean::class)
+        constructor(Holder, Int::class, Int::class, Boolean::class, Boolean::class, Boolean::class)
         fieldInferred("effect", "1.20.4")
         methodInferred("getEffect", "1.20.4")
         methodInferred("getDuration", "1.20.4")
@@ -1437,6 +1440,40 @@ accessors {
         fieldInferred("BAD_OMEN", "1.20.4")
         fieldInferred("HERO_OF_THE_VILLAGE", "1.20.4")
         fieldInferred("DARKNESS", "1.20.4")
+
+        fieldInferred("MOVEMENT_SPEED", "1.20.6")
+        fieldInferred("MOVEMENT_SLOWDOWN", "1.20.6")
+        fieldInferred("DIG_SPEED", "1.20.6")
+        fieldInferred("DIG_SLOWDOWN", "1.20.6")
+        fieldInferred("DAMAGE_BOOST", "1.20.6")
+        fieldInferred("HEAL", "1.20.6")
+        fieldInferred("HARM", "1.20.6")
+        fieldInferred("JUMP", "1.20.6")
+        fieldInferred("CONFUSION", "1.20.6")
+        fieldInferred("REGENERATION", "1.20.6")
+        fieldInferred("DAMAGE_RESISTANCE", "1.20.6")
+        fieldInferred("FIRE_RESISTANCE", "1.20.6")
+        fieldInferred("WATER_BREATHING", "1.20.6")
+        fieldInferred("INVISIBILITY", "1.20.6")
+        fieldInferred("BLINDNESS", "1.20.6")
+        fieldInferred("NIGHT_VISION", "1.20.6")
+        fieldInferred("HUNGER", "1.20.6")
+        fieldInferred("WEAKNESS", "1.20.6")
+        fieldInferred("POISON", "1.20.6")
+        fieldInferred("WITHER", "1.20.6")
+        fieldInferred("HEALTH_BOOST", "1.20.6")
+        fieldInferred("ABSORPTION", "1.20.6")
+        fieldInferred("SATURATION", "1.20.6")
+        fieldInferred("GLOWING", "1.20.6")
+        fieldInferred("LEVITATION", "1.20.6")
+        fieldInferred("LUCK", "1.20.6")
+        fieldInferred("UNLUCK", "1.20.6")
+        fieldInferred("SLOW_FALLING", "1.20.6")
+        fieldInferred("CONDUIT_POWER", "1.20.6")
+        fieldInferred("DOLPHINS_GRACE", "1.20.6")
+        fieldInferred("BAD_OMEN", "1.20.6")
+        fieldInferred("HERO_OF_THE_VILLAGE", "1.20.6")
+        fieldInferred("DARKNESS", "1.20.6")
     }
     mapClass(Scoreboard) {
         constructor()

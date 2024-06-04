@@ -45,10 +45,19 @@ val velocityAPIAnnotation = Dependency(
     modules = listOf(Module.VELOCITY)
 )
 
-val spigotAPI = Dependency(
+/*val spigotAPI = Dependency(
     group = "org.spigotmc",
     artifact = "spigot-api",
     version = "1.20.5-R0.1-SNAPSHOT",
+    relocation = null,
+    type = Dependency.Type.COMPILE_ONLY,
+    modules = listOf(Module.BUKKIT, Module.PAPER)
+)*/
+
+val paperApi = Dependency(
+    group = "io.papermc.paper",
+    artifact = "paper-api",
+    version = "1.20.6-R0.1-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY,
     modules = listOf(Module.BUKKIT, Module.PAPER)
@@ -268,15 +277,16 @@ val repositories = listOf(
             foliaAPI,
             velocityAPI,
             velocityAPIAnnotation,
+            paperApi
         )
     ),
-    Repository(
+    /*Repository(
         id = "spigotmc",
         repos = listOf("https://hub.spigotmc.org/nexus/content/repositories/snapshots/"),
         dependencies = listOf(
             spigotAPI
         )
-    ),
+    ),*/
     Repository(
         id = "sonatype-snapshots",
         repos = listOf("https://oss.sonatype.org/content/repositories/snapshots"),

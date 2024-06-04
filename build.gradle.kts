@@ -4,17 +4,23 @@ plugins {
     kotlin("jvm") version "2.0.0"
     `maven-publish`
     `java-library`
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.34"
+    version = "1.0.35"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
     plugins.apply("kotlin")
-    plugins.apply("io.github.goooler.shadow")
+    plugins.apply("com.github.johnrengelman.shadow")
+
+    tasks {
+        java {
+            disableAutoTargetJvm()
+        }
+    }
 
     repositories {
         mavenCentral()

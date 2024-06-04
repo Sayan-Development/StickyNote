@@ -1,16 +1,19 @@
 package org.sayandev.stickynote.bukkit.command
 
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
-import org.sayandev.stickynote.bukkit.utils.AdventureUtils.sendMessage
 
 open class StickySender(
-    private var commandSender: CommandSender
+    private var commandSender: CommandSender,
+    val sourceStack: CommandSourceStack?
 ): SenderExtension {
 
     private var onlinePlayersMessage = Component.text("Only players can use this command.")
@@ -41,6 +44,18 @@ open class StickySender(
 
     override fun onlyPlayersComponent(message: Component) {
         onlinePlayersMessage = message
+    }
+
+    override fun getLocation(): Location {
+        return sourceStack?.location ?: executor?.location!!
+    }
+
+    override fun getSender(): CommandSender {
+        return sourceStack?.sender ?: commandSender
+    }
+
+    override fun getExecutor(): Entity? {
+        return sourceStack?.executor ?: player()
     }
 
 }

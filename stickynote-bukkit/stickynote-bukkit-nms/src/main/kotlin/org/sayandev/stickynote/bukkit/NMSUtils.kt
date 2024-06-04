@@ -217,11 +217,11 @@ object NMSUtils {
     }
 
     fun getPotion(potion: ItemStack): Any {
-        return PotionUtilsAccessor.METHOD_GET_POTION!!.invoke(null, getNmsItemStack(potion))
+        return PotionContentsAccessor.METHOD_GET_POTION!!.invoke(null, getNmsItemStack(potion))
     }
 
     fun getPotionColor(potion: ItemStack): Int {
-        return PotionUtilsAccessor.METHOD_GET_COLOR!!.invoke(null, getNmsItemStack(potion)) as Int
+        return PotionContentsAccessor.METHOD_GET_COLOR!!.invoke(null, getNmsItemStack(potion)) as Int
     }
 
     fun getNmsLivingEntity(livingEntity: LivingEntity): Any {

@@ -125,8 +125,14 @@ object PacketUtils {
 
     @JvmStatic
     fun getMobEffectPacket(effect: PotionEffect): Any {
-        val effectPacket = MobEffectInstanceAccessor.CONSTRUCTOR_0!!.newInstance(
-            getMobEffectByEffectType(effect.type),
+        val mobEffect = getMobEffectByEffectType(effect.type)
+        val effectConstructor =
+            if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5)
+                MobEffectInstanceAccessor.CONSTRUCTOR_1!!
+            else
+                MobEffectInstanceAccessor.CONSTRUCTOR_0!!
+        val effectPacket = effectConstructor.newInstance(
+            mobEffect,
             effect.duration,
             effect.amplifier,
             effect.isAmbient,
@@ -139,7 +145,11 @@ object PacketUtils {
     @JvmStatic
     fun getMobEffectByEffectType(effect: PotionEffectType): Any {
         return if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) {
-            val memberProperty = MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
+            val memberProperty = if (ServerVersion.patchNumber() >= 5) {
+                MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}_1" }!!
+            } else {
+                MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
+            }
             memberProperty.getter.call(MobEffectsAccessor)!!
         } else {
             MobEffectAccessor.METHOD_BY_ID!!.invoke(null, effect.id)
@@ -149,12 +159,20 @@ object PacketUtils {
     @JvmStatic
     fun getUpdateMobEffectPacket(player: Player, effect: PotionEffect): Any {
         val effectPacket = getMobEffectPacket(effect)
-        return ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, effectPacket)
+        return if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) {
+            ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_1!!.newInstance(player.entityId, effectPacket, true)
+        } else {
+            ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, effectPacket)
+        }
     }
 
     @JvmStatic
     fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
-        return ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, getMobEffectByEffectType(effect))
+        val effectConstructor = if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5)
+            ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_1!!
+        else
+            ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!
+        return effectConstructor.newInstance(player.entityId, getMobEffectByEffectType(effect))
     }
 
     @JvmStatic
