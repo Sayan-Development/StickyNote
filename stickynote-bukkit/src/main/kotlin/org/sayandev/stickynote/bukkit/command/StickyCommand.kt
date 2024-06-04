@@ -41,7 +41,7 @@ abstract class StickyCommand(
             val modernMapper = { sourceStack: CommandSourceStack -> StickySender(sourceStack.sender, sourceStack) }
             val sourceMapper = { stickySender: StickySender -> stickySender.sourceStack!! }
             PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
-                .executionCoordinator(ExecutionCoordinator.asyncCoordinator())
+                .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
                 .buildOnEnable(plugin)
         } else {
             LegacyPaperCommandManager(
