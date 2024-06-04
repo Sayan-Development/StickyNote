@@ -46,16 +46,4 @@ open class StickySender(
         onlinePlayersMessage = message
     }
 
-    override fun getLocation(): Location {
-        return sourceStack?.location ?: executor?.location!!
-    }
-
-    override fun getSender(): CommandSender {
-        return sourceStack?.sender ?: commandSender
-    }
-
-    override fun getExecutor(): Entity? {
-        return sourceStack?.executor ?: player()
-    }
-
 }

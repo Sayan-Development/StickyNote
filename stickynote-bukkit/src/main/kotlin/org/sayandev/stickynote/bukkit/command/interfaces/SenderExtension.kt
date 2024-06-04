@@ -1,12 +1,11 @@
 package org.sayandev.stickynote.bukkit.command.interfaces
 
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-interface SenderExtension : CommandSourceStack {
+interface SenderExtension {
 
     /**
      * Retrieves the player associated with the sender.

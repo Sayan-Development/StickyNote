@@ -1,17 +1,13 @@
 package org.sayandev.stickynote.bukkit.command
 
-import io.leangen.geantyref.TypeToken
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.incendo.cloud.Command
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
-import org.incendo.cloud.annotations.AnnotationParser
-import org.incendo.cloud.bukkit.BukkitCommandManager
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.execution.ExecutionCoordinator
-import org.incendo.cloud.kotlin.coroutines.annotations.installCoroutineSupport
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
@@ -43,7 +39,8 @@ abstract class StickyCommand(
 
         manager = if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) {
             val modernMapper = { sourceStack: CommandSourceStack -> StickySender(sourceStack.sender, sourceStack) }
-            PaperCommandManager.builder(SenderMapper.create(modernMapper, modernMapper))
+            val sourceMapper = { stickySender: StickySender -> stickySender.sourceStack!! }
+            PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
                 .executionCoordinator(ExecutionCoordinator.asyncCoordinator())
                 .buildOnEnable(plugin)
         } else {
