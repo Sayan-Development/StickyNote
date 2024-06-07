@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     applyDependencies(Module.CORE)
+    implementation(kotlin("stdlib", version = "2.0.0"))
 }
 
 tasks {

@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.0.38"
+    version = "1.1.0"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
@@ -24,6 +24,10 @@ allprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    dependencies {
+        compileOnly(kotlin("stdlib", version = "2.0.0"))
     }
 }
 

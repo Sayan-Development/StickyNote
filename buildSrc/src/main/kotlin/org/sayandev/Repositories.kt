@@ -6,7 +6,7 @@ val configurateYaml = Dependency(
     version = "4.1.2",
     relocation = Relocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT)
+    modules = listOf(Module.CORE)
 )
 
 val configurateExtraKotlin = Dependency(
@@ -15,7 +15,7 @@ val configurateExtraKotlin = Dependency(
     version = "4.1.2",
     relocation = Relocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val foliaAPI = Dependency(
@@ -78,7 +78,7 @@ val cloudCore = Dependency(
     version = "2.0.0-SNAPSHOT",
     relocation = Relocation("org.incendo", "org.sayandev.stickynote.lib.incendo"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val cloudPaper = Dependency(
@@ -159,7 +159,7 @@ val adventureAPI = Dependency(
     version = "4.17.0",
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.BUNGEECORD)
+    modules = listOf(Module.CORE)
 )
 
 val adventureTextMiniMessage = Dependency(
@@ -168,7 +168,7 @@ val adventureTextMiniMessage = Dependency(
     version = "4.17.0",
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.BUNGEECORD)
+    modules = listOf(Module.CORE)
 )
 
 val adventurePlatformBukkit = Dependency(
@@ -183,7 +183,7 @@ val adventurePlatformBukkit = Dependency(
 val adventurePlatformBungeecord = Dependency(
     group = "net.kyori",
     artifact = "adventure-platform-bungeecord",
-    version = "4.3.2",
+    version = "4.3.3",
     relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
     type = Dependency.Type.API,
     modules = listOf(Module.BUNGEECORD)
@@ -202,9 +202,9 @@ val jedis = Dependency(
     group = "redis.clients",
     artifact = "jedis",
     version = "5.0.0",
-    relocation = null /*Relocation("redis", "org.sayandev.stickynote.lib.jedis")*/,
+    relocation = Relocation("redis", "org.sayandev.stickynote.lib.jedis"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER, Module.VELOCITY, Module.BUNGEECORD)
+    modules = listOf(Module.CORE)
 )
 
 val reflections = Dependency(
@@ -213,7 +213,7 @@ val reflections = Dependency(
     version = "0.10.2",
     relocation = Relocation("org.reflections", "org.sayandev.stickynote.lib.reflections"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val hikari = Dependency(
@@ -222,7 +222,7 @@ val hikari = Dependency(
     version = "5.1.0",
     relocation = Relocation("com.zaxxer", "org.sayandev.stickynote.lib.zaxxer"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val guava = Dependency(
@@ -231,7 +231,7 @@ val guava = Dependency(
     version = "31.1-jre",
     relocation = Relocation("com.google.guava", "org.sayandev.stickynote.lib.guava"),
     type = Dependency.Type.COMPILE_ONLY_API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val guavaTestImplementation = Dependency(
@@ -240,7 +240,7 @@ val guavaTestImplementation = Dependency(
     version = "31.1-jre",
     relocation = Relocation("com.google.guava", "org.sayandev.stickynote.lib.guava"),
     type = Dependency.Type.TEST_IMPLEMENTATION,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
 val gson = Dependency(
@@ -249,7 +249,7 @@ val gson = Dependency(
     version = "2.10.1",
     relocation = Relocation("com.google.gson", "org.sayandev.stickynote.lib.gson"),
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT)
+    modules = listOf(Module.CORE)
 )
 
 val kotlinReflect = Dependency(
@@ -258,10 +258,10 @@ val kotlinReflect = Dependency(
     version = "2.0.0",
     relocation = null,
     type = Dependency.Type.API,
-    modules = listOf(Module.CORE, Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.CORE)
 )
 
-val repositories = listOf(
+fun repositories() = listOf(
     Repository(
         id = "spongepowered",
         repos = listOf("https://repo.spongepowered.org/maven/"),
