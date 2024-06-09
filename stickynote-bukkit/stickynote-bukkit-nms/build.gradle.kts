@@ -774,7 +774,7 @@ accessors {
     mapClass(EntityType) {
         methodInferred("loadEntityRecursive", "1.20.4", CompoundTag, Level, Function::class)
         enumConstant(
-            /*"ALLAY",
+            "ALLAY",
             "AREA_EFFECT_CLOUD",
             "ARMOR_STAND",
             "ARROW",
@@ -899,7 +899,7 @@ accessors {
             "ZOMBIE_VILLAGER",
             "ZOMBIFIED_PIGLIN",
             "PLAYER",
-            "FISHING_BOBBER",*/
+            "FISHING_BOBBER"
         )
     }
     mapClass(EquipmentSlot) {
