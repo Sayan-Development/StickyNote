@@ -21,20 +21,6 @@ dependencies {
 }
 
 tasks {
-    publishing {
-        repositories {
-            maven {
-                name = "sayandevelopment-repo"
-                url = uri("https://repo.sayandev.org/snapshots/")
-
-                credentials {
-                    username = System.getenv("REPO_SAYAN_USER") ?: project.findProperty("repo.sayan.user") as String
-                    password = System.getenv("REPO_SAYAN_TOKEN") ?: project.findProperty("repo.sayan.token") as String
-                }
-            }
-        }
-    }
-
     shadowJar {
         applyShadowRelocation(Module.LOADER)
     }

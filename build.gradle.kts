@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.1.3"
+    version = "1.1.4"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
