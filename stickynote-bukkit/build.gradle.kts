@@ -10,7 +10,7 @@ repositories {
 dependencies {
     applyDependencies(Module.BUKKIT)
 
-    compileOnlyApi(project(":stickynote-core"))
+    compileOnly(project(":stickynote-core"))
 }
 
 tasks {

@@ -4,16 +4,16 @@ import org.sayandev.applyRepositories
 import org.sayandev.applyShadowRelocation
 
 repositories {
-    applyRepositories(Module.CORE)
+    applyRepositories(Module.LOADER_BUKKIT)
 }
 
 dependencies {
-    applyDependencies(Module.CORE)
-    implementation(kotlin("stdlib", version = "2.0.0"))
+    applyDependencies(Module.LOADER_BUKKIT)
+    compileOnly(project(":stickynote-bukkit"))
 }
 
 tasks {
     shadowJar {
-        applyShadowRelocation(Module.CORE)
+        applyShadowRelocation(Module.LOADER_BUKKIT)
     }
 }

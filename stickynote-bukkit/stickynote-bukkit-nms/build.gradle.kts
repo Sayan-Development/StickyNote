@@ -28,7 +28,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":stickynote-bukkit"))
+    compileOnly(project(":stickynote-core"))
+    compileOnly(project(":stickynote-bukkit"))
     applyDependencies(Module.BUKKIT, false)
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.6")

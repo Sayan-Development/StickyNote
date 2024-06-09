@@ -1,8 +1,6 @@
 package org.sayandev.stickynote.bukkit
 
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.InputStreamReader
 
 lateinit var wrappedPlugin: WrappedStickyNotePlugin
 

@@ -2,12 +2,16 @@ import java.util.*
 
 plugins {
     `kotlin-dsl`
-    `java-library`
+    java
+    `maven-publish`
     kotlin("jvm") version "2.0.0"
 //    id("io.github.goooler.shadow") version "8.1.7"
 }
 
+version = "1.0.1"
+
 repositories {
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     mavenCentral()
     gradlePluginPortal()
 }

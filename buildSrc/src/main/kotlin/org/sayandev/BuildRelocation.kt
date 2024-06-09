@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 
 fun getProjectRelocations(): List<BuildRelocation> {
-    return repositories.map { it.dependencies }
+    return repositories().map { it.dependencies }
         .flatten()
         .filter { it.relocation != null }
         .map { BuildRelocation(it.relocation!!.from, it.relocation.to, it.modules) }

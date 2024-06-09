@@ -12,11 +12,13 @@ data class Repository(
 )
 
 fun getRepositories(module: Module): List<Repository> {
-    return repositories.filter { repository -> repository.dependencies.any { dependency -> dependency.modules.contains(module) } }
+    return repositories().filter { repository -> repository.dependencies.any { dependency -> dependency.modules.contains(module) } }
 }
 
 fun getDependencies(module: Module): List<Dependency> {
-    return repositories.flatMap { repository -> repository.dependencies }.filter { dependency -> dependency.modules.contains(module) }
+    return repositories().flatMap { repository -> repository.dependencies }.filter { dependency ->
+        dependency.modules.contains(module)
+    }
 }
 
 fun RepositoryHandler.applyRepositories(module: Module) {
@@ -49,7 +51,7 @@ fun Project.generateRepositoriesClass(module: Module) {
     file.writeText(
         """
             |repositories:
-            |${org.sayandev.repositories.map { it.repos }.flatten().joinToString("\n") { "  - $it" } }
+            |${org.sayandev.repositories().map { it.repos }.flatten().joinToString("\n") { "  - $it" } }
             |dependencies:
             |${serializedDependency}
         """.trimMargin()
