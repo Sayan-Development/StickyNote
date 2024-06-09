@@ -6,6 +6,7 @@ import org.sayandev.applyShadowRelocation
 plugins {
     `kotlin-dsl`
     publishing
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 repositories {
@@ -40,9 +41,14 @@ tasks {
 }
 
 gradlePlugin {
+    vcsUrl = "https://github.com/Sayan-Development/StickyNote.git"
+
     plugins {
         create("stickynote") {
             id = "org.sayandev.stickynote"
+            displayName = "StickyNote"
+            description = rootProject.description
+            tags = listOf("minecraft", "paper", "spigot", "velocity")
             implementationClass = "org.sayandev.plugin.StickyNotePlugin"
         }
     }
