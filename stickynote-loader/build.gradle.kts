@@ -28,6 +28,7 @@ tasks {
 
 gradlePlugin {
     vcsUrl = "https://github.com/Sayan-Development/StickyNote.git"
+    website = "https://sayandev.org"
 
     plugins {
         create("stickynote") {
