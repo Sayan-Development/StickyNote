@@ -1,8 +1,6 @@
 import org.sayandev.*
 import org.sayandev.applyShadowRelocation
 
-generateRepositoriesClass(Module.BUKKIT)
-
 repositories {
     applyRepositories(Module.BUKKIT)
 }

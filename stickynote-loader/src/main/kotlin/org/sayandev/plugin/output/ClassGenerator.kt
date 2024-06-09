@@ -42,7 +42,7 @@ class ClassGenerator(
                     .build())*/
                 .addField(FieldSpec.builder(JClassName.get(basePackage, "Relocation"), "RELOCATION")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                    .initializer("new Relocation(\$S, \$S)", relocation.first, relocation.second)
+                    .initializer("new Relocation(\$S, \$S)", relocation.first.replace(".", "{}"), relocation.second.replace(".", "{}"))
                     .build()
                 )
                 .apply {

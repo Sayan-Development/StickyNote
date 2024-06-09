@@ -30,11 +30,9 @@ class StickyNotePlugin : Plugin<Project> {
             dependsOn(createStickyNoteLoader)
         }
 
-        /*target.tasks.withType<ShadowJar> {
-            relocate(config.relocation.get().first, config.relocation.get().second) {
-                exclude("org/sayandev/generated/StickyNotes.class")
-            }
-        }*/
+        target.tasks.withType<ShadowJar> {
+            relocate(config.relocation.get().first, config.relocation.get().second)
+        }
 
         @Suppress("UNCHECKED_CAST")
         runCatching { Class.forName("org.jetbrains.kotlin.gradle.tasks.KotlinCompile") as Class<Task> }

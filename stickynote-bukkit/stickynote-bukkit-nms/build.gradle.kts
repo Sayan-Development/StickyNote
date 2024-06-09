@@ -4,6 +4,7 @@ import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
 import org.sayandev.Module
 import org.sayandev.applyDependencies
 import org.sayandev.applyRepositories
+import org.sayandev.applyShadowRelocation
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.time.Instant
@@ -39,6 +40,10 @@ dependencies {
 tasks {
     sourcesJar {
         dependsOn(generateAccessors)
+    }
+
+    shadowJar {
+        applyShadowRelocation(Module.BUKKIT)
     }
 }
 
