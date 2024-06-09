@@ -10,6 +10,7 @@ plugins {
 allprojects {
     group = "org.sayandev"
     version = "1.1.4"
+    description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("java-library")
@@ -120,7 +121,7 @@ subprojects {
 fun setPom(publication: MavenPublication) {
     publication.pom {
         name.set("stickynote")
-        description.set("A modular Kotlin library for Minecraft: JE")
+        description.set(rootProject.description)
         url.set("https://github.com/sayan-development/stickynote")
         licenses {
             license {
