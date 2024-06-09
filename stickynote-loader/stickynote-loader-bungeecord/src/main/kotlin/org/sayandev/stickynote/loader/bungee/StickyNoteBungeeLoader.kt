@@ -14,7 +14,7 @@ object StickyNoteBungeeLoader {
         if (useLoader == true) {
             val dependencies = listOfNotNull(
                 stickyNotes.fields.find { it.name == "STICKYNOTE_CORE" }?.get(null),
-                stickyNotes.fields.find { it.name == "STICKYNOTE_BUNGEECORD" }?.get(null),
+                stickyNotes.fields.find { it.name == "STICKYNOTE_PROXY_BUNGEECORD" }?.get(null),
             )
 
             val relocation = stickyNotes.getField("RELOCATION").get(null)
