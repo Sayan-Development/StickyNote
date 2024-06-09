@@ -25,7 +25,7 @@ abstract class MySQLExecutor(
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
 
     protected lateinit var hikari: HikariPool
-    protected lateinit var connection: Connection
+    lateinit var connection: Connection
     protected var poolingUsed: Int = 0
 
     protected fun connect(driverClassName: String?) {

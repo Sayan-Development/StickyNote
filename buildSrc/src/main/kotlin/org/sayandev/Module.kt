@@ -5,5 +5,9 @@ enum class Module {
     BUKKIT,
     PAPER,
     VELOCITY,
-    BUNGEECORD
+    BUNGEECORD,
+    LOADER,
+    LOADER_BUKKIT,
+    LOADER_VELOCITY,
+    LOADER_BUNGEECORD
 }

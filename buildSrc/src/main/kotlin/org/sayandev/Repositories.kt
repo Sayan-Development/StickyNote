@@ -1,5 +1,23 @@
 package org.sayandev
 
+val kotlinPoet = Dependency(
+    group = "com.squareup",
+    artifact = "kotlinpoet",
+    version = "1.17.0",
+    relocation = Relocation("com.squareup", "org.sayandev.stickynote.lib.squareup"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.LOADER)
+)
+
+val kotlinPoetJava = Dependency(
+    group = "com.squareup",
+    artifact = "kotlinpoet-javapoet",
+    version = "1.17.0",
+    relocation = Relocation("com.squareup", "org.sayandev.stickynote.lib.squareup"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.LOADER)
+)
+
 val configurateYaml = Dependency(
     group = "org.spongepowered",
     artifact = "configurate-yaml",
@@ -24,7 +42,7 @@ val foliaAPI = Dependency(
     version = "1.20.4-R0.1-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY,
-    modules = listOf(Module.BUKKIT)
+    modules = listOf(Module.BUKKIT, Module.PAPER, Module.LOADER_BUKKIT)
 )
 
 val velocityAPI = Dependency(
@@ -33,7 +51,7 @@ val velocityAPI = Dependency(
     version = "3.3.0-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY_API,
-    modules = listOf(Module.VELOCITY)
+    modules = listOf(Module.VELOCITY, Module.LOADER_VELOCITY)
 )
 
 val velocityAPIAnnotation = Dependency(
@@ -42,7 +60,7 @@ val velocityAPIAnnotation = Dependency(
     version = "3.3.0-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.ANNOTATION_PROCESSOR,
-    modules = listOf(Module.VELOCITY)
+    modules = listOf(Module.VELOCITY, Module.LOADER_VELOCITY)
 )
 
 /*val spigotAPI = Dependency(
@@ -60,7 +78,7 @@ val paperApi = Dependency(
     version = "1.20.6-R0.1-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY,
-    modules = listOf(Module.BUKKIT, Module.PAPER)
+    modules = listOf(Module.BUKKIT, Module.PAPER, Module.LOADER_BUKKIT)
 )
 
 val bungeecordAPI = Dependency(
@@ -69,7 +87,7 @@ val bungeecordAPI = Dependency(
     version = "1.19-R0.1-SNAPSHOT",
     relocation = null,
     type = Dependency.Type.COMPILE_ONLY,
-    modules = listOf(Module.BUNGEECORD)
+    modules = listOf(Module.BUNGEECORD, Module.LOADER_BUNGEECORD)
 )
 
 val cloudCore = Dependency(
@@ -247,7 +265,7 @@ val gson = Dependency(
     group = "com.google.code.gson",
     artifact = "gson",
     version = "2.10.1",
-    relocation = Relocation("com.google.gson", "org.sayandev.stickynote.lib.gson"),
+//    relocation = Relocation("com.google.gson", "org.sayandev.stickynote.lib.gson"),
     type = Dependency.Type.API,
     modules = listOf(Module.CORE)
 )
@@ -259,6 +277,36 @@ val kotlinReflect = Dependency(
     relocation = null,
     type = Dependency.Type.API,
     modules = listOf(Module.CORE)
+)
+
+val libbyBukkit = Dependency(
+    group = "com.alessiodp.libby",
+    artifact = "libby-bukkit",
+    version = "2.0.0-SNAPSHOT",
+    relocation = Relocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.LOADER_BUKKIT),
+    shadeMethod = Dependency.ShadeMethod.FORCE
+)
+
+val libbyVelocity = Dependency(
+    group = "com.alessiodp.libby",
+    artifact = "libby-velocity",
+    version = "2.0.0-SNAPSHOT",
+    relocation = Relocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.LOADER_VELOCITY),
+    shadeMethod = Dependency.ShadeMethod.FORCE
+)
+
+val libbyBungeecord = Dependency(
+    group = "com.alessiodp.libby",
+    artifact = "libby-bungee",
+    version = "2.0.0-SNAPSHOT",
+    relocation = Relocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.LOADER_BUNGEECORD),
+    shadeMethod = Dependency.ShadeMethod.FORCE
 )
 
 fun repositories() = listOf(
@@ -324,22 +372,18 @@ fun repositories() = listOf(
             guava,
             guavaTestImplementation,
             gson,
-            kotlinReflect
+            kotlinReflect,
+            kotlinPoet,
+            kotlinPoetJava
         )
     ),
-    /*Repository(
+    Repository(
         id = "sonatype",
         repos = listOf("https://s01.oss.sonatype.org/content/repositories/snapshots/"),
         dependencies = listOf(
-            Dependency(
-                group = "com.alessiodp.libby",
-                artifact = "libby-bukkit",
-                version = "2.0.0-SNAPSHOT",
-                relocation = Relocation("com.alessiodp.libby", "org.sayandev.stickynote.lib.libby"),
-                type = Dependency.Type.API,
-                modules = listOf(Module.BUKKIT, Module.PAPER),
-                shadeMethod = Dependency.ShadeMethod.FORCE
-            ),
+            libbyBukkit,
+            libbyVelocity,
+            libbyBungeecord,
         )
-    ),*/
+    ),
 )
