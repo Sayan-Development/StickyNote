@@ -33,7 +33,6 @@ object StickyNoteBukkitLoader {
                         .artifactId(dependency::class.java.getMethod("getName").invoke(dependency) as String)
                         .version(dependency::class.java.getMethod("getVersion").invoke(dependency) as String)
                         .apply {
-                            plugin.logger.warning("trying to relocate from ${relocationFrom} to ${relocationTo}")
                             if (relocationFrom?.isNotEmpty() == true && relocationTo?.isNotEmpty() == true) {
                                 this.relocate(relocationFrom, relocationTo)
                             }
