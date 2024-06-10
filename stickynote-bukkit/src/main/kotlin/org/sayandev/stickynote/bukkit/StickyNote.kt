@@ -26,7 +26,7 @@ object StickyNote {
 
     @JvmStatic
     fun isPaper(): Boolean = try {
-        Class.forName("io.papermc.paperclip.Main")
+        Class.forName("com.destroystokyo.paper.ParticleBuilder")
         true
     } catch (e: Exception) {
         false
