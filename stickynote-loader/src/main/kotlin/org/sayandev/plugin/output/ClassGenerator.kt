@@ -17,6 +17,7 @@ class ClassGenerator(
     val outputDir: Directory,
     val modules: List<ModuleConfiguration>,
     val useLoader: Boolean,
+    val relocate: Boolean,
     /*val loadKotlin: Boolean,
     val kotlinVersion: String,*/
     val relocation: Pair<String, String>
@@ -31,6 +32,10 @@ class ClassGenerator(
                 .addField(FieldSpec.builder(Boolean::class.java, "USE_LOADER")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .initializer("$useLoader")
+                    .build())
+                .addField(FieldSpec.builder(Boolean::class.java, "RELOCATE")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                    .initializer("$relocate")
                     .build())
                 /*.addField(FieldSpec.builder(Boolean::class.java, "LOAD_KOTLIN")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)

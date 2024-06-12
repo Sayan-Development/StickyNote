@@ -24,14 +24,17 @@ class StickyNotePlugin : Plugin<Project> {
             this.loaderVersion.set(config.loaderVersion)
             this.relocation.set(config.relocation)
             this.useLoader.set(config.useLoader)
+            this.useKotlin.set(config.useKotlin)
         }
 
         target.tasks.withType<JavaCompile> {
             dependsOn(createStickyNoteLoader)
         }
 
-        target.tasks.withType<ShadowJar> {
-            relocate(config.relocation.get().first, config.relocation.get().second)
+        if (config.relocate.get()) {
+            target.tasks.withType<ShadowJar> {
+                relocate(config.relocation.get().first, config.relocation.get().second)
+            }
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -49,6 +52,10 @@ class StickyNotePlugin : Plugin<Project> {
 
             if (config.outputDirectory.get().asFile == defaultLocation) {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
+            }
+
+            if (!config.useKotlin.get()) {
+                project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
             }
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
