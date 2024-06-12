@@ -25,6 +25,7 @@ class StickyNotePlugin : Plugin<Project> {
             this.relocation.set(config.relocation)
             this.useLoader.set(config.useLoader)
             this.useKotlin.set(config.useKotlin)
+            this.relocate.set(config.relocate)
         }
 
         target.tasks.withType<JavaCompile> {
