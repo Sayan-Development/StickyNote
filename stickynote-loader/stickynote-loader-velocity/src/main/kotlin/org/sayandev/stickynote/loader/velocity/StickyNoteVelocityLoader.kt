@@ -23,7 +23,7 @@ object StickyNoteVelocityLoader {
             val relocation = stickyNotes.getField("RELOCATION").get(null)
             val relocationFrom = relocation::class.java.getMethod("getFrom").invoke(relocation) as? String
             val relocationTo = relocation::class.java.getMethod("getTo").invoke(relocation) as? String
-            val relocate = relocation::class.java.getField("RELOCATE").get(relocation) as? Boolean
+            val relocate = stickyNotes.getField("RELOCATE").get(null) as? Boolean
 
             val libraryManager = VelocityLibraryManager(plugin, LoggerFactory.getLogger(plugin::class.java), dataDirectory, server.pluginManager)
             libraryManager.addMavenLocal()

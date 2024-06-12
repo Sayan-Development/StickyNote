@@ -21,7 +21,7 @@ object StickyNoteBukkitLoader {
             val relocation = stickyNotes.getField("RELOCATION").get(null)
             val relocationFrom = relocation::class.java.getMethod("getFrom").invoke(relocation) as? String
             val relocationTo = relocation::class.java.getMethod("getTo").invoke(relocation) as? String
-            val relocate = relocation::class.java.getField("RELOCATE").get(relocation) as? Boolean
+            val relocate = stickyNotes.getField("RELOCATE").get(null) as? Boolean
 
             val libraryManager = BukkitLibraryManager(plugin)
             libraryManager.addMavenLocal()
