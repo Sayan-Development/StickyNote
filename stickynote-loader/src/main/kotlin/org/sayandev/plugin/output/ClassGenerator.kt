@@ -18,8 +18,6 @@ class ClassGenerator(
     val modules: List<ModuleConfiguration>,
     val useLoader: Boolean,
     val relocate: Boolean,
-    /*val loadKotlin: Boolean,
-    val kotlinVersion: String,*/
     val relocation: Pair<String, String>
 ) {
     private val basePackage = "org.sayandev.generated"

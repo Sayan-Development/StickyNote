@@ -37,7 +37,7 @@ abstract class MySQLExecutor(
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
-        if (keepaliveTime != null) {
+        if (keepaliveTime != null && keepaliveTime > 0) {
             hikariConfig.keepaliveTime = keepaliveTime
         }
         if (connectionTimeout != null) {
