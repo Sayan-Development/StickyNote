@@ -27,6 +27,15 @@ val configurateYaml = Dependency(
     modules = listOf(Module.CORE)
 )
 
+val snakeYaml = Dependency(
+    group = "org.yaml",
+    artifact = "snakeyaml",
+    version = "2.2",
+    relocation = Relocation("org.yaml", "org.sayandev.stickynote.lib.yaml"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.CORE)
+)
+
 val configurateExtraKotlin = Dependency(
     group = "org.spongepowered",
     artifact = "configurate-extra-kotlin",
@@ -374,7 +383,8 @@ fun repositories() = listOf(
             gson,
             kotlinReflect,
             kotlinPoet,
-            kotlinPoetJava
+            kotlinPoetJava,
+            snakeYaml
         )
     ),
     Repository(
