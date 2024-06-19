@@ -1,7 +1,7 @@
 package org.sayandev.stickynote.core.database.mysql
 
 import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.pool.HikariPool
+import com.zaxxer.hikari.HikariDataSource
 import org.sayandev.stickynote.core.database.Database
 import org.sayandev.stickynote.core.database.Priority
 import org.sayandev.stickynote.core.database.Query
@@ -19,13 +19,14 @@ abstract class MySQLExecutor(
     threadFactory: ThreadFactory,
     val verifyCertificate: Boolean,
     val keepaliveTime: Long?,
-    val connectionTimeout: Long?
+    val connectionTimeout: Long?,
+    val minimumIdle: Int?,
+    val maxLifeTime: Long?,
 ) : Database() {
 
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
 
-    protected lateinit var hikari: HikariPool
-    lateinit var connection: Connection
+    protected lateinit var hikari: HikariDataSource
     protected var poolingUsed: Int = 0
 
     protected fun connect(driverClassName: String?) {
@@ -37,29 +38,31 @@ abstract class MySQLExecutor(
         hikariConfig.username = credentials.username
         hikariConfig.password = credentials.password
         hikariConfig.maximumPoolSize = poolingSize
-        if (keepaliveTime != null && keepaliveTime > 0) {
+        hikariConfig.minimumIdle = minimumIdle ?: hikari.maximumPoolSize
+        if (keepaliveTime != null) {
             hikariConfig.keepaliveTime = keepaliveTime
         }
         if (connectionTimeout != null) {
             hikariConfig.connectionTimeout = connectionTimeout
         }
+        hikariConfig.maxLifetime = maxLifeTime ?: 1800000
 
         hikariConfig.addDataSourceProperty("socketTimeout", TimeUnit.SECONDS.toMillis(30).toString());
 
-        hikariConfig.addDataSourceProperty("verifyServerCertificate", verifyCertificate.toString())
-        hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
-        hikariConfig.addDataSourceProperty("encoding", "UTF-8")
-        hikariConfig.addDataSourceProperty("useUnicode", "true");
-
-        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-        hikariConfig.addDataSourceProperty("jdbcCompliantTruncation", "false");
-
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "275");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+        hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
+        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
+        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
+        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
+        hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
+        hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
+        hikariConfig.addDataSourceProperty("alwaysSendSetIsolation", "false");
+        hikariConfig.addDataSourceProperty("cacheCallableStmts", "true");
 
-        this.hikari = HikariPool(hikariConfig)
-        connection = hikari.connection
+        this.hikari = HikariDataSource(hikariConfig)
     }
 
     protected fun tick() {
@@ -99,39 +102,41 @@ abstract class MySQLExecutor(
     }
 
     private fun executeQuerySync(query: Query): QueryResult {
-        try {
-            val preparedStatement = query.createPreparedStatement(connection)
-            var resultSet: ResultSet? = null
+        getConnection().use { connection ->
+            try {
+                val preparedStatement = query.createPreparedStatement(connection)
+                var resultSet: ResultSet? = null
 
-            if (query.statement.startsWith("INSERT") ||
-                query.statement.startsWith("UPDATE") ||
-                query.statement.startsWith("DELETE") ||
-                query.statement.startsWith("CREATE") ||
-                query.statement.startsWith("ALTER")
-            ) {
-                preparedStatement.executeUpdate()
-                preparedStatement.close()
+                if (query.statement.startsWith("INSERT") ||
+                    query.statement.startsWith("UPDATE") ||
+                    query.statement.startsWith("DELETE") ||
+                    query.statement.startsWith("CREATE") ||
+                    query.statement.startsWith("ALTER")
+                ) {
+                    preparedStatement.executeUpdate()
+                    preparedStatement.close()
+                }
+                else resultSet = preparedStatement.executeQuery()
+
+                if (resultSet != null) {
+                    query.complete(resultSet)
+                }
+
+                return QueryResult(StatusCode.FINISHED, resultSet)
+            } catch (e: SQLException) {
+                onQueryFail(query)
+                e.printStackTrace()
+
+                query.increaseFailedAttempts()
+                if (query.failedAttempts > failAttemptRemoval) {
+                    onQueryRemoveDueToFail(query)
+
+                    return QueryResult(StatusCode.FINISHED, null)
+                }
+
+
+                return QueryResult(StatusCode.FAILED, null)
             }
-            else resultSet = preparedStatement.executeQuery()
-
-            if (resultSet != null) {
-                query.complete(resultSet)
-            }
-
-            return QueryResult(StatusCode.FINISHED, resultSet)
-        } catch (e: SQLException) {
-            onQueryFail(query)
-            e.printStackTrace()
-
-            query.increaseFailedAttempts()
-            if (query.failedAttempts > failAttemptRemoval) {
-                onQueryRemoveDueToFail(query)
-
-                return QueryResult(StatusCode.FINISHED, null)
-            }
-
-
-            return QueryResult(StatusCode.FAILED, null)
         }
     }
 
@@ -145,7 +150,7 @@ abstract class MySQLExecutor(
         return completableFuture
     }
 
-    private fun createConnection(): Connection {
+    private fun getConnection(): Connection {
         return hikari.connection ?: throw NullPointerException("Can't create connection while HikariDataSource (hikari) is null")
     }
 
