@@ -22,6 +22,7 @@ abstract class MySQLExecutor(
     val connectionTimeout: Long?,
     val minimumIdle: Int?,
     val maxLifeTime: Long?,
+    val allowPublicKeyRetrieval: Boolean
 ) : Database() {
 
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(max(1, poolingSize), threadFactory)
@@ -47,20 +48,20 @@ abstract class MySQLExecutor(
         }
         hikariConfig.maxLifetime = maxLifeTime ?: 1800000
 
-        hikariConfig.addDataSourceProperty("socketTimeout", TimeUnit.SECONDS.toMillis(30).toString());
-
-        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
-        hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
-        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
-        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
-        hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
-        hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
-        hikariConfig.addDataSourceProperty("alwaysSendSetIsolation", "false");
-        hikariConfig.addDataSourceProperty("cacheCallableStmts", "true");
+        hikariConfig.addDataSourceProperty("socketTimeout", TimeUnit.SECONDS.toMillis(30).toString())
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true")
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250")
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true")
+        hikariConfig.addDataSourceProperty("useLocalSessionState", "true")
+        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true")
+        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true")
+        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true")
+        hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true")
+        hikariConfig.addDataSourceProperty("maintainTimeStats", "false")
+        hikariConfig.addDataSourceProperty("alwaysSendSetIsolation", "false")
+        hikariConfig.addDataSourceProperty("cacheCallableStmts", "true")
+        hikariConfig.addDataSourceProperty("allowPublicKeyRetrieval", allowPublicKeyRetrieval.toString())
 
         this.hikari = HikariDataSource(hikariConfig)
     }
