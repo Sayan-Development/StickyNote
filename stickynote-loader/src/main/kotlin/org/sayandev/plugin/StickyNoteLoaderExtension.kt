@@ -29,9 +29,9 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         useLoader.convention(false)
         loaderVersion.convention("0.0.0")
         basePackage.convention(project.group.toString())
+        relocate.convention(false)
         relocation.convention("org.sayandev.stickynote" to "${project.group}.libs.stickynote")
         useKotlin.convention(false)
-        relocate.convention(false)
     }
 
     fun outputDirectory(outputDirectory: Any) {

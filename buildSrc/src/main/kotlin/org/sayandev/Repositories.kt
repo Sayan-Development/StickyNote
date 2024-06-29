@@ -189,6 +189,15 @@ val adventureAPI = Dependency(
     modules = listOf(Module.CORE)
 )
 
+val adventureTextSerializerGson = Dependency(
+    group = "net.kyori",
+    artifact = "adventure-text-serializer-gson",
+    version = "4.17.0",
+    relocation = Relocation("net.kyori", "org.sayandev.stickynote.lib.kyori"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.CORE)
+)
+
 val adventureTextMiniMessage = Dependency(
     group = "net.kyori",
     artifact = "adventure-text-minimessage",
@@ -371,6 +380,7 @@ fun repositories() = listOf(
         dependencies = listOf(
             xSeries,
             adventureAPI,
+            adventureTextSerializerGson,
             adventureTextMiniMessage,
             adventurePlatformBukkit,
             adventurePlatformBungeecord,
