@@ -62,6 +62,7 @@ abstract class MySQLExecutor(
         hikariConfig.addDataSourceProperty("alwaysSendSetIsolation", "false")
         hikariConfig.addDataSourceProperty("cacheCallableStmts", "true")
         hikariConfig.addDataSourceProperty("allowPublicKeyRetrieval", allowPublicKeyRetrieval.toString())
+        hikariConfig.addDataSourceProperty("characterEncoding", "utf8")
 
         this.hikari = HikariDataSource(hikariConfig)
     }
