@@ -37,7 +37,7 @@ abstract class StickyCommand(
         val backwardsMapper = { sayanSenderExtension: SenderExtension -> sayanSenderExtension.bukkitSender() }
         val audienceMapper = { sayanSenderExtension: SenderExtension -> AdventureUtils.audience.sender(sayanSenderExtension.bukkitSender()) }
 
-        manager = if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) {
+        manager = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
             val modernMapper = { sourceStack: CommandSourceStack -> StickySender(sourceStack.sender, sourceStack) }
             val sourceMapper = { stickySender: StickySender -> stickySender.sourceStack!! }
             PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
