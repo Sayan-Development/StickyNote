@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.utils
 
-import com.cryptomorin.xseries.ReflectionUtils
+import com.cryptomorin.xseries.reflection.XReflection
 
 object ServerVersion {
 
@@ -8,19 +8,19 @@ object ServerVersion {
      * @return The server's version without "1.", That would be an integer. Example return: 1.19 -> 19
      */
     @JvmStatic
-    fun version() = ReflectionUtils.MINOR_NUMBER
+    fun version() = XReflection.MINOR_NUMBER
 
     /**
      * @return The complete server's version. Example return: "v1_19_R2" which is 1.19.3
      */
     @JvmStatic
-    fun completeVersion() = ReflectionUtils.NMS_VERSION
+    fun completeVersion() = XReflection.NMS_VERSION
     
     /**
      * @return The server's patch number. Example return: 1.19.3 -> 3
      */
     @JvmStatic
-    fun patchNumber() = ReflectionUtils.PATCH_NUMBER
+    fun patchNumber() = XReflection.PATCH_NUMBER
 
     /**
      * @return true if the server is running on 1.8 - 1.12.2
@@ -40,5 +40,5 @@ object ServerVersion {
      * @return true if the version is equal or newer, otherwise false
      */
     @JvmStatic
-    fun supports(version: Int) = ReflectionUtils.supports(version)
+    fun supports(version: Int) = XReflection.supports(version)
 }
