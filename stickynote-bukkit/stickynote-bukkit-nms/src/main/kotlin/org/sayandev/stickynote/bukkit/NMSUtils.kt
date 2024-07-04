@@ -351,8 +351,7 @@ object NMSUtils {
         if (ServerVersion.supports(17)) {
             SignBlockEntityAccessor.METHOD_MARK_UPDATED!!.invoke(getNmsSign(sign))
         } else {
-            sendPacket(
-                sign.block.location.world!!.players,
+            sign.block.location.world!!.players.sendPacket(
                 SignBlockEntityAccessor.METHOD_GET_UPDATE_PACKET!!.invoke(getNmsSign(sign))
             )
         }
@@ -604,7 +603,7 @@ object NMSUtils {
      * @param stage The destruction stage between 1 and 9. Any number below 1 and above 9 will remove the destruction process.
      */
     fun sendBlockDestruction(viewers: Set<Player>, location: Vector3, stage: Int) {
-        sendPacket(
+        viewers.sendPacket(
             viewers,
             PacketUtils.getBlockDestructionPacket(location, stage)
         )
@@ -617,7 +616,7 @@ object NMSUtils {
      * @param passengers The passengers that are going to ride on the entity.
      */
     fun setPassengers(viewers: Set<Player>, entity: Any, vararg passengers: Int) {
-        sendPacket(
+        viewers.sendPacket(
             viewers,
             PacketUtils.getEntityPassengersPacket(entity, *passengers)
         )
@@ -638,7 +637,7 @@ object NMSUtils {
             if (open) 1 else 0
         )
 
-        sendPacket(viewers, chestAnimationPacket)
+        viewers.sendPacket(chestAnimationPacket)
     }
 
     fun createConnection(): Any {
@@ -651,10 +650,10 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
-    fun sendPacketSync(player: Player, vararg packets: Any) {
+    fun Player.sendPacketSync(vararg packets: Any) {
         try {
             //ReflectionUtils.sendPacketSync(player, packets);
-            val commonGameConnection = getServerGamePacketListener(player)
+            val commonGameConnection = getServerGamePacketListener(this)
             for (packet in packets) {
                 if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
                     ServerCommonPacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
@@ -674,8 +673,8 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
-    fun sendPacketSync(players: Collection<Player>, vararg packets: Any) {
-        for (player in players) {
+    fun Collection<Player>.sendPacketSync(vararg packets: Any) {
+        for (player in this) {
             sendPacketSync(player, *packets)
         }
     }
@@ -686,8 +685,8 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
-    fun sendPacket(player: Player, vararg packets: Any): Future<*> {
-        return runEAsync { sendPacketSync(player, *packets) }
+    fun Player.sendPacket(vararg packets: Any): Future<*> {
+        return runEAsync { sendPacketSync(this, *packets) }
     }
 
     /**
@@ -696,7 +695,7 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
-    fun sendPacket(players: Collection<Player>, vararg packets: Any): Future<*> {
-        return runEAsync { sendPacketSync(players, *packets) }
+    fun Collection<Player>.sendPacket(vararg packets: Any): Future<*> {
+        return runEAsync { sendPacketSync(this, *packets) }
     }
 }
