@@ -127,7 +127,7 @@ object PacketUtils {
     fun getMobEffectPacket(effect: PotionEffect): Any {
         val mobEffect = getMobEffectByEffectType(effect.type)
         val effectConstructor =
-            if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5)
+            if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))
                 MobEffectInstanceAccessor.CONSTRUCTOR_1!!
             else
                 MobEffectInstanceAccessor.CONSTRUCTOR_0!!
@@ -144,8 +144,8 @@ object PacketUtils {
 
     @JvmStatic
     fun getMobEffectByEffectType(effect: PotionEffectType): Any {
-        return if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) {
-            val memberProperty = if (ServerVersion.patchNumber() >= 5) {
+        return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
+            val memberProperty = if (ServerVersion.patchNumber() >= 5 || ServerVersion.supports(21)) {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}_1" }!!
             } else {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
@@ -159,7 +159,7 @@ object PacketUtils {
     @JvmStatic
     fun getUpdateMobEffectPacket(player: Player, effect: PotionEffect): Any {
         val effectPacket = getMobEffectPacket(effect)
-        return if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) {
+        return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
             ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_1!!.newInstance(player.entityId, effectPacket, true)
         } else {
             ClientboundUpdateMobEffectPacketAccessor.CONSTRUCTOR_0!!.newInstance(player.entityId, effectPacket)
@@ -168,7 +168,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
-        val effectConstructor = if (ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5)
+        val effectConstructor = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_1!!
         else
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!

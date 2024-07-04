@@ -16,7 +16,7 @@ import java.util.function.Function
 import java.util.function.UnaryOperator
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.1.4-SNAPSHOT"
+    id("me.kcra.takenaka.accessor") version "1.1.4"
 }
 
 repositories {
@@ -33,7 +33,7 @@ dependencies {
     compileOnly(project(":stickynote-bukkit"))
     applyDependencies(Module.BUKKIT, false)
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.20.6")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21")
     implementation(accessorRuntime())
 }
 
@@ -53,7 +53,7 @@ accessors {
     accessedNamespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.20.6")
+    versionRange("1.8.8", "1.21")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketEntry = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Entry"

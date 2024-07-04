@@ -675,7 +675,7 @@ object NMSUtils {
     @JvmStatic
     fun Collection<Player>.sendPacketSync(vararg packets: Any) {
         for (player in this) {
-            sendPacketSync(player, *packets)
+            player.sendPacketSync(*packets)
         }
     }
 
@@ -686,7 +686,7 @@ object NMSUtils {
      */
     @JvmStatic
     fun Player.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { sendPacketSync(this, *packets) }
+        return runEAsync { this.sendPacketSync(*packets) }
     }
 
     /**
@@ -696,6 +696,6 @@ object NMSUtils {
      */
     @JvmStatic
     fun Collection<Player>.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { sendPacketSync(this, *packets) }
+        return runEAsync { this.sendPacketSync(*packets) }
     }
 }
