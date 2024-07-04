@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit
 
-import com.cryptomorin.xseries.ReflectionUtils
+import com.cryptomorin.xseries.reflection.XReflection
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -28,18 +28,18 @@ import java.util.function.UnaryOperator
 
 object NMSUtils {
 
-    private val CRAFT_ITEM_STACK: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("inventory.CraftItemStack") }
-    private val CRAFT_PLAYER: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("entity.CraftPlayer") }
-    private val CRAFT_WORLD: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("CraftWorld") }
-    private val CRAFT_SERVER: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("CraftServer") }
-    private val CRAFT_BLOCK_STATE: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("block.CraftBlockState") }
-    private val CRAFT_LIVING_ENTITY: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("entity.CraftLivingEntity") }
-    private val CRAFT_ENTITY: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("entity.CraftEntity") }
+    private val CRAFT_ITEM_STACK: Result<Class<*>> = runCatching { XReflection.getCraftClass("inventory.CraftItemStack") }
+    private val CRAFT_PLAYER: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftPlayer") }
+    private val CRAFT_WORLD: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftWorld") }
+    private val CRAFT_SERVER: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftServer") }
+    private val CRAFT_BLOCK_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockState") }
+    private val CRAFT_LIVING_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftLivingEntity") }
+    private val CRAFT_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftEntity") }
     /**
      * mc-1.9 and above
      */
-    private val CRAFT_BLOCK_ENTITY_STATE: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("block.CraftBlockEntityState") }
-    private val CRAFT_CHUNK: Result<Class<*>> = runCatching { ReflectionUtils.getCraftClass("CraftChunk") }
+    private val CRAFT_BLOCK_ENTITY_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockEntityState") }
+    private val CRAFT_CHUNK: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftChunk") }
 
     private val CRAFT_ITEM_STACK_AS_NMS_COPY: Result<Method> = runCatching { CRAFT_ITEM_STACK.getOrThrow().getMethod("asNMSCopy", ItemStack::class.java) }
     private val CRAFT_ITEM_STACK_AS_BUKKIT_COPY: Result<Method> = runCatching { CRAFT_ITEM_STACK.getOrThrow().getMethod("asBukkitCopy", ItemStackAccessor.TYPE) }
