@@ -20,7 +20,7 @@ class ClassGenerator(
     val relocate: Boolean,
     val relocation: Pair<String, String>
 ) {
-    private val basePackage = "org.sayandev.generated"
+    private val basePackage = "org.sayandev.stickynote.generated"
 
     fun generateStickyNotesClass() {
         val stickynotesClass = JClassName.get(basePackage, "StickyNotes")

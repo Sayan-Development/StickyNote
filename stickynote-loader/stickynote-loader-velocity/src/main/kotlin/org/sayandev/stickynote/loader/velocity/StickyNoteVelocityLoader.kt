@@ -12,7 +12,7 @@ object StickyNoteVelocityLoader {
 
     @JvmStatic
     fun load(plugin: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path) {
-        val stickyNotes = Class.forName("org.sayandev.generated.StickyNotes")
+        val stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes")
         val useLoader = stickyNotes.getField("USE_LOADER").get(null) as? Boolean
         if (useLoader == true) {
             val dependencies = listOfNotNull(

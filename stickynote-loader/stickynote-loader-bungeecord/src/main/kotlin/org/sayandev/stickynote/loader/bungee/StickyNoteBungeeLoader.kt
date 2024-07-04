@@ -9,7 +9,7 @@ object StickyNoteBungeeLoader {
 
     @JvmStatic
     fun load(plugin: Plugin) {
-        val stickyNotes = Class.forName("org.sayandev.generated.StickyNotes")
+        val stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes")
         val useLoader = stickyNotes.getField("USE_LOADER").get(null) as? Boolean
         if (useLoader == true) {
             val dependencies = listOfNotNull(
