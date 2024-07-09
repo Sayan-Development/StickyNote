@@ -4,9 +4,9 @@ import com.alessiodp.libby.Library
 import com.alessiodp.libby.VelocityLibraryManager
 import com.velocitypowered.api.proxy.ProxyServer
 import org.sayandev.stickynote.velocity.WrappedStickyNotePlugin
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
-import java.util.logging.Logger
 
 object StickyNoteVelocityLoader {
 
@@ -25,7 +25,7 @@ object StickyNoteVelocityLoader {
             val relocationTo = relocation::class.java.getMethod("getTo").invoke(relocation) as? String
             val relocate = stickyNotes.getField("RELOCATE").get(null) as? Boolean
 
-            val libraryManager = VelocityLibraryManager(plugin, LoggerFactory.getLogger(plugin::class.java), dataDirectory, server.pluginManager)
+            val libraryManager = VelocityLibraryManager(plugin, logger, dataDirectory, server.pluginManager)
             libraryManager.addMavenLocal()
             libraryManager.addRepository("https://repo.sayandev.org/snapshots")
 

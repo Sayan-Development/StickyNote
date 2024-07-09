@@ -38,7 +38,7 @@ object StickyNote {
 
     @JvmStatic
     fun warn(message: String) {
-        logger.warning(message)
+        logger.warn(message)
     }
 
     @JvmStatic
@@ -48,7 +48,7 @@ object StickyNote {
 
     @JvmStatic
     fun error(message: String) {
-        logger.severe(message)
+        logger.error(message)
     }
 
     @JvmStatic
