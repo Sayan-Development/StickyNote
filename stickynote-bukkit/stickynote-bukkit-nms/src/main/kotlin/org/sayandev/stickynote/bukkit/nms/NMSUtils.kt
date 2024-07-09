@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.bukkit
+package org.sayandev.stickynote.bukkit.nms
 
 import com.cryptomorin.xseries.reflection.XReflection
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
+import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
 import org.sayandev.stickynote.nms.accessors.*
@@ -153,9 +154,9 @@ object NMSUtils {
             )
         }
         CompoundTagAccessor.METHOD_PUT!!.invoke(
-            NMSUtils.getItemDisplayTag(nmsItem),
-            NMSUtils.getTagLore(),
-            ListTagAccessor.CONSTRUCTOR_0!!.newInstance(stringTagList, NMSUtils.getTagString())
+            getItemDisplayTag(nmsItem),
+            getTagLore(),
+            ListTagAccessor.CONSTRUCTOR_0!!.newInstance(stringTagList, getTagString())
         )
         return getBukkitItemStack(nmsItem)
     }

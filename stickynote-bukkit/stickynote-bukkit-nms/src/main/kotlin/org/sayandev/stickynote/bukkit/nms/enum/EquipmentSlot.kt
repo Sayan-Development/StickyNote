@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.bukkit.enum
+package org.sayandev.stickynote.bukkit.nms.enum
 
 import org.sayandev.stickynote.nms.accessors.EquipmentSlotAccessor
 

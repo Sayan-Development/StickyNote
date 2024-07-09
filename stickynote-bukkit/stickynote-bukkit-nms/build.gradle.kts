@@ -94,6 +94,7 @@ accessors {
     val ClientboundKeepAlivePacket = "net.minecraft.network.protocol.game.ClientboundKeepAlivePacket"
     val ClientboundSetCameraPacket = "net.minecraft.network.protocol.game.ClientboundSetCameraPacket"
     val ClientboundContainerSetContentPacket = "net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket"
+    val ClientboundContainerSetSlotPacket = "net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket"
     val ClientboundLevelParticlesPacket = "net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket"
     val ClientboundSetDisplayObjectivePacket = "net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket"
     val ClientboundSetObjectivePacket = "net.minecraft.network.protocol.game.ClientboundSetObjectivePacket"
@@ -478,7 +479,13 @@ accessors {
     }
     mapClass(ClientboundContainerSetContentPacket) {
         constructor(Int::class, Int::class, NonNullList, ItemStack)
+        fieldInferred("containerId", "1.20.4")
         fieldInferred("items", "1.20.4")
+    }
+    mapClass(ClientboundContainerSetSlotPacket) {
+        constructor(Int::class, Int::class, Int::class, ItemStack)
+        fieldInferred("slot", "1.20.4")
+        fieldInferred("itemStack", "1.20.4")
     }
     mapClass(ClientboundLevelParticlesPacket) {
         constructor(EnumParticle, Boolean::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Float::class, Int::class, IntArray::class) //1.8.8 - 1.12.2
