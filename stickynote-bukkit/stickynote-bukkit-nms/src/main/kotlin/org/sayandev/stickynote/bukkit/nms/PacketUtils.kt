@@ -6,6 +6,7 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.sayandev.stickynote.bukkit.nms.enum.*
@@ -152,6 +153,8 @@ object PacketUtils {
             }
             memberProperty.getter.call(MobEffectsAccessor)!!
         } else {
+            //TODO: replace with key()
+            @Suppress("removal")
             MobEffectAccessor.METHOD_BY_ID!!.invoke(null, effect.id)
         }
     }
@@ -326,7 +329,6 @@ object PacketUtils {
         return packet
     }
 
-    /*
     @JvmStatic
     fun getContainerSetContentPacket(
         containerId: Int,
@@ -346,7 +348,7 @@ object PacketUtils {
             nonNullList,
             NMSUtils.getNmsItemStack(carriedItem)
         )
-    }*/
+    }
 
     @JvmStatic
     fun getChatPacket(message: Component, type: ChatType, sender: UUID): Any {
@@ -626,12 +628,11 @@ object PacketUtils {
         }
     }
 
-    /*
     @JvmStatic
     fun getEntityDataPacket(id: Int, metadataId: Int, value: Any): Any {
         val synchedEntityData: Any = SynchedEntityDataAccessor.CONSTRUCTOR_0!!.newInstance(null)
         if (ServerVersion.supports(9)) {
-            val entityDataSerializer: Any = NMSUtils.getEntityDataSerializer(value)
+            val entityDataSerializer: Any = NMSUtils.getEntityDataSerializer(value)!!
             SynchedEntityDataAccessor.METHOD_DEFINE!!.invoke(
                 synchedEntityData,
                 EntityDataSerializerAccessor.METHOD_CREATE_ACCESSOR!!.invoke(entityDataSerializer, metadataId),
@@ -642,6 +643,6 @@ object PacketUtils {
         }
 
         return ClientboundSetEntityDataPacketAccessor.CONSTRUCTOR_0!!.newInstance(id, synchedEntityData, true)
-    }*/
+    }
 
 }

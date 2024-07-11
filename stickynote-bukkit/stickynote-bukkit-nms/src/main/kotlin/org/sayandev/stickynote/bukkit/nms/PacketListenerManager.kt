@@ -1,4 +1,3 @@
-/*
 package org.sayandev.stickynote.bukkit.nms
 
 import io.netty.channel.ChannelDuplexHandler
@@ -65,12 +64,10 @@ object PacketListenerManager: Listener {
                     if (!isCancelled) {
                         if (packet.javaClass == ServerboundPlayerActionPacketAccessor.TYPE && PlayerActionEvent.HANDLER_LIST.isNotEmpty()) {
                             PlayerActionEvent.HANDLER_LIST.forEach { event -> event.handle(player, packet) }
-                        } */
-/*TODO PlayerInteractAtEntityEvent
+                        } /*TODO PlayerInteractAtEntityEvent
                             else if (packet.javaClass == ServerboundInteractPacketAccessor.getType() && !PlayerInteractAtEntityEvent.HANDLER_LIST.isEmpty()) {
                             PlayerInteractAtEntityEvent.HANDLER_LIST.forEach { event -> event.handle(player, packet) }
-                        }*//*
-
+                        }*/
 
                         try {
                             super.channelRead(context, packet)
@@ -153,4 +150,4 @@ object PacketListenerManager: Listener {
             )
         }
     }
-}*/
+}
