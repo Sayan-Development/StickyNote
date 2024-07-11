@@ -13,8 +13,8 @@ repositories {
 dependencies {
     applyDependencies(Module.VELOCITY)
 
-    compileOnlyApi(project(":stickynote-core"))
-    compileOnlyApi(project(":stickynote-proxy"))
+    compileOnly(project(":stickynote-core"))
+    compileOnly(project(":stickynote-proxy"))
 }
 
 tasks {

@@ -3,7 +3,6 @@ package org.sayandev.stickynote.core.utils
 import java.text.DecimalFormat
 import kotlin.math.pow
 
-
 class MilliCounter {
     var decimalFormat = DecimalFormat("#.00")
 

@@ -6,8 +6,8 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import org.slf4j.Logger
 import java.nio.file.Path
-import java.util.logging.Logger
 
 lateinit var wrappedPlugin: WrappedStickyNotePlugin
 lateinit var mainInstance: Any

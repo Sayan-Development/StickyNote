@@ -1,3 +1,4 @@
+/*
 package org.sayandev.stickynote.bukkit.nms.event
 
 import org.bukkit.entity.Player
@@ -53,4 +54,4 @@ abstract class ContainerItemEvent : PacketListener {
     companion object {
         var HANDLER_LIST: MutableSet<ContainerItemEvent> = HashSet()
     }
-}
+}*/
