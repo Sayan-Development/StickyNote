@@ -10,7 +10,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.nms.event.ContainerItemEvent
 import org.sayandev.stickynote.bukkit.nms.event.PacketEvent
 import org.sayandev.stickynote.bukkit.nms.event.PlayerActionEvent
@@ -19,10 +18,7 @@ import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.unregisterListener
 import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetContentPacketAccessor
 import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetSlotPacketAccessor
-import org.sayandev.stickynote.nms.accessors.ServerboundInteractPacketAccessor
 import org.sayandev.stickynote.nms.accessors.ServerboundPlayerActionPacketAccessor
-import java.nio.channels.Channel
-import java.util.concurrent.Callable
 
 object PacketListenerManager: Listener {
 
@@ -50,7 +46,7 @@ object PacketListenerManager: Listener {
         val channelDuplexHandler: ChannelDuplexHandler = object : ChannelDuplexHandler() {
             override fun channelRead(context: ChannelHandlerContext, packet: Any) {
                 try {
-                    val packetContainer: PacketContainer = PacketContainer(packet)
+                    val packetContainer = PacketContainer(packet)
                     var isCancelled = false
 
                     for (packetEvent in packetEvents) {
@@ -66,7 +62,7 @@ object PacketListenerManager: Listener {
                     }
 
                     if (!isCancelled) {
-                        if (packet.javaClass == ServerboundPlayerActionPacketAccessor.TYPE && !PlayerActionEvent.HANDLER_LIST.isEmpty()) {
+                        if (packet.javaClass == ServerboundPlayerActionPacketAccessor.TYPE && PlayerActionEvent.HANDLER_LIST.isNotEmpty()) {
                             PlayerActionEvent.HANDLER_LIST.forEach { event -> event.handle(player, packet) }
                         } /*TODO PlayerInteractAtEntityEvent
                             else if (packet.javaClass == ServerboundInteractPacketAccessor.getType() && !PlayerInteractAtEntityEvent.HANDLER_LIST.isEmpty()) {
@@ -85,7 +81,7 @@ object PacketListenerManager: Listener {
 
             override fun write(context: ChannelHandlerContext, packet: Any, channelPromise: ChannelPromise) {
                 try {
-                    val packetContainer: PacketContainer = PacketContainer(packet)
+                    val packetContainer = PacketContainer(packet)
                     var isCancelled = false
 
                     for (packetEvent in packetEvents) {
@@ -131,7 +127,7 @@ object PacketListenerManager: Listener {
     fun removePlayer(player: Player) {
         try {
             val channel = NMSUtils.getChannel(player)
-            channel.eventLoop().submit<Any>(Callable<Any?> {
+            channel.eventLoop().submit<Any> {
                 channel.pipeline().remove(
                     String.format(
                         "%s_%s",
@@ -140,7 +136,7 @@ object PacketListenerManager: Listener {
                     )
                 )
                 null
-            })
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

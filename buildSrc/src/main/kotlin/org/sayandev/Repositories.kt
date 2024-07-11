@@ -327,6 +327,14 @@ val libbyBungeecord = Dependency(
     shadeMethod = Dependency.ShadeMethod.FORCE
 )
 
+val netty = Dependency(
+    group = "io.netty",
+    artifact = "netty-all",
+    version = "4.1.111.Final",
+    type = Dependency.Type.COMPILE_ONLY_API,
+    modules = listOf(Module.BUKKIT)
+)
+
 fun repositories() = listOf(
     Repository(
         id = "spongepowered",
@@ -394,7 +402,8 @@ fun repositories() = listOf(
             kotlinReflect,
             kotlinPoet,
             kotlinPoetJava,
-            snakeYaml
+            snakeYaml,
+            netty
         )
     ),
     Repository(

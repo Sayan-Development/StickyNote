@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.bukkit.nms
 
 import com.cryptomorin.xseries.reflection.XReflection
+import io.netty.channel.Channel
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -22,7 +23,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.net.InetSocketAddress
 import java.net.SocketAddress
-import java.nio.channels.Channel
 import java.util.*
 import java.util.concurrent.Future
 import java.util.function.UnaryOperator
