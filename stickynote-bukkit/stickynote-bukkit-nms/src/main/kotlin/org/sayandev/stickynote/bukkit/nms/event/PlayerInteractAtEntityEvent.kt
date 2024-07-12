@@ -30,7 +30,7 @@ abstract class PlayerInteractAtEntityEvent : PacketListener {
         HANDLER_LIST.remove(this)
     }
 
-    fun handle(player: Player?, packet: Any?) {
+    override fun handle(player: Player, packet: Any) {
         try {
             val entityId = ServerboundInteractPacketAccessor.FIELD_ENTITY_ID!!.get(packet) as Int
             val action: Any = ServerboundInteractPacketAccessor.FIELD_ACTION!!.get(packet)

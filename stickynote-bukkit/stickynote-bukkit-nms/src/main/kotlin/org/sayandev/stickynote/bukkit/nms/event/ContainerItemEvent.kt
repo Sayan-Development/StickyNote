@@ -22,7 +22,7 @@ abstract class ContainerItemEvent : PacketListener {
         HANDLER_LIST.remove(this)
     }
 
-    fun handle(player: Player?, packet: Any) {
+    override fun handle(player: Player, packet: Any) {
         try {
             if (packet.javaClass == ClientboundContainerSetSlotPacketAccessor.TYPE) {
                 val item: ItemStack = NMSUtils.getBukkitItemStack(
