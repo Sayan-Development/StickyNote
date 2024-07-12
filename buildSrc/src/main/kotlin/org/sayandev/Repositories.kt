@@ -18,15 +18,6 @@ val kotlinPoetJava = Dependency(
     modules = listOf(Module.LOADER)
 )
 
-val configurateYaml = Dependency(
-    group = "org.spongepowered",
-    artifact = "configurate-yaml",
-    version = "4.1.2",
-    relocation = Relocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered"),
-    type = Dependency.Type.API,
-    modules = listOf(Module.CORE)
-)
-
 val snakeYaml = Dependency(
     group = "org.yaml",
     artifact = "snakeyaml",
@@ -36,10 +27,19 @@ val snakeYaml = Dependency(
     modules = listOf(Module.CORE)
 )
 
+val configurateYaml = Dependency(
+    group = "org.spongepowered",
+    artifact = "configurate-yaml",
+    version = "4.2.0-SNAPSHOT",
+    relocation = Relocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered"),
+    type = Dependency.Type.API,
+    modules = listOf(Module.CORE)
+)
+
 val configurateExtraKotlin = Dependency(
     group = "org.spongepowered",
     artifact = "configurate-extra-kotlin",
-    version = "4.1.2",
+    version = "4.2.0-SNAPSHOT",
     relocation = Relocation("org.spongepowered", "org.sayandev.stickynote.lib.spongepowered"),
     type = Dependency.Type.API,
     modules = listOf(Module.CORE)
@@ -336,6 +336,14 @@ val netty = Dependency(
 )
 
 fun repositories() = listOf(
+    /*Repository(
+        id = "sayandev",
+        repos = listOf("https://repo.sayandev.org/snapshots/"),
+        dependencies = listOf(
+            configurateYaml,
+            configurateExtraKotlin,
+        )
+    ),*/
     Repository(
         id = "spongepowered",
         repos = listOf("https://repo.spongepowered.org/maven/"),

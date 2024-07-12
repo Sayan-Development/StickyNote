@@ -12,6 +12,7 @@ import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
 import org.incendo.cloud.paper.PaperCommandManager
+import org.incendo.cloud.setting.ManagerSetting
 import org.sayandev.stickynote.bukkit.command.interfaces.CommandExtension
 import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.plugin
@@ -54,6 +55,7 @@ abstract class StickyCommand(
         exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
 
         manager.createHelpHandler()
+        manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
         try {
             if (manager is LegacyPaperCommandManager) {
                 manager.registerAsynchronousCompletions()
