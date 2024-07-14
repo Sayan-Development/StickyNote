@@ -31,7 +31,6 @@ abstract class StickyCommand(
     var builder: Command.Builder<StickySender>
     var help: MinecraftHelp<StickySender>
     var exceptionHandler: MinecraftExceptionHandler<SenderExtension>
-//    var annotationParser: AnnotationParser<SenderExtension>
 
     init {
         val stickySenderMapper = { commandSender: CommandSender -> StickySender(commandSender, null) }
@@ -72,10 +71,6 @@ abstract class StickyCommand(
             manager,
             audienceMapper
         )
-
-//        annotationParser = AnnotationParser(manager, TypeToken.get(SenderExtension::class.java))
-//        annotationParser.installCoroutineSupport()
-//        annotationParser.parse(this)
 
         builder = manager.commandBuilder(name, *aliases)
     }
