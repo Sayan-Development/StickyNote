@@ -528,7 +528,7 @@ object NMSUtils {
         return ResourceLocationAccessor.CONSTRUCTOR_1!!.newInstance(key, value)
     }
 
-    fun getEntityDataSerializer(any: Any): Any? {
+    fun getEntityDataSerializer(any: Any): Any {
         return when (any.javaClass.simpleName) {
             "Byte" -> EntityDataSerializersAccessor.FIELD_BYTE!!
             "Integer" -> EntityDataSerializersAccessor.FIELD_INT!!
@@ -541,7 +541,7 @@ object NMSUtils {
                 when (any.javaClass) {
                     ComponentAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_COMPONENT!!
                     PoseAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_POSE!!
-                    else -> null
+                    else -> throw IllegalArgumentException("Unknown data type: ${any.javaClass.simpleName}")
                 }
             }
         }
@@ -647,7 +647,6 @@ object NMSUtils {
 
     /**
      * Sends one or more packets to a player.
-     * @param player The player that is going to receive the packet(s).
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
@@ -670,7 +669,6 @@ object NMSUtils {
 
     /**
      * Sends one or more packets to a group of player.
-     * @param players The players that are going to receive the packet(s).
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
@@ -682,7 +680,6 @@ object NMSUtils {
 
     /**
      * Sends one or more packets to a player asynchronously. Packets are thread safe.
-     * @param player The player that is going to receive the packet(s).
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
@@ -692,7 +689,6 @@ object NMSUtils {
 
     /**
      * Sends one or more packets to a group of player asynchronously. Packets are thread safe.
-     * @param players The players that are going to receive the packet(s).
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic

@@ -335,6 +335,14 @@ val netty = Dependency(
     modules = listOf(Module.BUKKIT)
 )
 
+val patheticPathfinderBukkit = Dependency(
+    group = "com.github.pathloper.pathetic",
+    artifact = "pathetic-mapping",
+    version = "2.4.6",
+    type = Dependency.Type.IMPLEMENTATION,
+    modules = listOf(Module.BUKKIT)
+)
+
 fun repositories() = listOf(
     Repository(
         id = "spongepowered",
