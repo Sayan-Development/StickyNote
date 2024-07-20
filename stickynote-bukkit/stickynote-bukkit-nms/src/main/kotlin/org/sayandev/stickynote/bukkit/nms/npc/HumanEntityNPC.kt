@@ -9,7 +9,7 @@ import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.nms.accessors.LivingEntityAccessor
 import org.sayandev.stickynote.nms.accessors.SynchedEntityDataAccessor
 
-class HumanEntityNPC(
+open class HumanEntityNPC(
     entity: Any,
     location: Location,
     npcType: NPCType
