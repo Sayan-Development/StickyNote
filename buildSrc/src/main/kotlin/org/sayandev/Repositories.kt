@@ -343,6 +343,14 @@ val patheticPathfinderBukkit = Dependency(
     modules = listOf(Module.BUKKIT)
 )
 
+val authlib = Dependency(
+    group = "com.mojang",
+    artifact = "authlib",
+    version = "6.0.54",
+    type = Dependency.Type.COMPILE_ONLY_API,
+    modules = listOf(Module.BUKKIT)
+)
+
 fun repositories() = listOf(
     Repository(
         id = "spongepowered",
@@ -411,7 +419,9 @@ fun repositories() = listOf(
             kotlinPoet,
             kotlinPoetJava,
             snakeYaml,
-            netty
+            netty,
+            patheticPathfinderBukkit,
+            authlib
         )
     ),
     Repository(
