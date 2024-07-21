@@ -1,0 +1,57 @@
+package org.sayandev.stickynote.bukkit.hook
+
+import me.clip.placeholderapi.PlaceholderAPI
+import net.kyori.adventure.text.Component
+import org.bukkit.entity.Player
+import org.sayandev.stickynote.bukkit.hasPlugin
+import org.sayandev.stickynote.bukkit.plugin
+import org.sayandev.stickynote.bukkit.utils.AdventureUtils
+import org.sayandev.stickynote.bukkit.warn
+
+object PlaceholderAPIHook {
+
+    var injectComponent: Boolean = false
+    var sendWarningIfNotInstalled: Boolean = false
+
+    fun injectComponent() {
+        this.injectComponent = true
+    }
+
+    fun injectComponent(injectComponent: Boolean) {
+        this.injectComponent = injectComponent
+    }
+
+    fun sendWarningIfNotInstalled() {
+        this.sendWarningIfNotInstalled = true
+    }
+
+    fun sendWarningIfNotInstalled(sendWarningIfNotInstalled: Boolean) {
+        this.sendWarningIfNotInstalled = sendWarningIfNotInstalled
+    }
+
+    fun injectPlaceholders(player: Player?, content: String): String {
+        var finalContent = content
+        if (injectComponent) {
+            if (sendWarningIfNotInstalled && !hasPlugin("PlaceholderAPI")) {
+                plugin.logger.warning("tried to parse placeholder for message `${content}` but PlaceholderAPI is not installed.")
+            } else {
+                finalContent = PlaceholderAPI.setPlaceholders(player, finalContent)
+            }
+        }
+        return finalContent
+    }
+
+    fun injectPlaceholders(player: Player?, content: Component): Component {
+        var finalContent = content
+        if (injectComponent) {
+            if (sendWarningIfNotInstalled && !hasPlugin("PlaceholderAPI")) {
+                plugin.logger.warning("tried to parse placeholder for message `${content}` but PlaceholderAPI is not installed.")
+            } else {
+                warn("player: ${player}")
+                finalContent = AdventureUtils.miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, AdventureUtils.miniMessage.serialize(finalContent)))
+            }
+        }
+        return finalContent
+    }
+
+}

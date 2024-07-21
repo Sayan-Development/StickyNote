@@ -27,6 +27,14 @@ val snakeYaml = Dependency(
     modules = listOf(Module.CORE)
 )
 
+val placeholderAPI = Dependency(
+    group = "me.clip",
+    artifact = "placeholderapi",
+    version = "2.11.6",
+    type = Dependency.Type.COMPILE_ONLY,
+    modules = listOf(Module.BUKKIT)
+)
+
 val configurateYaml = Dependency(
     group = "org.spongepowered",
     artifact = "configurate-yaml",
@@ -344,6 +352,13 @@ fun repositories() = listOf(
             configurateExtraKotlin,
         )
     ),*/
+    Repository(
+        id = "extendedclip",
+        repos = listOf("https://repo.extendedclip.com/content/repositories/placeholderapi/"),
+        dependencies = listOf(
+            placeholderAPI
+        )
+    ),
     Repository(
         id = "spongepowered",
         repos = listOf("https://repo.spongepowered.org/maven/"),
