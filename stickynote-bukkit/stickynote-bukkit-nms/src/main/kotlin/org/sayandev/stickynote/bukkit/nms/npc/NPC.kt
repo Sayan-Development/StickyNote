@@ -11,7 +11,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable
-import org.sayandev.stickynote.bukkit.nms.enum.EntityPose
+import org.sayandev.stickynote.bukkit.nms.enum.Pose
 import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.EntityAnimation
 import org.sayandev.stickynote.bukkit.plugin
@@ -26,7 +26,7 @@ import java.util.*
 abstract class NPC: Viewable() {
 
     protected val equipments: EnumMap<EquipmentSlot, Any> = EnumMap<EquipmentSlot, Any>(EquipmentSlot::class.java)
-    protected val poses: MutableSet<EntityPose> = HashSet()
+    protected val poses: MutableSet<Pose> = HashSet()
 
     private var customName: Component = Component.empty()
 
@@ -273,21 +273,21 @@ abstract class NPC: Viewable() {
      * @param pose The pose to set
      * @param flag Whether to set or remove the pose
      */
-    fun setPose(pose: EntityPose, flag: Boolean) {
+    fun setPose(pose: Pose, flag: Boolean) {
         val changed: Boolean
         if (flag) {
             changed = poses.add(pose)
         } else {
             changed = poses.remove(pose)
-            if (!poses.contains(EntityPose.CROUCHING) && !poses.contains(EntityPose.SWIMMING)) {
-                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, EntityPose.STANDING.nmsPose)
+            if (!poses.contains(Pose.CROUCHING) && !poses.contains(Pose.SWIMMING)) {
+                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.STANDING.nmsPose)
             }
         }
         if (changed) {
-            if (poses.contains(EntityPose.SWIMMING)) {
-                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, EntityPose.SWIMMING.nmsPose)
-            } else if (poses.contains(EntityPose.CROUCHING)) {
-                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, EntityPose.CROUCHING.nmsPose)
+            if (poses.contains(Pose.SWIMMING)) {
+                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.SWIMMING.nmsPose)
+            } else if (poses.contains(Pose.CROUCHING)) {
+                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.CROUCHING.nmsPose)
             }
         }
     }
@@ -297,7 +297,7 @@ abstract class NPC: Viewable() {
      * @param pose The pose to check
      * @return Whether the NPC has the pose
      */
-    fun hasPose(pose: EntityPose): Boolean {
+    fun hasPose(pose: Pose): Boolean {
         return poses.contains(pose)
     }
 
@@ -424,6 +424,19 @@ abstract class NPC: Viewable() {
      */
     fun sendEntityData() {
         getViewers().forEach(this::sendEntityData)
+    }
+
+    /**
+     * Gets the glowing state of the NPC
+     * @return The glowing state of the NPC
+     */
+    fun isGlowing(): Boolean {
+        return EntityAccessor.METHOD_HAS_GLOWING_TAG!!.invoke(entity) as Boolean
+    }
+
+    fun setGlowing(glowing: Boolean) {
+        EntityAccessor.METHOD_SET_GLOWING_TAG!!.invoke(entity, glowing)
+        sendEntityData()
     }
 
     /**
