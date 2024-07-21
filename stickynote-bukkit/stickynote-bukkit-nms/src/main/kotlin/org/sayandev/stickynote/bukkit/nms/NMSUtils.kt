@@ -65,8 +65,12 @@ object NMSUtils {
      */
     private val LIVING_ENTITY_DROPS_FIELD: Result<Field> = runCatching { LivingEntityAccessor.TYPE!!.getField("drops") }
 
-    fun getNmsItemStack(item: ItemStack?): Any {
+    fun getNmsItemStack(item: ItemStack): Any {
         return CRAFT_ITEM_STACK_AS_NMS_COPY.getOrThrow().invoke(null, item)
+    }
+
+    fun ItemStack.toNmsItemStack(): Any {
+        return getNmsItemStack(this)
     }
 
     fun getNmsEmptyItemStack(): Any {
