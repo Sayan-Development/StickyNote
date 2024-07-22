@@ -25,6 +25,10 @@ class ThrowableProjectileNPC(
         setItem(item)
     }
 
+    /**
+     * Sets the item of the NPC
+     * @param item ItemStack to set
+     */
     fun setItem(item: ItemStack) {
         val nmsItem = item.toNmsItemStack()
         if (ServerVersion.supports(16)) {
@@ -39,6 +43,10 @@ class ThrowableProjectileNPC(
         sendEntityData()
     }
 
+    /**
+     * Gets the item of the NPC
+     * @return ItemStack of the NPC
+     */
     fun getItem(): ItemStack {
         return NMSUtils.getBukkitItemStack(
             (if (ServerVersion.supports(16)) ThrowableItemProjectileAccessor.METHOD_GET_ITEM_RAW!!.invoke(entity)
