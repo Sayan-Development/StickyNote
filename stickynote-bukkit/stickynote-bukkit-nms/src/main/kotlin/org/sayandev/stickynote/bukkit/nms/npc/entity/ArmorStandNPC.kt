@@ -17,6 +17,7 @@ class ArmorStandNPC(
 
     fun setHeadPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_HEAD_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getHeadPose(): Rotations {
@@ -25,6 +26,7 @@ class ArmorStandNPC(
 
     fun setBodyPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_BODY_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getBodyPose(): Rotations {
@@ -33,6 +35,7 @@ class ArmorStandNPC(
 
     fun setLeftArmPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_LEFT_ARM_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getLeftArmPose(): Rotations {
@@ -41,6 +44,7 @@ class ArmorStandNPC(
 
     fun setRightArmPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_RIGHT_ARM_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getRightArmPose(): Rotations {
@@ -49,6 +53,7 @@ class ArmorStandNPC(
 
     fun setLeftLegPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_LEFT_LEG_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getLeftLegPose(): Rotations {
@@ -57,6 +62,7 @@ class ArmorStandNPC(
 
     fun setRightLegPose(rotations: Rotations) {
         ArmorStandAccessor.METHOD_SET_RIGHT_LEG_POSE!!.invoke(entity, rotations.toNmsRotations())
+        sendEntityData()
     }
 
     fun getRightLegPose(): Rotations {
@@ -65,6 +71,7 @@ class ArmorStandNPC(
 
     fun setMarker(marker: Boolean) {
         ArmorStandAccessor.METHOD_SET_MARKER!!.invoke(entity, marker)
+        sendEntityData()
     }
 
     fun isMarker(): Boolean {
@@ -73,6 +80,7 @@ class ArmorStandNPC(
 
     fun setNoBasePlate(noBasePlate: Boolean) {
         ArmorStandAccessor.METHOD_SET_NO_BASE_PLATE!!.invoke(entity, noBasePlate)
+        sendEntityData()
     }
 
     fun hasBasePlate(): Boolean {
@@ -81,6 +89,7 @@ class ArmorStandNPC(
 
     fun setShowArms(showArms: Boolean) {
         ArmorStandAccessor.METHOD_SET_SHOW_ARMS!!.invoke(entity, showArms)
+        sendEntityData()
     }
 
     fun isShowingArms(): Boolean {
@@ -89,6 +98,7 @@ class ArmorStandNPC(
 
     fun setSmall(small: Boolean) {
         ArmorStandAccessor.METHOD_SET_SMALL!!.invoke(entity, small)
+        sendEntityData()
     }
 
     fun isSmall(): Boolean {
@@ -97,10 +107,12 @@ class ArmorStandNPC(
 
     fun setYBodyRotation(yBodyRotation: Float) {
         ArmorStandAccessor.METHOD_SET_YBODY_ROT!!.invoke(entity, yBodyRotation)
+        sendEntityData()
     }
 
     fun setYHeadRotation(yHeadRotation: Float) {
         ArmorStandAccessor.METHOD_SET_YHEAD_ROT!!.invoke(entity, yHeadRotation)
+        sendEntityData()
     }
 
 }
