@@ -39,7 +39,7 @@ class HologramLine(
 
     override fun initializeNPC(location: Location) {
         val npc = ArmorStandNPC(location)
-        //TODO npc.setPose(NPC.Pose.INVISIBLE, true)
+        npc.setInvisible(true)
         npc.setCustomNameVisible(true)
         npc.setCustomName(component)
         getArmorStandNPC().setNoBasePlate(true)

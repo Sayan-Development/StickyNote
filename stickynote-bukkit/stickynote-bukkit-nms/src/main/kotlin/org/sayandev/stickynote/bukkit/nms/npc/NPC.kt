@@ -38,15 +38,6 @@ abstract class NPC: Viewable() {
     var discarded: Boolean = false; private set
 
     init {
-        /*TODO Pathetic
-           if (!patheticMapperInitialized) {
-            patheticMapperInitialized = true
-            try {
-                PatheticMapper.initialize(Ruom.getPlugin())
-            } catch (ignore: IllegalStateException) {
-            }
-        }*/
-
         for (equipmentSlot in EquipmentSlot.entries) {
             equipments[equipmentSlot] = NMSUtils.getNmsEmptyItemStack()
         }
@@ -130,59 +121,6 @@ abstract class NPC: Viewable() {
             }
         }.runTaskTimerAsynchronously(plugin, 0, 1)
     }
-
-    /*TODO Pathetic
-       fun moveTo(destination: Location, tickPerBlock: Int, callback: ()) {
-        val pathFinder: Pathfinder = PatheticMapper.newPathfinder(
-            PathingRuleSet.createAsyncRuleSet()
-                .withAllowingDiagonal(true)
-                .withAllowingFailFast(true)
-                .withAllowingFallback(false)
-                .withLoadingChunks(true)
-                .withAsync(true)
-        )
-        pathFinder.findPath(
-            BukkitMapper.toPathPosition(Vector3UtilsBukkit.toLocation(destination.world, getPosition())),
-            BukkitMapper.toPathPosition(destination),
-            WalkablePathfinderStrategy()
-        ).thenAccept { result ->
-            if (!result.successful()) {
-                callback.accept(false)
-            } else {
-                val vectors: MutableList<Vector3> = ArrayList<Vector3>()
-                val looks: MutableList<Float> = ArrayList()
-                var previousVector: Vector3? = getPosition()
-                for (position in result.getPath().getPositions()) {
-                    val vector: Vector3 = Vector3.at(position.getX(), position.getY(), position.getZ())
-                    val travelVector: Vector3 = Vector3Utils.getTravelDistance(previousVector, vector)
-                    previousVector = vector
-                    for (i in 0 until tickPerBlock) {
-                        vectors.add(
-                            Vector3.at(
-                                travelVector.getX() / tickPerBlock,
-                                travelVector.getY() / tickPerBlock,
-                                travelVector.getZ() / tickPerBlock
-                            )
-                        )
-                        looks.add(Vector(0, 0, 0).angle(Vector(0, 0, 0)))
-                    }
-                }
-                object : BukkitRunnable() {
-                    var index: Int = 0
-                    override fun run() {
-                        if (index >= vectors.size) {
-                            cancel()
-                            callback.accept(true)
-                            return@thenAccept
-                        }
-                        moveAndLook(vectors[index], looks[index], 0f)
-                        Bukkit.broadcastMessage("yaw: " + looks[index])
-                        index++
-                    }
-                }.runTaskTimerAsynchronously(Ruom.getPlugin(), 0, 1)
-            }
-        }
-    }*/
 
     /**
      * Moves the NPC by the given vector and looks with the given yaw and pitch
@@ -436,6 +374,19 @@ abstract class NPC: Viewable() {
 
     fun setGlowing(glowing: Boolean) {
         EntityAccessor.METHOD_SET_GLOWING_TAG!!.invoke(entity, glowing)
+        sendEntityData()
+    }
+
+    /**
+     * Checks if the NPC is invisible
+     * @return Whether the NPC is invisible
+     */
+    fun isInvisible(): Boolean {
+        return EntityAccessor.METHOD_IS_INVISIBLE!!.invoke(entity) as Boolean
+    }
+
+    fun setInvisible(invisible: Boolean) {
+        EntityAccessor.METHOD_SET_INVISIBLE!!.invoke(entity, invisible)
         sendEntityData()
     }
 
