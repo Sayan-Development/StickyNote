@@ -344,7 +344,7 @@ val netty = Dependency(
 )
 
 val patheticPathfinderBukkit = Dependency(
-    group = "com.github.pathloper.pathetic",
+    group = "com.github.patheloper.pathetic",
     artifact = "pathetic-mapping",
     version = "2.4.6",
     type = Dependency.Type.IMPLEMENTATION,
@@ -357,6 +357,14 @@ val authlib = Dependency(
     version = "6.0.54",
     type = Dependency.Type.COMPILE_ONLY_API,
     modules = listOf(Module.BUKKIT)
+)
+
+val skinsRestorer = Dependency(
+    group = "net.skinsrestorer",
+    artifact = "skinsrestorer-api",
+    version = "15.3.1",
+    type = Dependency.Type.COMPILE_ONLY_API,
+    modules = listOf(Module.BUKKIT, Module.PAPER)
 )
 
 fun repositories() = listOf(
@@ -443,7 +451,6 @@ fun repositories() = listOf(
             kotlinPoetJava,
             snakeYaml,
             netty,
-            patheticPathfinderBukkit,
             authlib
         )
     ),
@@ -456,4 +463,18 @@ fun repositories() = listOf(
             libbyBungeecord,
         )
     ),
+    Repository(
+        id = "jitpack.io",
+        repos = listOf("https://jitpack.io"),
+        dependencies = listOf(
+            patheticPathfinderBukkit
+        )
+    ),
+    Repository(
+        id = "codemc",
+        repos = listOf("https://repo.codemc.org/repository/maven-public/"),
+        dependencies = listOf(
+            skinsRestorer
+        )
+    )
 )

@@ -5,6 +5,7 @@ import org.sayandev.applyShadowRelocation
 
 repositories {
     applyRepositories(Module.LOADER_BUKKIT)
+    maven("https://repo.codemc.org/repository/maven-public/")
 }
 
 dependencies {
