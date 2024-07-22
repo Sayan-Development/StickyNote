@@ -116,7 +116,7 @@ accessors {
     val ServerLevelAccessor = "net.minecraft.world.level.ServerLevelAccessor"
     val ServerPlayerGameMode = "net.minecraft.server.level.ServerPlayerGameMode"
     val Level = "net.minecraft.world.level.Level"
-    var LevelSpigot = "net.minecraft.server.VVV.World"
+    val LevelSpigot = "net.minecraft.server.VVV.World"
     val LevelWriter = "net.minecraft.world.level.LevelWriter"
     val LevelChunk = "net.minecraft.world.level.chunk.LevelChunk"
     val ChunkAccess = "net.minecraft.world.level.chunk.ChunkAccess"
@@ -578,6 +578,7 @@ accessors {
     }
     mapClass(ServerPlayerGameMode) {
         constructor(ServerLevel)
+        constructor(LevelSpigot)
     }
     mapClass(Level) {
         methodInferred("getChunkAt", "1.20.4", BlockPos)

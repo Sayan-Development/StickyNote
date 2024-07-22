@@ -343,6 +343,22 @@ val netty = Dependency(
     modules = listOf(Module.BUKKIT)
 )
 
+val patheticPathfinderBukkit = Dependency(
+    group = "com.github.pathloper.pathetic",
+    artifact = "pathetic-mapping",
+    version = "2.4.6",
+    type = Dependency.Type.IMPLEMENTATION,
+    modules = listOf(Module.BUKKIT)
+)
+
+val authlib = Dependency(
+    group = "com.mojang",
+    artifact = "authlib",
+    version = "6.0.54",
+    type = Dependency.Type.COMPILE_ONLY_API,
+    modules = listOf(Module.BUKKIT)
+)
+
 fun repositories() = listOf(
     /*Repository(
         id = "sayandev",
@@ -426,7 +442,9 @@ fun repositories() = listOf(
             kotlinPoet,
             kotlinPoetJava,
             snakeYaml,
-            netty
+            netty,
+            patheticPathfinderBukkit,
+            authlib
         )
     ),
     Repository(
