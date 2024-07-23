@@ -81,7 +81,7 @@ abstract class NPC: Viewable() {
      */
     fun lookAt(position: Vector3) {
         val targetLocation: Location = position.toLocation(null)
-        val dirLocation: Location = getPosition().toLocation(null)
+        val dirLocation: Location = position.toLocation(null)
         dirLocation.setDirection(targetLocation.subtract(dirLocation).toVector())
         look(dirLocation.yaw, dirLocation.pitch)
     }
@@ -92,7 +92,7 @@ abstract class NPC: Viewable() {
      * @apiNote The length of the vector shouldn't be greater than 8
      */
     fun move(vector: Vector3) {
-        setPosition(getPosition().add(vector))
+        setPosition(position.add(vector))
         getViewers().sendPacket(PacketUtils.getEntityPosPacket(entityId, vector.x, vector.y, vector.z))
     }
 
@@ -130,7 +130,7 @@ abstract class NPC: Viewable() {
      * @apiNote The length of the vector shouldn't be greater than 8
      */
     fun moveAndLook(vector: Vector3, yaw: Float, pitch: Float) {
-        setPosition(getPosition().add(vector))
+        setPosition(position.add(vector))
         getViewers().sendPacket(
             PacketUtils.getEntityPosRotPacket(entityId, vector.x, vector.y, vector.z, yaw, pitch, true),
             PacketUtils.getHeadRotatePacket(entity, yaw)
@@ -342,14 +342,6 @@ abstract class NPC: Viewable() {
     }
 
     /**
-     * Gets the nms entity instance of the NPC
-     * @return The nms entity instance of the NPC
-     */
-    fun getEntity(): Any {
-        return entity
-    }
-
-    /**
      * Sends the entity data to the given viewer
      * @param viewer The viewer to send the entity data
      */
@@ -407,14 +399,6 @@ abstract class NPC: Viewable() {
     protected fun setPosition(position: Vector3) {
         this.position = position
         EntityAccessor.METHOD_SET_POSE!!.invoke(entity, position.x, position.y, position.z)
-    }
-
-    /**
-     * Gets the position of the NPC
-     * @return The position of the NPC
-     */
-    fun getPosition(): Vector3 {
-        return position.copy()
     }
 
     /**
