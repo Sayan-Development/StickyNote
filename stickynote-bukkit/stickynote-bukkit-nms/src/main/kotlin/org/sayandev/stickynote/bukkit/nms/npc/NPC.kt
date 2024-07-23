@@ -11,9 +11,9 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable
-import org.sayandev.stickynote.bukkit.nms.enum.Pose
-import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.EntityAnimation
+import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
+import org.sayandev.stickynote.bukkit.nms.enum.Pose
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
@@ -222,11 +222,14 @@ abstract class NPC: Viewable() {
             }
         }
         if (changed) {
-            if (poses.contains(Pose.SWIMMING)) {
+            if (poses.contains(Pose.SLEEPING)) {
+                EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.SLEEPING.nmsPose)
+            } else if (poses.contains(Pose.SWIMMING)) {
                 EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.SWIMMING.nmsPose)
             } else if (poses.contains(Pose.CROUCHING)) {
                 EntityAccessor.METHOD_SET_POSE!!.invoke(entity, Pose.CROUCHING.nmsPose)
             }
+            setMetadata(0, Pose.getBitMasks(poses))
         }
     }
 
