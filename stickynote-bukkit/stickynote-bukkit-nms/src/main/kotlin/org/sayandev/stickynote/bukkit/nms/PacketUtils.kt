@@ -407,7 +407,7 @@ object PacketUtils {
                 PlayerTeamAccessor.FIELD_PLAYER_SUFFIX!!.set(playerTeam, MinecraftComponentSerializer.get().serialize(playerSuffix))
                 PlayerTeamAccessor.FIELD_NAME_TAG_VISIBILITY!!.set(playerTeam, nameTagVisibility.modernNmsObject)
                 PlayerTeamAccessor.FIELD_COLLISION_RULE!!.set(playerTeam, collisionRule.modernNmsObject)
-                PlayerTeamAccessor.FIELD_COLOR!!.set(playerTeam, ChatFormattingAccessor::class.java.getField("FIELD_" + color.name).get(null))
+                PlayerTeamAccessor.FIELD_COLOR!!.set(playerTeam,  ChatFormattingAccessor::class.memberProperties.find { it.name == "FIELD_${color.name.uppercase()}" }!!.getter.call(ChatFormattingAccessor)!!)
                 (PlayerTeamAccessor.FIELD_PLAYERS!!.get(playerTeam) as MutableSet<String>).addAll(players)
                 PlayerTeamAccessor.FIELD_SEE_FRIENDLY_INVISIBLES!!.set(playerTeam, canSeeFriendlyInvisible)
 

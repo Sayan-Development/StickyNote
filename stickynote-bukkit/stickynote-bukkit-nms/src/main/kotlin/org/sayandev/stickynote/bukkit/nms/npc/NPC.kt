@@ -401,7 +401,7 @@ abstract class NPC: Viewable() {
      */
     protected fun setPosition(position: Vector3) {
         this.position = position
-        EntityAccessor.METHOD_SET_POSE!!.invoke(entity, position.x, position.y, position.z)
+        EntityAccessor.METHOD_SET_POS!!.invoke(entity, position.x, position.y, position.z)
     }
 
     /**

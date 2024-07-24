@@ -107,7 +107,7 @@ class PlayerNPC(
             val serverLevel: Any = NMSUtils.getServerLevel(world)
             val profile = GameProfile(UUID.randomUUID(), name)
             val serverPlayer: Any
-            if (ServerVersion.supports(21) || (ServerVersion.patchNumber() == 20 && ServerVersion.patchNumber() >= 2)) {
+            if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
                 serverPlayer = ServerPlayerAccessor.CONSTRUCTOR_3!!.newInstance(
                     NMSUtils.getDedicatedServer(),
                     serverLevel,

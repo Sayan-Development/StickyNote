@@ -455,8 +455,8 @@ fun repositories() = listOf(
         )
     ),
     Repository(
-        id = "sonatype",
-        repos = listOf("https://s01.oss.sonatype.org/content/repositories/snapshots/"),
+        id = "libby",
+        repos = listOf("https://repo.alessiodp.com/snapshots"),
         dependencies = listOf(
             libbyBukkit,
             libbyVelocity,
