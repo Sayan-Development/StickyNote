@@ -71,7 +71,7 @@ open class Item3DHologramLine(
         npc.setGlowing(glowing)
     }
 
-    protected fun getItemNPC(): ItemNPC {
+    internal fun getItemNPC(): ItemNPC {
         return npc as ItemNPC
     }
 
