@@ -255,6 +255,10 @@ accessors {
     val CommonListenerCookie = "net.minecraft.server.network.CommonListenerCookie"
     val GameProfile = "com.mojang.authlib.GameProfile"
     val Lifecycle = "com.mojang.serialization.Lifecycle"
+    val NumberFormat = "net.minecraft.network.chat.numbers.NumberFormat"
+    val BlankFormat = "net.minecraft.network.chat.numbers.BlankFormat"
+    val DisplaySlot = "net.minecraft.world.scores.DisplaySlot"
+
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
     val Arrow = "net.minecraft.world.entity.projectile.Arrow"
@@ -494,13 +498,17 @@ accessors {
     }
     mapClass(ClientboundSetDisplayObjectivePacket) {
         constructor(Int::class, Objective)
+        constructor(DisplaySlot, Objective)
         methodInferred("getObjectiveName", "1.20.4")
     }
     mapClass(ClientboundSetObjectivePacket) {
         constructor(Objective, Int::class)
+        fieldInferred("numberFormat", "1.20.6")
     }
     mapClass(ClientboundSetScorePacket) {
         constructor(ServerScoreboardMethod, String::class, String::class, Int::class)
+        constructor(String::class, String::class, Int::class, Component, NumberFormat) //1.20.2 - 1.20.3
+        constructor(String::class, String::class, Int::class, Optional::class, Optional::class) //1.20.4 and above
     }
     mapClass(ClientboundUpdateMobEffectPacket) {
         constructor(Int::class, MobEffectInstance)
@@ -1495,6 +1503,7 @@ accessors {
         methodInferred("getOrCreateObjective", "1.16.5", String::class)
         methodInferred("getObjective", "1.16.5", String::class)
         methodInferred("addObjective", "1.16.5", String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
+        method(Objective, "addObjective", String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType, Boolean::class, NumberFormat)
         methodInferred("getOrCreatePlayerScore", "1.16.5", String::class, Objective)
         methodInferred("getTrackedPlayers", "1.16.5")
         methodInferred("resetPlayerScore", "1.16.5", String::class, Objective)
@@ -1611,6 +1620,7 @@ accessors {
     }
     mapClass(Objective) {
         constructor(Scoreboard, String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
+        constructor(Scoreboard, String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType, Boolean::class, NumberFormat)
     }
     mapClass(ObjectiveCriteria) {
         fieldInferred("TRIGGER", "1.20.4")
@@ -1644,6 +1654,12 @@ accessors {
     }
     mapClass(CommonListenerCookie) {
         constructor(GameProfile, Int::class, ClientInformation)
+    }
+    mapClass(BlankFormat) {
+        field(BlankFormat, "INSTANCE")
+    }
+    mapClass(DisplaySlot) {
+        enumConstant("SIDEBAR", "BELOW_NAME")
     }
     mapClass(CrossbowItem) {
         methodInferred("isCharged", "1.16.5", ItemStack)

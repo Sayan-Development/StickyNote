@@ -566,12 +566,30 @@ object PacketUtils {
 
     @JvmStatic
     fun getSetScorePacket(id: String, name: String, score: Int): Any {
-        return ClientboundSetScorePacketAccessor.CONSTRUCTOR_0!!.newInstance(
-            ServerScoreboard_MethodAccessor.FIELD_CHANGE,
-            id,
-            name,
-            score
-        )
+        if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 5)) {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_2!!.newInstance(
+                name,
+                id,
+                score,
+                Optional.empty<Any>(),
+                Optional.of(BlankFormatAccessor.FIELD_INSTANCE!!)
+            )
+        } else if (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3) {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_1!!.newInstance(
+                name,
+                id,
+                score,
+                null,
+                BlankFormatAccessor.FIELD_INSTANCE!!
+            )
+        } else {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_0!!.newInstance(
+                ServerScoreboard_MethodAccessor.FIELD_CHANGE,
+                id,
+                name,
+                score
+            )
+        }
     }
 
     /**
@@ -584,15 +602,24 @@ object PacketUtils {
         return ClientboundSetObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
             objective,
             method
-        )
+        ).apply {
+            ClientboundSetObjectivePacketAccessor.FIELD_NUMBER_FORMAT?.set(this, Optional.of(BlankFormatAccessor.FIELD_INSTANCE!!))
+        }
     }
 
     @JvmStatic
     fun getSetDisplayObjectivePacket(objective: Any): Any {
-        return ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
-            1,
-            objective
-        )
+        return if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
+            ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_1!!.newInstance(
+                DisplaySlotAccessor.FIELD_SIDEBAR!!,
+                objective
+            )
+        } else {
+            ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
+                1,
+                objective
+            )
+        }
     }
 
     @JvmStatic

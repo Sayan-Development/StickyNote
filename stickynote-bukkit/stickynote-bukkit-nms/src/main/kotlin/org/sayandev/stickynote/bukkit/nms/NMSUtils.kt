@@ -688,7 +688,12 @@ object NMSUtils {
      */
     @JvmStatic
     fun Player.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { this.sendPacketSync(*packets) }
+        return runEAsync { sendPacketSync(*packets) }
+    }
+
+    @JvmStatic
+    fun Player.sendPacket(packets: Collection<Any>): Future<*> {
+        return runEAsync { sendPacketSync(*packets.toTypedArray()) }
     }
 
     /**
