@@ -1,9 +1,12 @@
 package org.sayandev.stickynote.bukkit.nms.npc
 
 import org.bukkit.entity.EntityType
+import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.nms.accessors.EntityTypeAccessor
+import org.sayandev.stickynote.nms.accessors.MobEffectsAccessor
 import java.lang.reflect.Field
 import java.util.*
+import kotlin.reflect.full.memberProperties
 
 enum class NPCType {
     AREA_EFFECT_CLOUD,
@@ -111,7 +114,7 @@ enum class NPCType {
     ZOMBIFIED_PIGLIN,
     PLAYER;
 
-    val nmsEntityType: Any = (EntityTypeAccessor::class.java.getMethod("getField" + name.uppercase()).invoke(null) as Field).get(null)
+    val nmsEntityType: Any = EntityTypeAccessor::class.memberProperties.find { it.name == "FIELD_${name.uppercase()}" }!!.getter.call(EntityTypeAccessor)!!
 
     companion object {
         @JvmStatic

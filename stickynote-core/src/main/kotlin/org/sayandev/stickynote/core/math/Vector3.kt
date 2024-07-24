@@ -2,6 +2,8 @@ package org.sayandev.stickynote.core.math
 
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 data class Vector3(
     var x: Double,
@@ -60,6 +62,14 @@ data class Vector3(
 
     fun subtract(other: Vector3): Vector3 {
         return subtract(other.x, other.y, other.z)
+    }
+
+    fun distance(other: Vector3): Double {
+        return sqrt((x - other.x).pow(2) + (y - other.y).pow(2) + (z - other.z).pow(2))
+    }
+
+    fun length(): Double {
+        return sqrt((x * x) + (y * y) + (z * z))
     }
 
     fun travelVector(to: Vector3): Vector3 {
