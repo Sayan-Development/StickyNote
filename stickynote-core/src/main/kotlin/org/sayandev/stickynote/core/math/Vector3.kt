@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.core.math
 
+import kotlin.math.abs
 import kotlin.math.floor
 
 data class Vector3(
@@ -59,6 +60,16 @@ data class Vector3(
 
     fun subtract(other: Vector3): Vector3 {
         return subtract(other.x, other.y, other.z)
+    }
+
+    fun travelVector(to: Vector3): Vector3 {
+        var xD: Double = abs(x - to.x)
+        var yD: Double = abs(y - to.y)
+        var zD: Double = abs(z - to.z)
+        if (x > to.x) xD = -xD
+        if (y > to.y) yD = -yD
+        if (z > to.z) zD = -zD
+        return at(xD, yD, zD)
     }
 
     override fun toString(): String {
