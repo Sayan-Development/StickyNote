@@ -16,16 +16,16 @@ enum class Pose(val nmsPose: Any?, val bitMask: Int) {
     ELYTRA_FLYING(null, 0x80);
 
     companion object {
-        fun getBitMasks(vararg poses: Pose): Int {
+        fun getBitMasks(vararg poses: Pose): Byte {
             return getBitMasks(poses.toList())
         }
 
-        fun getBitMasks(poses: Collection<Pose>): Int {
+        fun getBitMasks(poses: Collection<Pose>): Byte {
             var bitMask = 0
             for (pose in poses) {
                 bitMask = bitMask or pose.bitMask
             }
-            return bitMask
+            return bitMask.toByte()
         }
 
         fun getPoses(bitMask: Int): Set<Pose> {
