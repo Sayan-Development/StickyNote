@@ -671,11 +671,22 @@ object NMSUtils {
     }
 
     /**
-     * Sends one or more packets to a group of player.
+     * Sends one or more packets to a collection of players.
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
     fun Collection<Player>.sendPacketSync(vararg packets: Any) {
+        for (player in this) {
+            player.sendPacketSync(*packets)
+        }
+    }
+
+    /**
+     * Sends one or more packets to multiple players.
+     * @param packets The packet(s) that are going to be sent to the player(s).
+     */
+    @JvmStatic
+    fun Array<out Player>.sendPacketSync(vararg packets: Any) {
         for (player in this) {
             player.sendPacketSync(*packets)
         }
@@ -690,9 +701,22 @@ object NMSUtils {
         return runEAsync { sendPacketSync(*packets) }
     }
 
+    /**
+     * Sends one or more packets to a collection of players asynchronously. Packets are thread safe.
+     * @param packets The packet(s) that are going to be sent to the player.
+     */
     @JvmStatic
     fun Player.sendPacket(packets: Collection<Any>): Future<*> {
         return runEAsync { sendPacketSync(*packets.toTypedArray()) }
+    }
+
+    /**
+     * Sends one or more packets to multiple players asynchronously. Packets are thread safe.
+     * @param packets The packet(s) that are going to be sent to the player.
+     */
+    @JvmStatic
+    fun Array<out Player>.sendPacket(vararg packets: Any): Future<*> {
+        return runEAsync { this.toSet().sendPacketSync(*packets) }
     }
 
     /**
