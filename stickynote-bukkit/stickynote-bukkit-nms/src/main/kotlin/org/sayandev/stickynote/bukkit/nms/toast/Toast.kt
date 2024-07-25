@@ -108,8 +108,7 @@ class Toast(
             //In 1.20.3 and above, advancement is getting initialized above.
             if ((ServerVersion.version() == 20 && ServerVersion.patchNumber() == 2)) {
                 //1.20.2
-                advancement =
-                    AdvancementAccessor.METHOD_FROM_JSON!!.invoke(null, jsonAdvancement, deserializationContext)
+                advancement = AdvancementAccessor.METHOD_FROM_JSON!!.invoke(null, jsonAdvancement, deserializationContext)
             } else if (!ServerVersion.supports(21) && !(ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
                 //1.20.1 and lower
                 advancementBuilder = Advancement_BuilderAccessor.METHOD_FROM_JSON!!.invoke(
