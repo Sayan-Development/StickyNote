@@ -667,7 +667,6 @@ object NMSUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            throw Error(e)
         }
     }
 
