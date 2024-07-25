@@ -13,6 +13,8 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
 import org.sayandev.stickynote.bukkit.runEAsync
@@ -643,6 +645,29 @@ object NMSUtils {
         )
 
         viewers.sendPacket(chestAnimationPacket)
+    }
+
+    /**
+     * Sets the title of the opened chest GUI to the given component. The method will not do anything if a chest isn't opened by the player.
+     * @param player The player
+     * @param title The new title
+     */
+    fun setChestGUITitle(player: Player, title: Component) {
+        if (player.openInventory.type == InventoryType.PLAYER || player.openInventory.type == InventoryType.CRAFTING) return
+        val topInventory: Inventory = player.openInventory.topInventory
+        if (topInventory.size % 9 != 0) return
+
+        val serverPlayer = getServerPlayer(player)
+        val containerMenu = PlayerAccessor.FIELD_CONTAINER_MENU!!.get(serverPlayer)
+
+        player.sendPacketSync(
+            PacketUtils.getOpenScreenPacket(
+                AbstractContainerMenuAccessor.FIELD_CONTAINER_ID!!.get(containerMenu) as Int,
+                topInventory.size,
+                title
+            )
+        )
+        player.updateInventory()
     }
 
     fun createConnection(): Any {
