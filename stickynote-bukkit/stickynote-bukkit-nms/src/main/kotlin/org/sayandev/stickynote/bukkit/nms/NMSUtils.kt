@@ -38,9 +38,6 @@ object NMSUtils {
     private val CRAFT_BLOCK_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockState") }
     private val CRAFT_LIVING_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftLivingEntity") }
     private val CRAFT_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftEntity") }
-    /**
-     * mc-1.9 and above
-     */
     private val CRAFT_BLOCK_ENTITY_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockEntityState") }
     private val CRAFT_CHUNK: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftChunk") }
 
@@ -49,22 +46,12 @@ object NMSUtils {
     private val CRAFT_PLAYER_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_PLAYER.getOrThrow().getMethod("getHandle") }
     private val CRAFT_WORLD_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_WORLD.getOrThrow().getMethod("getHandle") }
     private val CRAFT_SERVER_GET_SERVER_METHOD: Result<Method> = runCatching { CRAFT_SERVER.getOrThrow().getMethod("getServer") }
-    /**
-     * mc-1.13 and above
-     */
     private val CRAFT_BLOCK_STATE_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_BLOCK_STATE.getOrThrow().getMethod("getHandle") }
     private val CRAFT_LIVING_ENTITY_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_LIVING_ENTITY.getOrThrow().getMethod("getHandle") }
     private val CRAFT_ENTITY_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_ENTITY.getOrThrow().getMethod("getHandle") }
     private val ENTITY_GET_BUKKIT_ENTITY_METHOD: Result<Method> = runCatching { EntityAccessor.TYPE!!.getMethod("getBukkitEntity") }
-    /**
-     * mc-1.9 and above
-     */
     private val CRAFT_BLOCK_ENTITY_STATE_GET_TITE_ENTITY_METHOD: Result<Method> = runCatching { CRAFT_BLOCK_ENTITY_STATE.getOrThrow().getDeclaredMethod("getTileEntity").apply { isAccessible = true } }
     private val CRAFT_CHUNK_GET_HANDLE_METHOD: Result<Method> = runCatching { if (ServerVersion.supports(19)) CRAFT_CHUNK.getOrThrow().getMethod("getHandle", ChunkStatusAccessor.TYPE) else CRAFT_CHUNK.getOrThrow().getMethod("getHandle") }
-
-    /**
-     * mc-1.13 and above
-     */
     private val LIVING_ENTITY_DROPS_FIELD: Result<Field> = runCatching { LivingEntityAccessor.TYPE!!.getField("drops") }
 
     fun getNmsItemStack(item: ItemStack): Any {
