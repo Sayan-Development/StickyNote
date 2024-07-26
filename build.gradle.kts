@@ -1,15 +1,31 @@
-import org.sayandev.getRelocations
-
 plugins {
     kotlin("jvm") version "2.0.0"
+    `version-catalog`
     `maven-publish`
-    `java-library`
     id("com.github.johnrengelman.shadow") version "8.1.1"
+}
+
+val slug = "stickynote"
+
+catalog {
+    versionCatalog {
+        from(files("${rootProject.projectDir}/gradle/libs.versions.toml"))
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("catalog") {
+            artifactId = ("${artifactId.lowercase()}-catalog")
+            from(components["versionCatalog"])
+            setPom(this)
+        }
+    }
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.3.3"
+    version = "1.3.4"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -24,7 +40,41 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         mavenCentral()
+
+        maven {
+            name = "extendedclip"
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
+        maven {
+            name = "spongepowered"
+            url = uri("https://repo.spongepowered.org/maven/")
+        }
+        maven {
+            name = "papermc"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
+        maven {
+            name = "spigotmc"
+            url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        }
+        maven {
+            name = "sonatype-snapshots"
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+        maven {
+            name = "alessiodp"
+            url = uri("https://repo.alessiodp.com/snapshots")
+        }
+        maven {
+            name = "jitpack"
+            url = uri("https://jitpack.io")
+        }
+        maven {
+            name = "codemc"
+            url = uri("https://repo.codemc.org/repository/maven-public/")
+        }
     }
 }
 
@@ -36,6 +86,7 @@ subprojects {
     tasks {
         jar {
             archiveClassifier.set("unshaded")
+            enabled = false
         }
 
         build {
@@ -49,57 +100,12 @@ subprojects {
         }
     }
 
-    tasks.named<Jar>("sourcesJar") {
-        getRelocations().forEach { (from, to) ->
-            val filePattern = Regex("(.*)${from.replace('.', '/')}((?:/|$).*)")
-            val textPattern = Regex.fromLiteral(from)
-            eachFile {
-                filter {
-                    it.replaceFirst(textPattern, to)
-                }
-                path = path.replaceFirst(filePattern, "$1${to.replace('.', '/')}$2")
-            }
-        }
-    }
-
-    /*configurations {
-        "apiElements" {
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_API))
-                attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
-                attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
-                attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
-            }
-            outgoing.artifact(tasks["shadowJar"])
-        }
-        "runtimeElements" {
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
-                attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
-                attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
-                attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
-            }
-            outgoing.artifact(tasks["shadowJar"])
-        }
-        "mainSourceElements" {
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
-                attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.DOCUMENTATION))
-                attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
-                attribute(DocsType.DOCS_TYPE_ATTRIBUTE, project.objects.named(DocsType.SOURCES))
-            }
-            outgoing.artifact(tasks.named("sourcesJar"))
-        }
-    }*/
-
     publishing {
         publications {
             create<MavenPublication>("maven") {
+                groupId = rootProject.group as String
                 shadow.component(this)
                 artifact(tasks["sourcesJar"])
-//                artifact(tasks["java"])
                 setPom(this)
             }
         }

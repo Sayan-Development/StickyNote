@@ -9,41 +9,40 @@ object StickyNoteBukkitLoader {
 
     @JvmStatic
     fun load(plugin: JavaPlugin) {
+        load(plugin, false)
+    }
+
+    @JvmStatic
+    fun load(plugin: JavaPlugin, usePaperLoader: Boolean) {
         val stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes")
-        val useLoader = stickyNotes.getField("USE_LOADER").get(null) as? Boolean
-        if (useLoader == true) {
-            val dependencies = listOfNotNull(
-                stickyNotes.fields.find { it.name == "STICKYNOTE_CORE" }?.get(null),
-                stickyNotes.fields.find { it.name == "STICKYNOTE_BUKKIT" }?.get(null),
-                stickyNotes.fields.find { it.name == "STICKYNOTE_BUKKIT_NMS" }?.get(null)
-            )
+        val dependencies = stickyNotes.fields.filter { it.name.startsWith("DEPENDENCY_") }.map { it.get(null) }
+        val repositories = stickyNotes.fields.filter { it.name.startsWith("REPOSITORY_") }.map { it.get(null) } as List<String>
 
-            val relocation = stickyNotes.getField("RELOCATION").get(null)
-            val relocationFrom = relocation::class.java.getMethod("getFrom").invoke(relocation) as? String
-            val relocationTo = relocation::class.java.getMethod("getTo").invoke(relocation) as? String
-            val relocate = stickyNotes.getField("RELOCATE").get(null) as? Boolean
-
-            val libraryManager = BukkitLibraryManager(plugin)
-            libraryManager.addMavenLocal()
-            libraryManager.addRepository("https://repo.sayandev.org/snapshots")
-
-            for (dependency in dependencies) {
-                libraryManager.loadLibrary(
-                    Library.builder()
-                        .groupId((dependency::class.java.getMethod("getGroup").invoke(dependency) as String).replace(".", "{}"))
-                        .artifactId(dependency::class.java.getMethod("getName").invoke(dependency) as String)
-                        .version(dependency::class.java.getMethod("getVersion").invoke(dependency) as String)
-                        .apply {
-                            if (relocationFrom?.isNotEmpty() == true && relocationTo?.isNotEmpty() == true && relocate == true) {
-                                this.relocate(relocationFrom, relocationTo)
-                            }
-                        }
-                        .build()
-                )
-            }
-
-            WrappedStickyNotePlugin(plugin)
+        // TODO: utilize paper library manager
+        val libraryManager = if (usePaperLoader) BukkitLibraryManager(plugin) else BukkitLibraryManager(plugin)
+        libraryManager.addMavenLocal()
+        libraryManager.addRepository("https://repo.sayandev.org/snapshots")
+        for (repository in repositories) {
+            libraryManager.addRepository(repository.replace("{}", "."))
         }
+
+        for (dependency in dependencies) {
+            val group = (dependency::class.java.getMethod("getGroup").invoke(dependency) as String).replace(".", "{}")
+            libraryManager.loadLibrary(
+                Library.builder()
+                    .groupId(group)
+                    .artifactId(dependency::class.java.getMethod("getName").invoke(dependency) as String)
+                    .version(dependency::class.java.getMethod("getVersion").invoke(dependency) as String)
+                    /*.apply {
+                        if (relocationFrom?.isNotEmpty() == true && relocationTo?.isNotEmpty() == true) {
+                            this.relocate(group, relocationTo)
+                        }
+                    }*/
+                    .build()
+            )
+        }
+
+        WrappedStickyNotePlugin(plugin)
     }
 
 }

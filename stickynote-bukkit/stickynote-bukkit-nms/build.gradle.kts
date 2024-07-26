@@ -1,10 +1,6 @@
 import me.kcra.takenaka.generator.accessor.AccessorType
 import me.kcra.takenaka.generator.accessor.CodeLanguage
 import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
-import org.sayandev.Module
-import org.sayandev.applyDependencies
-import org.sayandev.applyRepositories
-import org.sayandev.applyShadowRelocation
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.time.Instant
@@ -24,14 +20,13 @@ repositories {
     maven("https://repo.screamingsandals.org/public")
     // Takenaka - SNAPSHOT
     maven("https://repo.screamingsandals.org/snapshots")
-
-    applyRepositories(Module.BUKKIT)
 }
 
 dependencies {
+    compileOnly(libs.paper)
+
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
-    applyDependencies(Module.BUKKIT, false)
 
     mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21")
     implementation(accessorRuntime())
@@ -40,10 +35,6 @@ dependencies {
 tasks {
     sourcesJar {
         dependsOn(generateAccessors)
-    }
-
-    shadowJar {
-        applyShadowRelocation(Module.BUKKIT)
     }
 }
 

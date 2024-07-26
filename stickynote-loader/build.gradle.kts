@@ -1,7 +1,3 @@
-import org.sayandev.Module
-import org.sayandev.applyDependencies
-import org.sayandev.applyRepositories
-import org.sayandev.applyShadowRelocation
 
 plugins {
     `kotlin-dsl`
@@ -9,20 +5,23 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
 }
 
-repositories {
-    applyRepositories(Module.LOADER)
-}
-
 dependencies {
     compileOnly(gradleApi())
-    implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
 
-    applyDependencies(Module.LOADER)
+    api(libs.kotlin.poet.kotlin)
+    api(libs.kotlin.poet.java)
+
+    implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
 }
 
 tasks {
-    shadowJar {
-        applyShadowRelocation(Module.LOADER)
+    withType<Jar> {
+        manifest {
+            attributes(
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version
+            )
+        }
     }
 }
 
@@ -31,12 +30,19 @@ gradlePlugin {
     website = "https://sayandev.org"
 
     plugins {
-        create("stickynote") {
-            id = "org.sayandev.stickynote"
-            displayName = "StickyNote"
+        create("stickynote-project") {
+            id = "org.sayandev.stickynote.project"
+            displayName = "StickyNoteProjectPlugin"
             description = rootProject.description
             tags = listOf("minecraft", "paper", "spigot", "velocity")
-            implementationClass = "org.sayandev.plugin.StickyNotePlugin"
+            implementationClass = "org.sayandev.plugin.StickyNoteProjectPlugin"
+        }
+        create("stickynote-settings") {
+            id = "org.sayandev.stickynote.settings"
+            displayName = "StickyNoteSettingsPlugin"
+            description = rootProject.description
+            tags = listOf("minecraft", "paper", "spigot", "velocity")
+            implementationClass = "org.sayandev.settings.StickyNoteSettingsPlugin"
         }
     }
 }
