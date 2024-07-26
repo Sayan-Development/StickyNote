@@ -47,7 +47,7 @@ class HologramLine(
         getArmorStandNPC().setMarker(true)
     }
 
-    fun getArmorStandNPC(): ArmorStandNPC {
+    internal fun getArmorStandNPC(): ArmorStandNPC {
         return npc as ArmorStandNPC
     }
 }

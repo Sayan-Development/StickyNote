@@ -74,7 +74,7 @@ class Item2DHologramLine(
         npc.setGlowing(glowing)
     }
 
-    fun getThrowableProjectileNPC(): ThrowableProjectileNPC {
+    internal fun getThrowableProjectileNPC(): ThrowableProjectileNPC {
         return npc as ThrowableProjectileNPC
     }
 
