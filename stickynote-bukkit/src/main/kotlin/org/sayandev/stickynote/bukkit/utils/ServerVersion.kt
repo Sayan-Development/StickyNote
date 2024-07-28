@@ -41,4 +41,13 @@ object ServerVersion {
      */
     @JvmStatic
     fun supports(version: Int) = XReflection.supports(version)
+
+    /**
+     * Checks whether the server version is equal to the given version and patch.
+     * @param version the version to compare the server version with
+     * @param patchNumber the patch number to compare the server version with
+     * @return true if the version and patch are equal, otherwise false
+     */
+    @JvmStatic
+    fun equals(version: Int, patchNumber: Int): Boolean = version() == version && patchNumber() == patchNumber
 }
