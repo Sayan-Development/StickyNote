@@ -1041,6 +1041,7 @@ accessors {
     mapClass(SynchedEntityData) {
         constructor(Entity)
         fieldInferred("itemsById", "1.20.4")
+        field("$DataItem[]", "itemsById")
         methodInferred("packDirty", "1.20.4") //1.19.3 and higher
         methodInferred("getNonDefaultValues", "1.20.4") //1.19.3 and higher
         methodInferred("define", "1.20.4", EntityDataAccessor, Object::class)

@@ -624,22 +624,26 @@ object PacketUtils {
 
     @JvmStatic
     fun getEntityDataPacket(entity: Any): Any {
-        if (ServerVersion.supports(20) || ServerVersion.completeVersion()
-                .equals("v1_19_R2") || ServerVersion.completeVersion().equals("v1_19_R3")
-        ) {
-            val int2ObjectClass = Class.forName("it.unimi.dsi.fastutil.ints.Int2ObjectMap")
-            val valuesMethod = int2ObjectClass.getMethod("values")
-            val iteratorMethod = int2ObjectClass.getMethod("values").returnType.getMethod("iterator")
+        if (ServerVersion.isAtLeast(19, 3)) {
+            val entityData = EntityAccessor.METHOD_GET_ENTITY_DATA!!.invoke(
+                entity
+            )
+            val list: MutableList<Any> = mutableListOf()
+            if (ServerVersion.isAtLeast(20, 5)) {
+                @Suppress("UNCHECKED_CAST")
+                list.addAll(SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID_1!!.get(entityData)!! as kotlin.Array<Any>)
+            } else {
+                val int2ObjectClass = Class.forName("it.unimi.dsi.fastutil.ints.Int2ObjectMap")
+                val valuesMethod = int2ObjectClass.getMethod("values")
+                val iteratorMethod = int2ObjectClass.getMethod("values").returnType.getMethod("iterator")
+                
+                val iterator = iteratorMethod.invoke(
+                    valuesMethod.invoke(SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID!!.get(entityData))
+                ) as Iterator<*>
 
-            val iterator = iteratorMethod.invoke(
-                valuesMethod.invoke(
-                    SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID!!.get(EntityAccessor.METHOD_GET_ENTITY_DATA!!.invoke(entity))
-                )
-            ) as Iterator<*>
-            val list: MutableList<Any> = ArrayList()
-
-            while (iterator.hasNext()) {
-                list.add(SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(iterator.next()))
+                while (iterator.hasNext()) {
+                    list.add(SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(iterator.next()))
+                }
             }
 
             return ClientboundSetEntityDataPacketAccessor.CONSTRUCTOR_1!!.newInstance(
