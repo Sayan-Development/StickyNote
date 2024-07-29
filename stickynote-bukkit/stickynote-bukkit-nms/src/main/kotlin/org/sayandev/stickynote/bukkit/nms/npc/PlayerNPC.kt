@@ -11,22 +11,29 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.enum.CollisionRule
+import org.sayandev.stickynote.bukkit.nms.enum.ModelPart
 import org.sayandev.stickynote.bukkit.nms.enum.NameTagVisibility
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
+import org.sayandev.stickynote.bukkit.nms.skin.Skin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.ClientInformationAccessor
-import org.sayandev.stickynote.nms.accessors.ServerGamePacketListenerImplAccessor
-import org.sayandev.stickynote.nms.accessors.ServerPlayerAccessor
-import org.sayandev.stickynote.nms.accessors.ServerPlayerGameModeAccessor
+import org.sayandev.stickynote.nms.accessors.*
 import sun.reflect.ReflectionFactory
 import java.lang.reflect.Constructor
 import java.util.*
 
 class PlayerNPC(
     val name: String,
-    private val location: Location
+    private val location: Location,
+    skin: Skin? = null
 ): HumanEntityNPC(createServerPlayerObject(name, location.world), location, NPCType.PLAYER) {
 
+    constructor(name: String, location: Location): this(name, location, null)
+
+    init {
+        skin?.apply(this)
+    }
+
+    var skin = skin; private set
     val tabName16 = "[NPC] " + UUID.randomUUID().toString().replace("-", "").substring(0, 10)
 
     var collision = true
@@ -41,16 +48,32 @@ class PlayerNPC(
             getViewers().sendPacket(createModifyPlayerTeamPacket())
         }
 
-    /*fun setModelParts(vararg modelParts: me.mohamad82.ruom.npc.PlayerNPC.ModelPart?) {
-        Ruom.run {
-            SynchedEntityDataAccessor.getMethodSet1().invoke(
-                getEntityData(),
-                PlayerAccessor.getFieldDATA_PLAYER_MODE_CUSTOMISATION().get(null),
-                PlayerNPC.ModelPart.getMasks(*modelParts)
-            )
-        }
+    /**
+     * Sets the skin of the NPC and applies it to the NPC.
+     * @param skin The skin to set.
+     * @param modelParts The model parts to apply the skin to. Default is all model parts.
+     * @see Skin
+     * @see [org.sayandev.stickynote.bukkit.nms.skin.SkinUtils]
+     */
+    fun setSkin(skin: Skin, vararg modelParts: ModelPart = ModelPart.entries.toTypedArray()) {
+        this.skin = skin
+        skin.apply(this)
+        setModelParts(*modelParts)
+    }
+
+    /**
+     * Sets the model parts of the NPC.
+     * @param modelParts The model parts to set.
+     * @see ModelPart
+     */
+    fun setModelParts(vararg modelParts: ModelPart) {
+        SynchedEntityDataAccessor.METHOD_SET!!.invoke(
+            getEntityData(),
+            PlayerAccessor.FIELD_DATA_PLAYER_MODE_CUSTOMISATION!!,
+            ModelPart.getMasks(*modelParts)
+        )
         sendEntityData()
-    }*/
+    }
 
     fun setTabList(component: Component?) {
         getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER))
@@ -154,9 +177,6 @@ class PlayerNPC(
                         .newInstance(serverLevel)
                 )
             }
-            /*if (skin.isPresent()) {
-                skin.get().apply(serverPlayer)
-            }*/
 
             return serverPlayer
         }
