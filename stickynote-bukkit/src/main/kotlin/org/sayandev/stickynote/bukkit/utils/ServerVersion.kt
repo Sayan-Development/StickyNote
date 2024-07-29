@@ -52,11 +52,21 @@ object ServerVersion {
     fun equals(version: Int, patchNumber: Int): Boolean = version() == version && patchNumber() == patchNumber
 
     /**
+     * Checks whether the server version is equal to the given version and patch is equal or newer.
+     * @param version the version to compare the server version with
+     * @param patchNumber the patch number to compare the server version with
+     * @return true if the version is equal and the patch is equal or newer, otherwise false
+     */
+    @JvmStatic
+    fun containsPatch(version: Int, patchNumber: Int): Boolean = version() == version && patchNumber() >= patchNumber
+
+    /**
      * Checks whether the server version is equal to the given version and patch or newer.
      * @param version the version to compare the server version with
      * @param patchNumber the patch number to compare the server version with
      * @return true if the version and patch are equal or newer, otherwise false
      */
+    @JvmStatic
     fun isAtLeast(version: Int, patchNumber: Int): Boolean {
         return if (version() == version) {
             patchNumber() >= patchNumber
