@@ -1,11 +1,7 @@
 package org.sayandev.stickynote.bukkit.nms.npc
 
 import org.bukkit.entity.EntityType
-import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.EntityTypeAccessor
-import org.sayandev.stickynote.nms.accessors.MobEffectsAccessor
-import java.lang.reflect.Field
-import java.util.*
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityTypeAccessor
 import kotlin.reflect.full.memberProperties
 
 enum class NPCType {

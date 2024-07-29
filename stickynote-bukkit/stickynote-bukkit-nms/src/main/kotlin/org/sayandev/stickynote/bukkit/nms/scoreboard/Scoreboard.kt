@@ -10,7 +10,7 @@ import org.sayandev.stickynote.bukkit.nms.Viewable
 import org.sayandev.stickynote.bukkit.nms.enum.CollisionRule
 import org.sayandev.stickynote.bukkit.nms.enum.NameTagVisibility
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 
 open class Scoreboard(
     val id: String,

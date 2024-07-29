@@ -11,7 +11,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
 import org.sayandev.stickynote.bukkit.nms.npc.PlayerNPC
-import org.sayandev.stickynote.nms.accessors.PlayerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.PlayerAccessor
 
 class Skin(
     val texture: String,

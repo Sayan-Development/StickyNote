@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.net.InetSocketAddress

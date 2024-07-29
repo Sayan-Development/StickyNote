@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.PoseAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.PoseAccessor
 import java.util.*
 
 enum class Pose(val nmsPose: Any?, val bitMask: Int) {

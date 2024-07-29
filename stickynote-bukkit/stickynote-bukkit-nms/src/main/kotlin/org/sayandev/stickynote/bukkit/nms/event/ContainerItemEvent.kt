@@ -3,8 +3,8 @@ package org.sayandev.stickynote.bukkit.nms.event
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
-import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetContentPacketAccessor
-import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetSlotPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetContentPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetSlotPacketAccessor
 
 abstract class ContainerItemEvent : PacketListener {
 

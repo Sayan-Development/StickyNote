@@ -7,9 +7,9 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils.toNmsItemStack
 import org.sayandev.stickynote.bukkit.nms.npc.EntityNPC
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.SynchedEntityDataAccessor
-import org.sayandev.stickynote.nms.accessors.ThrowableItemProjectileAccessor
-import org.sayandev.stickynote.nms.accessors.ThrownPotionAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ThrowableItemProjectileAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ThrownPotionAccessor
 
 class ThrowableProjectileNPC(
     location: Location,

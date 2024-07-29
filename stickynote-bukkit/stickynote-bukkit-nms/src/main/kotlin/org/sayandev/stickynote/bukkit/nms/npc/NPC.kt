@@ -17,10 +17,10 @@ import org.sayandev.stickynote.bukkit.nms.enum.Pose
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.EntityAccessor
-import org.sayandev.stickynote.nms.accessors.EntityDataSerializerAccessor
-import org.sayandev.stickynote.nms.accessors.SynchedEntityDataAccessor
-import org.sayandev.stickynote.nms.accessors.Vec3Accessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataSerializerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Vec3Accessor
 import java.util.*
 
 abstract class NPC: Viewable() {

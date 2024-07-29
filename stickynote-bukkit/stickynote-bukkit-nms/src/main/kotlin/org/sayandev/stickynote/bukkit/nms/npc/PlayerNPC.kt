@@ -16,7 +16,7 @@ import org.sayandev.stickynote.bukkit.nms.enum.NameTagVisibility
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
 import org.sayandev.stickynote.bukkit.nms.skin.Skin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import sun.reflect.ReflectionFactory
 import java.lang.reflect.Constructor
 import java.util.*

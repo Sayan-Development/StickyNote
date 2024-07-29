@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.InteractionHandAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.InteractionHandAccessor
 
 enum class InteractionHand(private val nmsObject: Any) {
     MAIN_HAND(InteractionHandAccessor.FIELD_MAIN_HAND!!),

@@ -10,7 +10,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern

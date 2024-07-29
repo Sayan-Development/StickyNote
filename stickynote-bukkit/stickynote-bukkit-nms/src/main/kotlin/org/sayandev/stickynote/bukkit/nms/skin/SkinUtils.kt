@@ -11,7 +11,7 @@ import org.sayandev.stickynote.bukkit.hasPlugin
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.PlayerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.PlayerAccessor
 import java.io.InputStreamReader
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection

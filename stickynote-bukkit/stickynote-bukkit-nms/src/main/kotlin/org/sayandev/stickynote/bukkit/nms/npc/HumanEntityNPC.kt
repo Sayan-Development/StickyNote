@@ -6,8 +6,8 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.InteractionHand
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.LivingEntityAccessor
-import org.sayandev.stickynote.nms.accessors.SynchedEntityDataAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.LivingEntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 
 open class HumanEntityNPC(
     entity: Any,

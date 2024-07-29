@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.ChatTypeAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ChatTypeAccessor
 
 /**
  * @param legacyId The legacy id of the chat type.

@@ -7,8 +7,8 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.npc.entity.ThrowableProjectileNPC
-import org.sayandev.stickynote.nms.accessors.EntityDataAccessorAccessor
-import org.sayandev.stickynote.nms.accessors.ThrowableItemProjectileAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataAccessorAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ThrowableItemProjectileAccessor
 
 /**
  * Item2DHologramLine displays a 2D item in a Hologram using a throwable projectile (Like a snowball)

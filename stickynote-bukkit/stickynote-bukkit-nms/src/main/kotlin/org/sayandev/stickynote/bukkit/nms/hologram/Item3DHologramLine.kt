@@ -7,8 +7,8 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.toNmsItemStack
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.npc.entity.ItemNPC
-import org.sayandev.stickynote.nms.accessors.EntityDataAccessorAccessor
-import org.sayandev.stickynote.nms.accessors.ItemEntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataAccessorAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ItemEntityAccessor
 
 /**
  * Item3DHologramLine displays a 3D item in a Hologram using an ItemEntity (Like a dropped item)

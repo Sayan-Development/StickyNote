@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.Team_VisibilityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Team_VisibilityAccessor
 
 /**
  * @param nmsName The name of the name tag visibility. Used for 1.16 and below.

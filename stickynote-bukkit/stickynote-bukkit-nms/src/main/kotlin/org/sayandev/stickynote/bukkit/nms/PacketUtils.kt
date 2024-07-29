@@ -13,7 +13,7 @@ import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import java.lang.reflect.Array
 import java.util.*
 import kotlin.reflect.full.memberProperties

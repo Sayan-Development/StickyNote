@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.Team_CollisionRuleAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Team_CollisionRuleAccessor
 
 /**
  * @param nmsName The name of the collision rule. Used for 1.16 and below.

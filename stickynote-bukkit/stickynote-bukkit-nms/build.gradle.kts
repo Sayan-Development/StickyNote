@@ -49,7 +49,7 @@ tasks {
 
 @Suppress("LocalVariableName")
 accessors {
-    basePackage("org.sayandev.stickynote.nms.accessors")
+    basePackage("org.sayandev.stickynote.bukkit.nms.accessors")
     accessedNamespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
