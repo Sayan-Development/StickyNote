@@ -25,7 +25,7 @@ object PacketUtils {
         return if (ServerVersion.supports(13)) {
             ClientboundOpenScreenPacketAccessor.CONSTRUCTOR_0!!.newInstance(
                 containerId,
-                MenuTypeAccessor::class.java.getField("FIELD_GENERIC_9X" + (inventorySize / 9)).get(null),
+                MenuTypeAccessor::class.memberProperties.find { it.name == "GENERIC_9X" + (inventorySize / 9) }!!.getter.call(MenuTypeAccessor),
                 MinecraftComponentSerializer.get().serialize(component)
             )
         } else {
@@ -36,12 +36,8 @@ object PacketUtils {
 
     @JvmStatic
     fun getRespawnPacket(serverLevel: Any, newGameMode: GameMode, oldGameMode: GameMode, isFlat: Boolean): Any {
-        val nmsNewGameMode: Any = GameTypeAccessor::class.java.getField(
-            "FIELD_" + newGameMode.toString().uppercase()
-        ).get(null)
-        val nmsOldGameMode: Any = GameTypeAccessor::class.java.getField(
-            "FIELD_" + oldGameMode.toString().uppercase()
-        ).get(null)
+        val nmsNewGameMode = GameTypeAccessor::class.memberProperties.find { it.name == "FIELD_${newGameMode.name.uppercase()}" }!!.getter.call(GameTypeAccessor)!!
+        val nmsOldGameMode = GameTypeAccessor::class.memberProperties.find { it.name == "FIELD_${oldGameMode.name.uppercase()}" }!!.getter.call(GameTypeAccessor)!!
         return if (ServerVersion.supports(19)) {
             ClientboundRespawnPacketAccessor.CONSTRUCTOR_1!!.newInstance(
                 LevelAccessor.METHOD_DIMENSION_TYPE_ID!!.invoke(serverLevel),
@@ -425,7 +421,7 @@ object PacketUtils {
 
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAME!!.set(packet, name)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAMETAG_VISIBILITY!!.set(packet, nameTagVisibility.nmsName)
-            ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.java.getField("FIELD_" + color.name).get(null))
+            ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.memberProperties.find { it.name == "FIELD_${color.name.uppercase()}" }!!.getter.call(ChatFormattingAccessor))
             ClientboundSetPlayerTeamPacketAccessor.FIELD_PLAYERS!!.set(packet, players)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_METHOD!!.set(packet, method)
             var options = 0
