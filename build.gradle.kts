@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.3.5"
+    version = "1.3.6"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
