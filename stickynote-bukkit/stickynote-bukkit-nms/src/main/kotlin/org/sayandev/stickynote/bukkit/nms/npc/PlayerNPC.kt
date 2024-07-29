@@ -29,12 +29,17 @@ class PlayerNPC(
 
     val tabName16 = "[NPC] " + UUID.randomUUID().toString().replace("-", "").substring(0, 10)
 
-    var collision = true; private set
+    var collision = true
+        set(value) {
+            field = value
+            getViewers().sendPacket(createModifyPlayerTeamPacket())
+        }
 
-    fun setCollision(collision: Boolean) {
-        this.collision = collision
-        getViewers().sendPacket(createModifyPlayerTeamPacket())
-    }
+    var nameTagVisibility = NameTagVisibility.ALWAYS
+        set(value) {
+            field = value
+            getViewers().sendPacket(createModifyPlayerTeamPacket())
+        }
 
     /*fun setModelParts(vararg modelParts: me.mohamad82.ruom.npc.PlayerNPC.ModelPart?) {
         Ruom.run {
@@ -79,7 +84,7 @@ class PlayerNPC(
             tabName16,
             Component.empty(),
             Component.empty(),
-            NameTagVisibility.NEVER,
+            nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
             ChatColor.BLUE,
             listOf(name),
@@ -92,7 +97,7 @@ class PlayerNPC(
             tabName16,
             Component.empty(),
             Component.empty(),
-            NameTagVisibility.NEVER,
+            nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
             ChatColor.BLUE,
             false
