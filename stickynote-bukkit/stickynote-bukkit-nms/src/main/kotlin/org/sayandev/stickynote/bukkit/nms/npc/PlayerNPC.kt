@@ -86,7 +86,7 @@ class PlayerNPC(
     override fun addViewer(viewer: Player) {
         viewer.sendPacket(
             PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
-            if ((ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)))
+            if (ServerVersion.isAtLeast(20, 2))
                 PacketUtils.getAddEntityPacket(entity)
             else
                 PacketUtils.getAddPlayerPacket(entity),
@@ -135,7 +135,7 @@ class PlayerNPC(
             val serverLevel: Any = NMSUtils.getServerLevel(world)
             val profile = GameProfile(UUID.randomUUID(), name)
             val serverPlayer: Any
-            if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
+            if (ServerVersion.isAtLeast(20, 2)) {
                 serverPlayer = ServerPlayerAccessor.CONSTRUCTOR_3!!.newInstance(
                     NMSUtils.getDedicatedServer(),
                     serverLevel,

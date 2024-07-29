@@ -69,9 +69,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getPlayerInfoPacket(serverPlayer: Any, action: PlayerInfoAction): Any {
-        if (ServerVersion.supports(20) || ServerVersion.completeVersion()
-                .equals("v1_19_R2") || ServerVersion.completeVersion().equals("v1_19_R3")
-        ) {
+        if (ServerVersion.isAtLeast(19, 4)) {
             return if (action == PlayerInfoAction.REMOVE_PLAYER) {
                 ClientboundPlayerInfoRemovePacketAccessor.CONSTRUCTOR_0!!
                     .newInstance(listOf(EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer)))
@@ -128,7 +126,7 @@ object PacketUtils {
     fun getMobEffectPacket(effect: PotionEffect): Any {
         val mobEffect = getMobEffectByEffectType(effect.type)
         val effectConstructor =
-            if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))
+            if (ServerVersion.isAtLeast(20, 5))
                 MobEffectInstanceAccessor.CONSTRUCTOR_1!!
             else
                 MobEffectInstanceAccessor.CONSTRUCTOR_0!!
@@ -145,8 +143,8 @@ object PacketUtils {
 
     @JvmStatic
     fun getMobEffectByEffectType(effect: PotionEffectType): Any {
-        return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
-            val memberProperty = if (ServerVersion.patchNumber() >= 5 || ServerVersion.supports(21)) {
+        return if (ServerVersion.isAtLeast(20, 2)) {
+            val memberProperty = if (ServerVersion.isAtLeast(20, 5)) {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}_1" }!!
             } else {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
@@ -566,7 +564,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getSetScorePacket(id: String, name: String, score: Int): Any {
-        if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 5)) {
+        if (ServerVersion.isAtLeast(20, 5)) {
             return ClientboundSetScorePacketAccessor.CONSTRUCTOR_2!!.newInstance(
                 name,
                 id,
@@ -574,7 +572,7 @@ object PacketUtils {
                 Optional.empty<Any>(),
                 Optional.of(BlankFormatAccessor.FIELD_INSTANCE!!)
             )
-        } else if (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3) {
+        } else if (ServerVersion.containsPatch(20, 3)) {
             return ClientboundSetScorePacketAccessor.CONSTRUCTOR_1!!.newInstance(
                 name,
                 id,
@@ -609,7 +607,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getSetDisplayObjectivePacket(objective: Any): Any {
-        return if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
+        return if (ServerVersion.isAtLeast(20, 2)) {
             ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_1!!.newInstance(
                 DisplaySlotAccessor.FIELD_SIDEBAR!!,
                 objective

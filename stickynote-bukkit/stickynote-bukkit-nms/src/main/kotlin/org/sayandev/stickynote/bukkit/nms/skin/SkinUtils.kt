@@ -87,7 +87,7 @@ object SkinUtils {
 
         var signature: String? = null
         if (property.hasSignature()) {
-            val signatureMethod = if ((ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3) || ServerVersion.supports(21)) {
+            val signatureMethod = if (ServerVersion.isAtLeast(20, 3)) {
                 Property::class.java.getMethod("signature")
             } else {
                 Property::class.java.getMethod("getSignature")

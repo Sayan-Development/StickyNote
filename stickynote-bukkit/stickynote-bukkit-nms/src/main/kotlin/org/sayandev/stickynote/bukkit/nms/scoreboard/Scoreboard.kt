@@ -44,7 +44,7 @@ open class Scoreboard(
 
     private fun createObjective(title: Component): Any {
         val scoreboard: Any = ScoreboardAccessor.CONSTRUCTOR_0!!.newInstance()
-        if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3)) {
+        if (ServerVersion.isAtLeast(20, 3)) {
             ScoreboardAccessor.METHOD_ADD_OBJECTIVE_1!!.invoke(
                 scoreboard,
                 id,

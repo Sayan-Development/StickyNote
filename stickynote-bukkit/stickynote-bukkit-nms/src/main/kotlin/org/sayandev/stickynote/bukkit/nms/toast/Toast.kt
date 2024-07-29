@@ -43,7 +43,7 @@ class Toast(
 
         //In 1.20.5 and above, "item" was changed to "id"
         iconJson.addProperty(
-            if (((ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))) "id" else "item",
+            if (ServerVersion.isAtLeast(20, 5)) "id" else "item",
             "minecraft:" + icon.parseMaterial().toString().lowercase()
         )
         if (!ServerVersion.supports(13)) iconJson.addProperty("data", icon.data)
@@ -74,7 +74,7 @@ class Toast(
         if (ServerVersion.supports(13)) {
             var deserializationContext: Any? = null
             if (ServerVersion.supports(20)) {
-                if ((ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3)) {
+                if (ServerVersion.containsPatch(20, 3)) {
                     //Extracted this method from bukkit's UnsafeValues
                     val jsonOps = Class.forName("com.mojang.serialization.JsonOps").getField("INSTANCE")[null]
                     val decoderParse = Class.forName("com.mojang.serialization.Decoder").getMethod(
@@ -106,10 +106,10 @@ class Toast(
             }
             //In 1.20.2 fromJson method was moved to "Advancement" class (previously was in "Advancement$Builder")
             //In 1.20.3 and above, advancement is getting initialized above.
-            if ((ServerVersion.version() == 20 && ServerVersion.patchNumber() == 2)) {
+            if (ServerVersion.equals(20, 2)) {
                 //1.20.2
                 advancement = AdvancementAccessor.METHOD_FROM_JSON!!.invoke(null, jsonAdvancement, deserializationContext)
-            } else if (!ServerVersion.supports(21) && !(ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
+            } else if (!ServerVersion.isAtLeast(20, 2)) {
                 //1.20.1 and lower
                 advancementBuilder = Advancement_BuilderAccessor.METHOD_FROM_JSON!!.invoke(
                     null,
