@@ -16,7 +16,7 @@ import java.util.function.Function
 import java.util.function.UnaryOperator
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.1.4"
+    id("me.kcra.takenaka.accessor") version "1.2.0"
 }
 
 repositories {
@@ -258,6 +258,9 @@ accessors {
     val NumberFormat = "net.minecraft.network.chat.numbers.NumberFormat"
     val BlankFormat = "net.minecraft.network.chat.numbers.BlankFormat"
     val DisplaySlot = "net.minecraft.world.scores.DisplaySlot"
+    val BlockDisplay = "net.minecraft.world.entity.Display\$BlockDisplay"
+    val ItemDisplay = "net.minecraft.world.entity.Display\$ItemDisplay"
+    val TextDisplay = "net.minecraft.world.entity.Display\$TextDisplay"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
@@ -920,7 +923,10 @@ accessors {
             "ZOMBIE_VILLAGER",
             "ZOMBIFIED_PIGLIN",
             "PLAYER",
-            "FISHING_BOBBER"
+            "FISHING_BOBBER",
+            "BLOCK_DISPLAY",
+            "ITEM_DISPLAY",
+            "TEXT_DISPLAY"
         )
     }
     mapClass(EquipmentSlot) {
@@ -1662,6 +1668,22 @@ accessors {
     mapClass(DisplaySlot) {
         enumConstant("SIDEBAR", "BELOW_NAME")
     }
+    mapClass(BlockDisplay) {
+        field(EntityDataAccessor, "DATA_BLOCK_STATE_ID")
+
+    }
+    mapClass(ItemDisplay) {
+        field(EntityDataAccessor, "DATA_ITEM_STACK_ID")
+        field(EntityDataAccessor, "DATA_ITEM_DISPLAY_ID")
+    }
+    mapClass(TextDisplay) {
+        field(EntityDataAccessor, "DATA_TEXT_ID")
+        field(EntityDataAccessor, "DATA_LINE_WIDTH_ID")
+        field(EntityDataAccessor, "DATA_BACKGROUND_COLOR_ID")
+        field(EntityDataAccessor, "DATA_TEXT_OPACITY_ID")
+        field(EntityDataAccessor, "DATA_STYLE_FLAGS_ID")
+    }
+
     mapClass(CrossbowItem) {
         methodInferred("isCharged", "1.16.5", ItemStack)
         methodInferred("setCharged", "1.16.5", ItemStack, Boolean::class)
