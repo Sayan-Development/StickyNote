@@ -11,5 +11,9 @@ enum class ItemDisplayContext(val nmsObject: Any) {
     HEAD(ItemDisplayContextAccessor.FIELD_HEAD!!),
     GUI(ItemDisplayContextAccessor.FIELD_GUI!!),
     GROUND(ItemDisplayContextAccessor.FIELD_GROUND!!),
-    FIXED(ItemDisplayContextAccessor.FIELD_FIXED!!)
+    FIXED(ItemDisplayContextAccessor.FIELD_FIXED!!);
+
+    fun getId(): Byte {
+        return ItemDisplayContextAccessor.METHOD_GET_ID!!.invoke(nmsObject) as Byte
+    }
 }

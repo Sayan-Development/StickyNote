@@ -1731,6 +1731,7 @@ accessors {
             "GROUND",
             "FIXED"
         )
+        method(Byte::class, "getId")
     }
 
     mapClass(CrossbowItem) {
