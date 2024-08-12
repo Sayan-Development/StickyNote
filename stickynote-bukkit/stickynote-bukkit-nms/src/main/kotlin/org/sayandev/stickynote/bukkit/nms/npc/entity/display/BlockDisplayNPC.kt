@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.bukkit.nms.npc.entity
+package org.sayandev.stickynote.bukkit.nms.npc.entity.display
 
 import com.cryptomorin.xseries.XMaterial
 import org.bukkit.Location
