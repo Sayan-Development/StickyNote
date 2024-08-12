@@ -263,6 +263,7 @@ accessors {
     val BlockDisplay = "net.minecraft.world.entity.Display\$BlockDisplay"
     val ItemDisplay = "net.minecraft.world.entity.Display\$ItemDisplay"
     val TextDisplay = "net.minecraft.world.entity.Display\$TextDisplay"
+    val BillboardConstraints = "net.minecraft.world.entity.Display\$BillboardConstraints"
     val ItemDisplayContext = "net.minecraft.world.item.ItemDisplayContext"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
@@ -1718,6 +1719,15 @@ accessors {
         field(EntityDataAccessor, "DATA_BACKGROUND_COLOR_ID")
         field(EntityDataAccessor, "DATA_TEXT_OPACITY_ID")
         field(EntityDataAccessor, "DATA_STYLE_FLAGS_ID")
+    }
+    mapClass(BillboardConstraints) {
+        enumConstant(
+            "FIXED",
+            "VERTICAL",
+            "HORIZONTAL",
+            "CENTER"
+        )
+        method(Byte::class, "getId")
     }
     mapClass(ItemDisplayContext) {
         enumConstant(
