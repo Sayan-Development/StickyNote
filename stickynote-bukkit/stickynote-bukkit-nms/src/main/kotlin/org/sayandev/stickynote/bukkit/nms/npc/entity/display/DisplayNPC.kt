@@ -23,7 +23,7 @@ abstract class DisplayNPC(
         DisplayAccessor.METHOD_DEFINE_SYNCHED_DATA!!.invoke(entity)
     }
 
-    var transformationInterpolationStartDeltaTicksId: Int = 0
+    var transformationInterpolationStartDeltaTicks: Int = 0
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -34,7 +34,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var transformationInterpolationDurationId: Int = 0
+    var transformationInterpolationDuration: Int = 0
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -45,7 +45,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var posRotInterpolationDurationId: Int = 0
+    var posRotInterpolationDuration: Int = 0
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -56,7 +56,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var translationId: Vector3 = Vector3.zero
+    var translation: Vector3 = Vector3.zero
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -67,7 +67,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var scaleId: Vector3 = Vector3.one
+    var scale: Vector3 = Vector3.one
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -78,7 +78,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var leftRotationId: Quaternionf = Quaternionf()
+    var leftRotation: Quaternionf = Quaternionf()
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -89,7 +89,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var rightRotationId: Quaternionf = Quaternionf()
+    var rightRotation: Quaternionf = Quaternionf()
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -100,7 +100,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var billboardRenderConstraintsId: BillboardConstraints = BillboardConstraints.FIXED
+    var billboardRenderConstraints: BillboardConstraints = BillboardConstraints.FIXED
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -111,7 +111,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var brightnessOverrideId: Int = -1
+    var brightnessOverride: Int = -1
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -122,7 +122,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var viewRangeId: Float = 1f
+    var viewRange: Float = 1f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -133,7 +133,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var shadowRadiusId: Float = 0f
+    var shadowRadius: Float = 0f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -144,7 +144,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var shadowStrengthId: Float = 1f
+    var shadowStrength: Float = 1f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -155,7 +155,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var widthId: Float = 0f
+    var width: Float = 0f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -166,7 +166,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var heightId: Float = 0f
+    var height: Float = 0f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -177,7 +177,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var glowColorOverrideId: Int = -1
+    var glowColorOverride: Int = -1
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
