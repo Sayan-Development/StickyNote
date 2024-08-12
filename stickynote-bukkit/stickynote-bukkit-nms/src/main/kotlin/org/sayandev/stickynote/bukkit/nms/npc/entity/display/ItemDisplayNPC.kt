@@ -24,6 +24,7 @@ class ItemDisplayNPC(
                 Display_ItemDisplayAccessor.FIELD_DATA_ITEM_STACK_ID,
                 value.toNmsItemStack()
             )
+            sendEntityData()
         }
 
     var itemDisplayContext: ItemDisplayContext = ItemDisplayContext.NONE
@@ -35,6 +36,7 @@ class ItemDisplayNPC(
                 Display_ItemDisplayAccessor.FIELD_DATA_ITEM_DISPLAY_ID,
                 value.getId()
             )
+            sendEntityData()
         }
 
 }
