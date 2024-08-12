@@ -4,7 +4,6 @@ import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.toNmsItemStack
 import org.sayandev.stickynote.bukkit.nms.accessors.Display_ItemDisplayAccessor
-import org.sayandev.stickynote.bukkit.nms.accessors.ItemDisplayContextAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
 
