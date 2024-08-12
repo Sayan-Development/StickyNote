@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.bukkit.nms.enum
+package org.sayandev.stickynote.bukkit.nms.npc.entity.display
 
 import org.sayandev.stickynote.bukkit.nms.accessors.ItemDisplayContextAccessor
 
