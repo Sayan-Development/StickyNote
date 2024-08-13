@@ -79,7 +79,11 @@ class PlayerNPC(
         getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER))
         if (component != null) {
             listNameField[entity] = MinecraftComponentSerializer.get().serialize(component)
-            getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER))
+            getViewers().sendPacket(
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_DISPLAY_NAME),
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_LISTED)
+            )
         }
     }
 
