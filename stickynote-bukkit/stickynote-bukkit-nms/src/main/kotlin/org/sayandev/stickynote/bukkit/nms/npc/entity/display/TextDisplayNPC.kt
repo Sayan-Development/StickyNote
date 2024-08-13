@@ -2,6 +2,8 @@ package org.sayandev.stickynote.bukkit.nms.npc.entity.display
 
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.sayandev.stickynote.bukkit.nms.NMSUtils
+import org.sayandev.stickynote.bukkit.nms.accessors.Display_BlockDisplayAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.Display_TextDisplayAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
@@ -10,6 +12,7 @@ class TextDisplayNPC(
     location: Location,
     text: Component
 ): DisplayNPC(
+    Display_TextDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.TEXT_DISPLAY.nmsEntityType, NMSUtils.getServerLevel(location.world)),
     location,
     NPCType.TEXT_DISPLAY
 ) {

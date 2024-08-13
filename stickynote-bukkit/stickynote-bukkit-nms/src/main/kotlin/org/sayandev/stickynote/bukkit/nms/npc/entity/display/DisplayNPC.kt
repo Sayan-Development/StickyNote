@@ -11,10 +11,11 @@ import org.sayandev.stickynote.bukkit.nms.npc.NPCType
 import org.sayandev.stickynote.core.math.Vector3
 
 abstract class DisplayNPC(
+    entity: Any,
     location: Location,
     type: NPCType
 ): EntityNPC(
-    DisplayAccessor.CONSTRUCTOR_0!!.newInstance(type.nmsEntityType, NMSUtils.getServerLevel(location.world)),
+    entity,
     location,
     type
 ) {

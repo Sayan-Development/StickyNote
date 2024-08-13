@@ -13,6 +13,7 @@ class BlockDisplayNPC(
     location: Location,
     material: XMaterial
 ): DisplayNPC(
+    Display_BlockDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.BLOCK_DISPLAY.nmsEntityType, NMSUtils.getServerLevel(location.world)),
     location,
     NPCType.BLOCK_DISPLAY
 ) {
