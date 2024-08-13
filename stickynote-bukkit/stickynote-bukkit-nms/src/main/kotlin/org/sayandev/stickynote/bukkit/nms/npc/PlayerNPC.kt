@@ -109,7 +109,7 @@ class PlayerNPC(
             Component.empty(),
             nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
-            ChatColor.BLUE,
+            ChatColor.WHITE,
             listOf(name),
             false
         )
@@ -122,7 +122,7 @@ class PlayerNPC(
             Component.empty(),
             nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
-            ChatColor.BLUE,
+            ChatColor.WHITE,
             false
         )
     }
