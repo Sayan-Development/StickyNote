@@ -625,7 +625,8 @@ object PacketUtils {
             val list: MutableList<Any> = mutableListOf()
             if (ServerVersion.isAtLeast(20, 5)) {
                 @Suppress("UNCHECKED_CAST")
-                list.addAll(SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID_1!!.get(entityData)!! as kotlin.Array<Any>)
+                list.addAll((SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID_1!!.get(entityData)!! as kotlin.Array<Any>)
+                    .map { SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(it) })
             } else {
                 val int2ObjectClass = Class.forName("it.unimi.dsi.fastutil.ints.Int2ObjectMap")
                 val valuesMethod = int2ObjectClass.getMethod("values")
