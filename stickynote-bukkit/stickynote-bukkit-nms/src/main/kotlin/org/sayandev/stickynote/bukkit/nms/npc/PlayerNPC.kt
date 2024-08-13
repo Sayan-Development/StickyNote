@@ -30,7 +30,7 @@ class PlayerNPC(
     constructor(name: String, location: Location): this(name, location, null)
 
     init {
-        skin?.apply(this)
+        skin?.let { setSkin(skin) }
     }
 
     var skin = skin; private set
