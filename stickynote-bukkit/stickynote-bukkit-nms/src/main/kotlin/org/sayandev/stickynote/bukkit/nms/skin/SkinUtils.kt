@@ -92,7 +92,7 @@ object SkinUtils {
             } else {
                 Property::class.java.getMethod("getSignature")
             }
-            signature = signatureMethod.invoke(gameProfile) as String
+            signature = signatureMethod.invoke(property) as String
         }
 
         return Skin(PlayerProfiles.getSkinValue(gameProfile)!!, signature)
