@@ -51,7 +51,7 @@ class Skin(
      * Applies the skin to a player NPC
      * @param playerNPC The player NPC to apply the skin to
      */
-    fun apply(playerNPC: PlayerNPC) {
+    internal fun apply(playerNPC: PlayerNPC) {
         val gameProfile = PlayerAccessor.METHOD_GET_GAME_PROFILE!!.invoke(playerNPC.entity) as GameProfile
         gameProfile.properties.removeAll("textures")
         gameProfile.properties.put("textures", Property("textures", texture, signature))
