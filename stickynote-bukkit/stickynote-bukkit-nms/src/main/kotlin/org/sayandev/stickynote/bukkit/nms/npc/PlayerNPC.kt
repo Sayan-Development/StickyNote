@@ -10,13 +10,13 @@ import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.CollisionRule
 import org.sayandev.stickynote.bukkit.nms.enum.ModelPart
 import org.sayandev.stickynote.bukkit.nms.enum.NameTagVisibility
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
 import org.sayandev.stickynote.bukkit.nms.skin.Skin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.bukkit.nms.accessors.*
 import sun.reflect.ReflectionFactory
 import java.lang.reflect.Constructor
 import java.util.*
@@ -25,7 +25,7 @@ class PlayerNPC(
     val name: String,
     private val location: Location,
     skin: Skin? = null
-): HumanEntityNPC(createServerPlayerObject(name, location.world), location, NPCType.PLAYER) {
+): LivingEntityNPC(createServerPlayerObject(name, location.world), location, NPCType.PLAYER) {
 
     constructor(name: String, location: Location): this(name, location, null)
 

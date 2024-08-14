@@ -102,6 +102,7 @@ accessors {
     val ClientboundSetScorePacket = "net.minecraft.network.protocol.game.ClientboundSetScorePacket"
     val ClientboundUpdateMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket"
     val ClientboundRemoveMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket"
+    val ClientboundUpdateAttributesPacket = "net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket"
     val ServerboundPlayerActionPacket = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket"
     val ServerboundPlayerActionPacketAction = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket\$Action"
     val ServerboundInteractPacket = "net.minecraft.network.protocol.game.ServerboundInteractPacket"
@@ -265,6 +266,8 @@ accessors {
     val TextDisplay = "net.minecraft.world.entity.Display\$TextDisplay"
     val BillboardConstraints = "net.minecraft.world.entity.Display\$BillboardConstraints"
     val ItemDisplayContext = "net.minecraft.world.item.ItemDisplayContext"
+    val AttributeInstance = "net.minecraft.world.entity.ai.attributes.AttributeInstance"
+    val Attributes = "net.minecraft.world.entity.ai.attributes.Attributes"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
@@ -525,6 +528,10 @@ accessors {
         constructor(Int::class, MobEffect)
         constructor(Int::class, Holder)
     }
+    mapClass(ClientboundUpdateAttributesPacket) {
+        constructor(Int::class, Collection::class)
+        constructor(Int::class, List::class)
+    }
     mapClass(ServerboundPlayerActionPacket) {
         methodInferred("getPos", "1.20.4")
         methodInferred("getDirection", "1.20.4")
@@ -781,6 +788,7 @@ accessors {
         methodInferred("getUseItem", "1.20.4")
         methodInferred("getUseItemRemainingTicks", "1.20.4")
         methodInferred("setLivingEntityFlag", "1.20.4", Int::class, Boolean::class)
+        method(AttributeInstance, "getAttribute", Holder)
         fieldInferred("useItem", "1.20.4")
         fieldInferred("DATA_LIVING_ENTITY_FLAGS", "1.20.4")
         fieldInferred("DATA_HEALTH_ID", "1.20.4")
@@ -1744,6 +1752,34 @@ accessors {
             "FIXED"
         )
         method(Byte::class, "getId")
+    }
+    mapClass(AttributeInstance) {
+        method(Double::class, "getBaseValue")
+        method(Void.TYPE, "setBaseValue", Double::class)
+    }
+    mapClass(Attributes) {
+        field(Holder, "ARMOR")
+        field(Holder, "ARMOR_TOUGHNESS")
+        field(Holder, "ATTACK_DAMAGE")
+        field(Holder, "ATTACK_KNOCKBACK")
+        field(Holder, "ATTACK_SPEED")
+        field(Holder, "BLOCK_BREAK_SPEED")
+        field(Holder, "BLOCK_INTERACTION_RANGE")
+        field(Holder, "ENTITY_INTERACTION_RANGE")
+        field(Holder, "FALL_DAMAGE_MULTIPLIER")
+        field(Holder, "FLYING_SPEED")
+        field(Holder, "FOLLOW_RANGE")
+        field(Holder, "GRAVITY")
+        field(Holder, "JUMP_STRENGTH")
+        field(Holder, "KNOCKBACK_RESISTANCE")
+        field(Holder, "LUCK")
+        field(Holder, "MAX_ABSORPTION")
+        field(Holder, "MAX_HEALTH")
+        field(Holder, "MOVEMENT_SPEED")
+        field(Holder, "SAFE_FALL_DISTANCE")
+        field(Holder, "SCALE")
+        field(Holder, "SPAWN_REINFORCEMENTS_CHANCE")
+        field(Holder, "STEP_HEIGHT")
     }
 
     mapClass(CrossbowItem) {

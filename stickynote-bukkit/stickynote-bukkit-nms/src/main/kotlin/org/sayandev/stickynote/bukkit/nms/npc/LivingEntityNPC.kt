@@ -1,15 +1,20 @@
 package org.sayandev.stickynote.bukkit.nms.npc
 
 import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
+import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
+import org.sayandev.stickynote.bukkit.nms.PacketUtils
+import org.sayandev.stickynote.bukkit.nms.accessors.AttributeInstanceAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.AttributesAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.LivingEntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.InteractionHand
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.bukkit.nms.accessors.LivingEntityAccessor
-import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 
-open class HumanEntityNPC(
+abstract class LivingEntityNPC(
     entity: Any,
     location: Location,
     npcType: NPCType
@@ -105,6 +110,41 @@ open class HumanEntityNPC(
 
     fun collect(collectedEntityId: Int, amount: Int) {
         collect(collectedEntityId, entityId, amount)
+    }
+
+    /**
+     * @apiNote > 1.20.6
+     */
+    fun setScale(scale: Double, viewer: Player) {
+        val scaleAttribute = getScaleAttribute()
+        val oldScale = AttributeInstanceAccessor.METHOD_GET_BASE_VALUE!!.invoke(scaleAttribute)
+        AttributeInstanceAccessor.METHOD_SET_BASE_VALUE!!.invoke(scaleAttribute, scale)
+        viewer.sendPacket(PacketUtils.getUpdateAttributesPacket(entityId, listOf(scaleAttribute)))
+        AttributeInstanceAccessor.METHOD_SET_BASE_VALUE!!.invoke(scaleAttribute, oldScale)
+    }
+
+    /**
+     * @apiNote > 1.20.6
+     */
+    fun setScale(scale: Double) {
+        val scaleAttribute = getScaleAttribute()
+        AttributeInstanceAccessor.METHOD_SET_BASE_VALUE!!.invoke(scaleAttribute, scale)
+        getViewers().sendPacket(PacketUtils.getUpdateAttributesPacket(entityId, listOf(scaleAttribute)))
+    }
+
+    /**
+     * @apiNote > 1.20.6
+     */
+    fun getScale(): Double {
+        val scaleAttribute = getScaleAttribute()
+        return AttributeInstanceAccessor.METHOD_GET_BASE_VALUE!!.invoke(scaleAttribute) as Double
+    }
+
+    internal fun getScaleAttribute(): Any = LivingEntityAccessor.METHOD_GET_ATTRIBUTE!!.invoke(entity, AttributesAccessor.FIELD_SCALE)
+
+    override fun onPostAddViewers(vararg viewers: Player) {
+        super.onPostAddViewers(*viewers)
+        viewers.sendPacket(PacketUtils.getUpdateAttributesPacket(entityId, listOf(getScaleAttribute())))
     }
 
 }
