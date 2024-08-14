@@ -108,6 +108,9 @@ enum class NPCType {
     ZOMBIE_HORSE,
     ZOMBIE_VILLAGER,
     ZOMBIFIED_PIGLIN,
+    BLOCK_DISPLAY,
+    ITEM_DISPLAY,
+    TEXT_DISPLAY,
     PLAYER;
 
     val nmsEntityType: Any = EntityTypeAccessor::class.memberProperties.find { it.name == "FIELD_${name.uppercase()}" }!!.getter.call(EntityTypeAccessor)!!
