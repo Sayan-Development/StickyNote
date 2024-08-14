@@ -18,13 +18,7 @@ enum class ModelPart(val mask: Byte) {
             return bytes
         }
 
-        val allBitMasks: Byte
-            get() {
-                var bytes: Byte = 0
-                for (modelPart in entries) {
-                    bytes = (bytes + modelPart.mask).toByte()
-                }
-                return bytes
-            }
+        val allBitMasks: Byte = entries.fold(0.toByte()) { acc, modelPart -> (acc + modelPart.mask).toByte() }
+
     }
 }
