@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "2.0.0"
     `version-catalog`
@@ -33,6 +35,10 @@ allprojects {
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
 
+    /*dependencies {
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
+    }*/
+
     tasks {
         java {
             disableAutoTargetJvm()
@@ -44,36 +50,8 @@ allprojects {
         mavenCentral()
 
         maven {
-            name = "extendedclip"
-            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        }
-        maven {
-            name = "spongepowered"
-            url = uri("https://repo.spongepowered.org/maven/")
-        }
-        maven {
-            name = "papermc"
-            url = uri("https://repo.papermc.io/repository/maven-public/")
-        }
-        maven {
-            name = "spigotmc"
-            url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-        }
-        maven {
-            name = "sonatype-snapshots"
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-        }
-        maven {
-            name = "alessiodp"
-            url = uri("https://repo.alessiodp.com/snapshots")
-        }
-        maven {
-            name = "jitpack"
-            url = uri("https://jitpack.io")
-        }
-        maven {
-            name = "codemc"
-            url = uri("https://repo.codemc.org/repository/maven-public/")
+            name = "sayandev"
+            url = uri("https://repo.sayandev.org/snapshots")
         }
     }
 }
@@ -85,12 +63,41 @@ subprojects {
 
     tasks {
         jar {
-            archiveClassifier.set("unshaded")
-            enabled = false
+//            archiveClassifier.set("unshaded")
+            enabled = true
         }
 
-        build {
-            dependsOn(shadowJar)
+        afterEvaluate {
+            val manualRelocations = mapOf(
+                "com.github.patheloper.pathetic" to "patheloper",
+                "com.github.cryptomorin" to "cryptomorin",
+                "com.google.code.gson" to "gson",
+            )
+            val versionCatalogs = extensions.getByType(VersionCatalogsExtension::class.java)
+            val libs = versionCatalogs.named("stickyNoteLibs")
+
+            withType<ShadowJar> {
+                for (bundleAlias in libs.bundleAliases) {
+                    val bundle = libs.findBundle(bundleAlias).get().get()
+                    for (alias in bundle) {
+                        if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
+                        if (manualRelocations.contains(alias.group)) {
+                            val relocation = manualRelocations[alias.group]!!
+                            relocate(relocation, "${project.group}.${slug}.libs.${relocation}")
+                        } else {
+                            relocate(alias.group, "${project.group}.${slug}.libs.${alias.group!!.split(".").lastOrNull()!!}")
+                        }
+                    }
+                }
+            }
+        }
+
+        val shadowJarNoDeps by creating(ShadowJar::class) {
+            configurations = emptyList()
+            from(sourceSets.main.get().output)
+            archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}-no-dep.jar")
+            archiveClassifier.set(null as String?)
+            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
         }
 
         shadowJar {
@@ -104,6 +111,13 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = rootProject.group as String
+                artifact(tasks["shadowJarNoDeps"])
+                artifact(tasks["sourcesJar"])
+                setPom(this)
+            }
+            create<MavenPublication>("maven-all") {
+                groupId = rootProject.group as String
+                artifactId += "-all"
                 shadow.component(this)
                 artifact(tasks["sourcesJar"])
                 setPom(this)

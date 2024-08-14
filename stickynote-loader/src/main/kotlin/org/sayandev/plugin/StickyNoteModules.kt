@@ -1,6 +1,7 @@
 package org.sayandev.plugin
 
 enum class StickyNoteModules(override val artifact: String, override val project: String) : StickyNoteModule {
+    CORE("stickynote-core", "stickynote-core"),
     BUKKIT("stickynote-bukkit", "stickynote-bukkit"),
     BUKKIT_NMS("stickynote-bukkit-nms", "${BUKKIT.project}:stickynote-bukkit-nms"),
     PAPER("stickynote-paper", "stickynote-paper"),

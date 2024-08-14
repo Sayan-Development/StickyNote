@@ -11,7 +11,7 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
+    implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.8")
 }
 
 tasks {

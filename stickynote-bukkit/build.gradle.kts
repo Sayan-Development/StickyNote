@@ -1,11 +1,12 @@
 dependencies {
-    compileOnlyApi(libs.libby.bukkit)
-    compileOnlyApi(libs.adventure.platform.bukkit)
-    compileOnlyApi(libs.cloud.paper)
-    compileOnlyApi(libs.cloud.minecraft.extras)
-    compileOnlyApi(libs.inventoryframework)
-    compileOnlyApi(libs.xseries) { isTransitive = false }
-    compileOnlyApi(libs.pathetic.pathfinder.bukkit)
+    api(libs.libby.bukkit)
+    api(libs.adventure.platform.bukkit)
+    api(libs.cloud.paper)
+    api(libs.cloud.minecraft.extras)
+    api(libs.inventoryframework)
+    api(libs.xseries) { isTransitive = false }
+    api(libs.pathetic.pathfinder.bukkit)
+
     compileOnlyApi(libs.authlib)
     compileOnlyApi(libs.placeholderapi)
     compileOnlyApi(libs.skinsrestorer.api)

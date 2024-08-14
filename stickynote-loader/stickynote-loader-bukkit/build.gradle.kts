@@ -1,7 +1,13 @@
 dependencies {
-    compileOnly(libs.paper)
+    compileOnly(libs.folia)
 
     api(libs.libby.bukkit)
 
     compileOnly(project(":stickynote-bukkit"))
+}
+
+tasks {
+    java {
+        disableAutoTargetJvm()
+    }
 }

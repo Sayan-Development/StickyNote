@@ -5,11 +5,10 @@ import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.*
-import kotlin.jvm.optionals.getOrNull
+import kotlin.jvm.java
 
 
 class StickyNoteProjectPlugin : Plugin<Project> {
@@ -39,8 +38,32 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             dependsOn(createStickyNoteLoader)
         }
 
+        target.plugins.apply("io.github.goooler.shadow")
         target.tasks.withType<ShadowJar> {
-//            relocate(config.relocation.get().first, config.relocation.get().second)
+            /*val manualRelocations = mapOf(
+                "com.github.patheloper.pathetic" to "patheloper",
+                "com.github.cryptomorin" to "cryptomorin",
+                "com.google.code.gson" to "gson"
+            )
+            val versionCatalogs = extensions.getByType(VersionCatalogsExtension::class.java)
+            val libs = versionCatalogs.named("stickyNoteLibs")
+
+            for (bundleAlias in libs.bundleAliases) {
+                val bundle = libs.findBundle(bundleAlias).get().get()
+                for (alias in bundle) {
+                    if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") {
+
+                    } else {
+                        if (manualRelocations.contains(alias.group)) {
+                            val relocation = manualRelocations[alias.group]!!
+                            relocate(relocation, "${config.relocation.get().second}.libs.${relocation}")
+                        } else {
+                            relocate(alias.group, "${config.relocation.get().second}.libs.${alias.group!!.split(".").lastOrNull()!!}")
+                        }
+                    }
+                }
+            }*/
+            relocate(config.relocation.get().first, config.relocation.get().second)
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -56,60 +79,16 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             mavenCentral()
 
             maven {
-                name = "extendedclip"
-                setUrl("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-            }
-            maven {
-                name = "spongepowered"
-                setUrl("https://repo.spongepowered.org/maven/")
-            }
-            maven {
-                name = "papermc"
-                setUrl("https://repo.papermc.io/repository/maven-public/")
-            }
-            maven {
-                name = "spigotmc"
-                setUrl("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-            }
-            maven {
-                name = "sonatype-snapshots"
-                setUrl("https://oss.sonatype.org/content/repositories/snapshots")
-            }
-            maven {
-                name = "alessiodp"
-                setUrl("https://repo.alessiodp.com/snapshots")
-            }
-            maven {
-                name = "jitpack"
-                setUrl("https://jitpack.io")
-            }
-            maven {
-                name = "codemc"
-                setUrl("https://repo.codemc.org/repository/maven-public/")
+                name = "sayandev"
+                setUrl("https://repo.sayandev.org/snapshots")
             }
         }
-
-        val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
-        val libs = versionCatalogs.named("stickyNoteLibs")
-
-        /*for (library in libs.findBundle("implementation-core").get().get()) {
-            target.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
-        }
-
-        for (module in config.modules.get()) {
-            val bundleName = module.type.artifact.removePrefix("stickynote-")
-            val bundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
-            for (library in bundleProvider.get()) {
-                target.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
-            }
-        }*/
 
         target.afterEvaluate {
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
             val defaultLocation = layout.buildDirectory.dir("stickynote/output").get().asFile
 
-//            config.relocation.set(Pair("org.sayandev.stickynote", "${project.group}.${project.name}.libs"))
-            config.relocation.set(Pair("org.sayandev.stickynote", "org.sayandev.stickynote"))
+            config.relocation.set(Pair("org.sayandev.stickynote", "${project.group}.${project.name.lowercase()}"))
 
             if (config.outputDirectory.get().asFile == defaultLocation) {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
@@ -118,16 +97,16 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             if (!config.useKotlin.get()) {
                 project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
             }
-            project.dependencies.add("compileOnly", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
+            project.dependencies.add("compileOnly", "org.sayandev:stickynote-core-all:${createStickyNoteLoader.loaderVersion.get()}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit-all:${createStickyNoteLoader.loaderVersion.get()}")
             }
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.VELOCITY)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity-all:${createStickyNoteLoader.loaderVersion.get()}")
             }
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUNGEECORD)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord-all:${createStickyNoteLoader.loaderVersion.get()}")
             }
 
             createStickyNoteLoader.run()
