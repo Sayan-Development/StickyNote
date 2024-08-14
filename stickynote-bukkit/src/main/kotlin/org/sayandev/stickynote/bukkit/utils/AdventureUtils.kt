@@ -22,7 +22,7 @@ object AdventureUtils {
     }
 
     fun Player.sendMiniMessage(message: String, vararg tagResolvers: TagResolver) {
-        audience.sender(this).sendMessage(toComponent(message, *tagResolvers))
+        audience.sender(this).sendMessage(toComponent(this, message, *tagResolvers))
     }
 
     fun Player.sendComponentActionbar(content: String, vararg tagResolvers: TagResolver) {
