@@ -11,16 +11,16 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataSerializerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Vec3Accessor
 import org.sayandev.stickynote.bukkit.nms.enum.EntityAnimation
 import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.Pose
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
-import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataSerializerAccessor
-import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
-import org.sayandev.stickynote.bukkit.nms.accessors.Vec3Accessor
 import java.util.*
 
 abstract class NPC: Viewable() {
@@ -356,7 +356,7 @@ abstract class NPC: Viewable() {
      * Sends the entity data to all viewers
      */
     fun sendEntityData() {
-        getViewers().forEach(this::sendEntityData)
+        getViewers().sendPacket(PacketUtils.getEntityDataPacket(entity))
     }
 
     /**
