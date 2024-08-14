@@ -1701,16 +1701,17 @@ accessors {
         field(String::class, "TAG_WIDTH")
         field(String::class, "TAG_HEIGHT")
         field(String::class, "TAG_GLOW_COLOR_OVERRIDE")
-        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(BlockDisplay) {
         constructor(EntityType, Level)
         field(EntityDataAccessor, "DATA_BLOCK_STATE_ID")
+        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(ItemDisplay) {
         constructor(EntityType, Level)
         field(EntityDataAccessor, "DATA_ITEM_STACK_ID")
         field(EntityDataAccessor, "DATA_ITEM_DISPLAY_ID")
+        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(TextDisplay) {
         constructor(EntityType, Level)
@@ -1719,6 +1720,7 @@ accessors {
         field(EntityDataAccessor, "DATA_BACKGROUND_COLOR_ID")
         field(EntityDataAccessor, "DATA_TEXT_OPACITY_ID")
         field(EntityDataAccessor, "DATA_STYLE_FLAGS_ID")
+        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(BillboardConstraints) {
         enumConstant(

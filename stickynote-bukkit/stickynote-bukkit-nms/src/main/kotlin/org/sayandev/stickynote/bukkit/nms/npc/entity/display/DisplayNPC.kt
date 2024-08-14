@@ -3,7 +3,6 @@ package org.sayandev.stickynote.bukkit.nms.npc.entity.display
 import org.bukkit.Location
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.accessors.DisplayAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
 import org.sayandev.stickynote.bukkit.nms.npc.EntityNPC
@@ -19,10 +18,6 @@ abstract class DisplayNPC(
     location,
     type
 ) {
-
-    init {
-        DisplayAccessor.METHOD_DEFINE_SYNCHED_DATA!!.invoke(entity)
-    }
 
     var transformationInterpolationStartDeltaTicks: Int = 0
         set(value) {
@@ -68,7 +63,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var scale: Vector3 = Vector3.one
+    var scale: Vector3 = Vector3.zero
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -112,7 +107,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var brightnessOverride: Int = -1
+    var brightnessOverride: Int = 0
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -123,7 +118,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var viewRange: Float = 1f
+    var viewRange: Float = 0f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -145,7 +140,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var shadowStrength: Float = 1f
+    var shadowStrength: Float = 0f
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -178,7 +173,7 @@ abstract class DisplayNPC(
             sendEntityData()
         }
 
-    var glowColorOverride: Int = -1
+    var glowColorOverride: Int = 0
         set(value) {
             field = value
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
@@ -188,5 +183,27 @@ abstract class DisplayNPC(
             )
             sendEntityData()
         }
+
+    init {
+        defineDefaultValues()
+    }
+
+    private fun defineDefaultValues() {
+        transformationInterpolationStartDeltaTicks = 0
+        transformationInterpolationDuration = 0
+        posRotInterpolationDuration = 0
+        translation = Vector3.zero
+        scale = Vector3.one
+        leftRotation = Quaternionf()
+        rightRotation = Quaternionf()
+        billboardRenderConstraints = BillboardConstraints.FIXED
+        brightnessOverride = -1
+        viewRange = 1f
+        shadowRadius = 0f
+        shadowStrength = 1f
+        width = 0f
+        height = 0f
+        glowColorOverride = -1
+    }
 
 }

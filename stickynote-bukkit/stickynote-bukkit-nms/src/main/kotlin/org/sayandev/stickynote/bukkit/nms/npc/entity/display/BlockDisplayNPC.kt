@@ -18,7 +18,7 @@ class BlockDisplayNPC(
     NPCType.BLOCK_DISPLAY
 ) {
 
-    var type: Material = material.parseMaterial() ?: throw IllegalArgumentException("Invalid material for version ${ServerVersion.completeVersion()}: $material")
+    var type: Material = Material.STONE
         set(value) {
             field = value
 
@@ -29,5 +29,9 @@ class BlockDisplayNPC(
             )
             sendEntityData()
         }
+
+    init {
+        type = material.parseMaterial() ?: throw IllegalArgumentException("Invalid material for version ${ServerVersion.completeVersion()}: $material")
+    }
 
 }
