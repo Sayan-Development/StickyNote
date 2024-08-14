@@ -80,6 +80,7 @@ inventoryframework = { group = "com.github.stefvanschie.inventoryframework", nam
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
 libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
+libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
 pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = "pathetic-mapping", version.ref = "pathetic-pathfinder-bukkit" }
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }

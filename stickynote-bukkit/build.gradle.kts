@@ -1,5 +1,6 @@
 dependencies {
     api(libs.libby.bukkit)
+    api(libs.libby.paper)
     api(libs.adventure.platform.bukkit)
     api(libs.cloud.paper)
     api(libs.cloud.minecraft.extras)
