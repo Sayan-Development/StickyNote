@@ -103,10 +103,13 @@ data class Vector3(
 
     companion object {
         private val ZERO = at(0, 0, 0)
+        private val ONE = at(1, 1, 1)
 
         @JvmStatic
         val zero: Vector3
             get() = ZERO.copy()
+        val one: Vector3
+            get() = ONE.copy()
 
         @JvmStatic
         fun at(x: Double, y: Double, z: Double): Vector3 {

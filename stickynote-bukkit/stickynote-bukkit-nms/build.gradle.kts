@@ -50,10 +50,11 @@ tasks {
 @Suppress("LocalVariableName")
 accessors {
     basePackage("org.sayandev.stickynote.bukkit.nms.accessors")
-    accessedNamespaces("spigot", "mojang")
+    namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
     versionRange("1.8.8", "1.21")
+    mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketEntry = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Entry"
@@ -258,9 +259,12 @@ accessors {
     val NumberFormat = "net.minecraft.network.chat.numbers.NumberFormat"
     val BlankFormat = "net.minecraft.network.chat.numbers.BlankFormat"
     val DisplaySlot = "net.minecraft.world.scores.DisplaySlot"
+    val Display = "net.minecraft.world.entity.Display"
     val BlockDisplay = "net.minecraft.world.entity.Display\$BlockDisplay"
     val ItemDisplay = "net.minecraft.world.entity.Display\$ItemDisplay"
     val TextDisplay = "net.minecraft.world.entity.Display\$TextDisplay"
+    val BillboardConstraints = "net.minecraft.world.entity.Display\$BillboardConstraints"
+    val ItemDisplayContext = "net.minecraft.world.item.ItemDisplayContext"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
@@ -1668,20 +1672,78 @@ accessors {
     mapClass(DisplaySlot) {
         enumConstant("SIDEBAR", "BELOW_NAME")
     }
+    mapClass(Display) {
+        constructor(EntityType, Level)
+        field(EntityDataAccessor, "DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID")
+        field(EntityDataAccessor, "DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID")
+        field(EntityDataAccessor, "DATA_POS_ROT_INTERPOLATION_DURATION_ID")
+        field(EntityDataAccessor, "DATA_TRANSLATION_ID")
+        field(EntityDataAccessor, "DATA_SCALE_ID")
+        field(EntityDataAccessor, "DATA_LEFT_ROTATION_ID")
+        field(EntityDataAccessor, "DATA_RIGHT_ROTATION_ID")
+        field(EntityDataAccessor, "DATA_BILLBOARD_RENDER_CONSTRAINTS_ID")
+        field(EntityDataAccessor, "DATA_BRIGHTNESS_OVERRIDE_ID")
+        field(EntityDataAccessor, "DATA_VIEW_RANGE_ID")
+        field(EntityDataAccessor, "DATA_SHADOW_RADIUS_ID")
+        field(EntityDataAccessor, "DATA_SHADOW_STRENGTH_ID")
+        field(EntityDataAccessor, "DATA_WIDTH_ID")
+        field(EntityDataAccessor, "DATA_HEIGHT_ID")
+        field(EntityDataAccessor, "DATA_GLOW_COLOR_OVERRIDE_ID")
+        field(String::class, "TAG_POS_ROT_INTERPOLATION_DURATION")
+        field(String::class, "TAG_TRANSFORMATION_INTERPOLATION_DURATION")
+        field(String::class, "TAG_TRANSFORMATION_START_INTERPOLATION")
+        field(String::class, "TAG_TRANSFORMATION")
+        field(String::class, "TAG_BILLBOARD")
+        field(String::class, "TAG_BRIGHTNESS")
+        field(String::class, "TAG_VIEW_RANGE")
+        field(String::class, "TAG_SHADOW_RADIUS")
+        field(String::class, "TAG_SHADOW_STRENGTH")
+        field(String::class, "TAG_WIDTH")
+        field(String::class, "TAG_HEIGHT")
+        field(String::class, "TAG_GLOW_COLOR_OVERRIDE")
+    }
     mapClass(BlockDisplay) {
+        constructor(EntityType, Level)
         field(EntityDataAccessor, "DATA_BLOCK_STATE_ID")
-
+        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(ItemDisplay) {
+        constructor(EntityType, Level)
         field(EntityDataAccessor, "DATA_ITEM_STACK_ID")
         field(EntityDataAccessor, "DATA_ITEM_DISPLAY_ID")
+        method(Void.TYPE, "defineSynchedData")
     }
     mapClass(TextDisplay) {
+        constructor(EntityType, Level)
         field(EntityDataAccessor, "DATA_TEXT_ID")
         field(EntityDataAccessor, "DATA_LINE_WIDTH_ID")
         field(EntityDataAccessor, "DATA_BACKGROUND_COLOR_ID")
         field(EntityDataAccessor, "DATA_TEXT_OPACITY_ID")
         field(EntityDataAccessor, "DATA_STYLE_FLAGS_ID")
+        method(Void.TYPE, "defineSynchedData")
+    }
+    mapClass(BillboardConstraints) {
+        enumConstant(
+            "FIXED",
+            "VERTICAL",
+            "HORIZONTAL",
+            "CENTER"
+        )
+        method(Byte::class, "getId")
+    }
+    mapClass(ItemDisplayContext) {
+        enumConstant(
+            "NONE",
+            "THIRD_PERSON_LEFT_HAND",
+            "THIRD_PERSON_RIGHT_HAND",
+            "FIRST_PERSON_LEFT_HAND",
+            "FIRST_PERSON_RIGHT_HAND",
+            "HEAD",
+            "GUI",
+            "GROUND",
+            "FIXED"
+        )
+        method(Byte::class, "getId")
     }
 
     mapClass(CrossbowItem) {
