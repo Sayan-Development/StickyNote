@@ -27,7 +27,7 @@ publishing {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.3.4"
+    version = "1.6.0"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -52,6 +52,38 @@ allprojects {
         maven {
             name = "sayandev"
             url = uri("https://repo.sayandev.org/snapshots")
+        }
+        maven {
+            name = "extendedclip"
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
+        maven {
+            name = "spongepowered"
+            url = uri("https://repo.spongepowered.org/maven/")
+        }
+        maven {
+            name = "papermc"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
+        maven {
+            name = "spigotmc"
+            url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        }
+        maven {
+            name = "sonatype-snapshots"
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+        maven {
+            name = "alessiodp"
+            url = uri("https://repo.alessiodp.com/snapshots")
+        }
+        maven {
+            name = "jitpack"
+            url = uri("https://jitpack.io")
+        }
+        maven {
+            name = "codemc"
+            url = uri("https://repo.codemc.org/repository/maven-public/")
         }
     }
 }
@@ -89,6 +121,7 @@ subprojects {
                         }
                     }
                 }
+                mergeServiceFiles()
             }
         }
 
@@ -115,9 +148,9 @@ subprojects {
                 artifact(tasks["sourcesJar"])
                 setPom(this)
             }
-            create<MavenPublication>("maven-all") {
+            create<MavenPublication>("maven-shaded") {
                 groupId = rootProject.group as String
-                artifactId += "-all"
+                artifactId += "-shaded"
                 shadow.component(this)
                 artifact(tasks["sourcesJar"])
                 setPom(this)

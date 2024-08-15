@@ -1,24 +1,35 @@
 package org.sayandev.stickynote.bukkit.command
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.incendo.cloud.Command
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
+import org.incendo.cloud.component.CommandComponent
+import org.incendo.cloud.context.CommandContext
+import org.incendo.cloud.execution.CommandExecutionHandler
 import org.incendo.cloud.execution.ExecutionCoordinator
+import org.incendo.cloud.kotlin.MutableCommandBuilder
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
 import org.incendo.cloud.paper.PaperCommandManager
+import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.setting.ManagerSetting
+import org.incendo.cloud.suggestion.Suggestion
 import org.sayandev.stickynote.bukkit.command.interfaces.CommandExtension
 import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
+import org.sayandev.stickynote.bukkit.warn
+import java.util.concurrent.CompletableFuture
 
 abstract class StickyCommand(
     val name: String,
@@ -81,5 +92,43 @@ abstract class StickyCommand(
 
     override fun errorPrefix(prefix: Component) {
         errorPrefix = prefix
+    }
+}
+
+internal fun CommandComponent.Builder<*, *>.createStringSuggestion(suggestions: Collection<String>) {
+    this.suggestionProvider { context, input ->
+        CompletableFuture.completedFuture(suggestions.map { Suggestion.suggestion(it) })
+    }
+}
+
+fun MutableCommandBuilder<SenderExtension>.required(name: String, suggestions: Collection<String>): MutableCommandBuilder<SenderExtension> {
+    return required(name, StringParser.stringParser()) {
+        createStringSuggestion(suggestions)
+    }
+}
+
+fun MutableCommandBuilder<SenderExtension>.optional(name: String, suggestions: Collection<String>): MutableCommandBuilder<SenderExtension> {
+    return optional(name, StringParser.stringParser()) {
+        createStringSuggestion(suggestions)
+    }
+}
+
+fun CommandContext<SenderExtension>.player(): Player? {
+    return this.sender().player()
+}
+
+fun CommandContext<SenderExtension>.sender(): CommandSender {
+    return this.sender().bukkitSender()
+}
+
+fun CommandContext<SenderExtension>.audience(): Audience {
+    return this.sender().audience()
+}
+
+fun MutableCommandBuilder<SenderExtension>.literalWithPermission(literal: String) {
+    val parentComponents = this.build().components()
+//    parentComponents.removeFirst()
+    for (command in parentComponents) {
+        warn("name: ${command.name()}")
     }
 }

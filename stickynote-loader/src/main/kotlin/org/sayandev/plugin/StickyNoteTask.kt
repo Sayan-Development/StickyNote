@@ -35,7 +35,7 @@ abstract class StickyNoteTask : DefaultTask() {
     fun run() {
         for (module in modules.get()) {
             println("adding module ${module.type.artifact} from stickynote")
-            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}-all:${module.version}")
+            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}-shaded:${module.version}")
         }
 
         val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)

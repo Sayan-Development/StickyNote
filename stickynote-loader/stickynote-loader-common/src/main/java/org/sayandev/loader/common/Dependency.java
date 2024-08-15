@@ -1,5 +1,4 @@
-// Dependency.java
-package org.sayandev.common;
+package org.sayandev.loader.common;// org.sayandev.loader.common.Dependency.java
 
 public class Dependency {
     private final String group;
