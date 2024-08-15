@@ -36,7 +36,7 @@ allprojects {
     plugins.apply("com.github.johnrengelman.shadow")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
+//        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
     }
 
     tasks {
@@ -109,7 +109,7 @@ subprojects {
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             withType<ShadowJar> {
-                for (bundleAlias in libs.bundleAliases) {
+                /*for (bundleAlias in libs.bundleAliases) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
@@ -120,8 +120,8 @@ subprojects {
                             relocate(alias.group, "${project.group}.${slug}.libs.${alias.group!!.split(".").lastOrNull()!!}")
                         }
                     }
-                }
-                mergeServiceFiles()
+                }*/
+//                mergeServiceFiles()
             }
         }
 
@@ -144,8 +144,10 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = rootProject.group as String
-                artifact(tasks["shadowJarNoDeps"])
+                shadow.component(this)
                 artifact(tasks["sourcesJar"])
+//                artifact(tasks["shadowJarNoDeps"])
+//                artifact(tasks["sourcesJar"])
                 setPom(this)
             }
             create<MavenPublication>("maven-shaded") {

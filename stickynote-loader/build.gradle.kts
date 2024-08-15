@@ -1,5 +1,6 @@
 
 plugins {
+    kotlin("jvm") version "2.0.0"
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
@@ -12,6 +13,7 @@ dependencies {
     api(libs.kotlin.poet.java)
 
     implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.8")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
 }
 
 tasks {

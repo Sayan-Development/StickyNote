@@ -152,17 +152,15 @@ public class StickyNoteBukkitLoader {
         Library.Builder libraryBuilder = Library.builder()
                 .groupId(group)
                 .artifactId(name)
-                .loaderId("stickynote-loader")
-                .isolatedLoad(true)
                 .version(dependency.getVersion());
 
         if (!name.contains("stickynote") && !name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect")) {
             String replacedGroup = group.replace("{}", ".");
             String[] groupParts = replacedGroup.split("\\.");
-//            libraryBuilder.relocate(group, relocationTo + "{}libs{}" + groupParts[groupParts.length - 1]);
+            libraryBuilder.relocate(group, relocationTo + "{}libs{}" + groupParts[groupParts.length - 1]);
         }
         if (name.contains("stickynote")) {
-//            libraryBuilder.relocate(relocationFrom, relocationTo);
+            libraryBuilder.relocate(relocationFrom, relocationTo);
         } else {
             libraryBuilder.resolveTransitiveDependencies(true);
         }

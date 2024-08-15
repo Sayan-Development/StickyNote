@@ -4,12 +4,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.*
-import kotlin.jvm.java
-
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
@@ -34,22 +31,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             this.useKotlin.set(config.useKotlin)
         }
 
-        target.tasks.withType<JavaCompile> {
-            dependsOn(createStickyNoteLoader)
-        }
-
         target.plugins.apply("io.github.goooler.shadow")
-        target.tasks.withType<ShadowJar> {
-            relocate(config.relocation.get().first, config.relocation.get().second)
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        runCatching { Class.forName("org.jetbrains.kotlin.gradle.tasks.KotlinCompile") as Class<Task> }
-            .onSuccess { klass ->
-                target.tasks.withType(klass) {
-                    dependsOn(createStickyNoteLoader)
-                }
-            }
 
         target.repositories {
             mavenLocal()
@@ -94,6 +76,31 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
+            val manualRelocations = mapOf(
+                "com.github.patheloper.pathetic" to "patheloper",
+                "com.github.cryptomorin" to "cryptomorin",
+                "com.google.code.gson" to "gson",
+            )
+            val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
+            val libs = versionCatalogs.named("stickyNoteLibs")
+
+            target.tasks.withType<ShadowJar> {
+                for (bundleAlias in libs.bundleAliases) {
+                    val bundle = libs.findBundle(bundleAlias).get().get()
+                    for (alias in bundle) {
+                        if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
+                        if (manualRelocations.contains(alias.group)) {
+                            val relocation = manualRelocations[alias.group]!!
+                            relocate(relocation, "${target.group}.${target.name.lowercase()}.libs.${relocation}")
+                        } else {
+                            relocate(alias.group, "${target.group}.${target.name.lowercase()}.libs.${alias.group!!.split(".").lastOrNull()!!}")
+                        }
+                    }
+                }
+                relocate("org.sayandev.stickynote", "${target.group}.${target.name.lowercase()}")
+                mergeServiceFiles()
+            }
+
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
             val defaultLocation = layout.buildDirectory.dir("stickynote/output").get().asFile
 
@@ -103,9 +110,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
-            if (!config.useKotlin.get()) {
-                project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
-            }
             project.dependencies.add("compileOnly", "org.sayandev:stickynote-core-shaded:${createStickyNoteLoader.loaderVersion.get()}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {

@@ -29,7 +29,6 @@ abstract class StickyNoteTask : DefaultTask() {
     @get:Input
     abstract val useKotlin: Property<Boolean>
 
-
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
