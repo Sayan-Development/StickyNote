@@ -35,9 +35,9 @@ allprojects {
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
 
-    /*dependencies {
+    dependencies {
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
-    }*/
+    }
 
     tasks {
         java {
