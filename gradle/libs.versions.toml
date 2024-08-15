@@ -109,7 +109,7 @@ implementation-loader = [
 ]
 implementation-core = [
     "stickynote-core",
-    "snakeyaml",
+#    "snakeyaml",
     "configurate-yaml",
     "configurate-extra-kotlin",
     "cloud-core",
@@ -117,8 +117,6 @@ implementation-core = [
     "adventure-api",
     "adventure-text-minimessage",
     "adventure-text-serializer-gson",
-    "mysql-connector",
-    "jedis",
     "reflections",
     "kotlin-reflect",
     "hikari",
@@ -139,7 +137,8 @@ implementation-bukkit-nms = [
     "stickynote-bukkit-nms"
 ]
 implementation-proxy = [
-    "stickynote-proxy"
+    "stickynote-proxy",
+    "mysql-connector"
 ]
 implementation-velocity = [
     "stickynote-proxy",
