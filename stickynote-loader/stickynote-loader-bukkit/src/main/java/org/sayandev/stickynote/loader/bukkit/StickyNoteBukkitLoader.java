@@ -6,6 +6,7 @@ import com.alessiodp.libby.LibraryManager;
 import com.alessiodp.libby.PaperLibraryManager;
 import com.alessiodp.libby.logging.LogLevel;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sayandev.common.Dependency;
 import org.sayandev.stickynote.bukkit.WrappedStickyNotePlugin;
 
 import java.io.UncheckedIOException;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class StickyNoteBukkitLoader {
 
@@ -31,7 +31,7 @@ public class StickyNoteBukkitLoader {
 
         try {
             Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
-            List<Object> dependencies = getDependencies(stickyNotes);
+            List<Dependency> dependencies = getDependencies(stickyNotes);
             List<String> repositories = getRepositories(stickyNotes);
 
             Object relocation = stickyNotes.getField("RELOCATION").get(stickyNotes);
@@ -41,12 +41,13 @@ public class StickyNoteBukkitLoader {
             LibraryManager libraryManager = getLibraryManager(plugin);
             libraryManager.setLogLevel(LogLevel.WARN);
             libraryManager.addRepository("https://repo.sayandev.org/snapshots");
+            libraryManager.addMavenLocal();
 
             Map<String, String> manualRelocations = getManualRelocations();
 
             List<CompletableFuture<Void>> futures = dependencies.stream()
                     .map(dependency -> loadDependencyAsync(plugin.getLogger(), dependency, relocationFrom, relocationTo, manualRelocations, libraryManager))
-                    .collect(Collectors.toList());
+                    .toList();
 
             CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
@@ -54,17 +55,17 @@ public class StickyNoteBukkitLoader {
                 long completedCount = futures.stream().filter(CompletableFuture::isDone).count();
                 double percentage = (completedCount / (double) dependencies.size()) * 100;
                 plugin.getLogger().info(String.format("Loading progress: %.2f%%", percentage));
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 5, 5, TimeUnit.SECONDS);
 
-            CompletableFuture<Void> delay = CompletableFuture.runAsync(() -> {
+            /*CompletableFuture<Void> delay = CompletableFuture.runAsync(() -> {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-            });
+            });*/
 
-            CompletableFuture.allOf(allOf, delay).join();
+            CompletableFuture.allOf(allOf/*, delay*/).join();
 
             long endTime = System.currentTimeMillis();
             plugin.getLogger().info("Loaded " + dependencies.size() + " dependencies in " + (endTime - startTime) + " ms.");
@@ -78,14 +79,21 @@ public class StickyNoteBukkitLoader {
         }
     }
 
-    private static List<Object> getDependencies(Class<?> stickyNotes) {
+    private static List<Dependency> getDependencies(Class<?> stickyNotes) {
         return Arrays.stream(stickyNotes.getFields())
                 .filter(field -> field.getName().startsWith("DEPENDENCY_"))
                 .map(field -> {
                     try {
-                        return field.get(null);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                        Object dependencyObject = field.get(null);
+                        Class<?> dependencyFieldClass = dependencyObject.getClass();
+                        return new Dependency(
+                                (String) dependencyFieldClass.getMethod("getGroup").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getName").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getVersion").invoke(dependencyObject)
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
                     }
                 }).toList();
     }
@@ -119,20 +127,10 @@ public class StickyNoteBukkitLoader {
         return manualRelocations;
     }
 
-    private static CompletableFuture<Void> loadDependencyAsync(Logger logger, Object dependency, String relocationFrom, String relocationTo, Map<String, String> manualRelocations, LibraryManager libraryManager) {
-        String group;
-        String name;
-        try {
-            group = ((String) dependency.getClass().getMethod("getGroup").invoke(dependency)).replace(".", "{}");
-            name = (String) dependency.getClass().getMethod("getName").invoke(dependency);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        String finalGroup = group;
-        String finalName = name;
-        return loadingLibraries.computeIfAbsent(group + ":" + name, key -> CompletableFuture.runAsync(() -> {
+    private static CompletableFuture<Void> loadDependencyAsync(Logger logger, Dependency dependency, String relocationFrom, String relocationTo, Map<String, String> manualRelocations, LibraryManager libraryManager) {
+        return loadingLibraries.computeIfAbsent(dependency.getGroup() + ":" + dependency.getName(), key -> CompletableFuture.runAsync(() -> {
             try {
-                Library.Builder libraryBuilder = createLibraryBuilder(dependency, finalGroup, finalName, relocationFrom, relocationTo, manualRelocations);
+                Library.Builder libraryBuilder = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo, manualRelocations);
                 Library library = libraryBuilder.build();
                 retryWithDelay(() -> {
                     libraryManager.downloadLibrary(library);
@@ -164,11 +162,11 @@ public class StickyNoteBukkitLoader {
         }
     }
 
-    private static Library.Builder createLibraryBuilder(Object dependency, String group, String name, String relocationFrom, String relocationTo, Map<String, String> manualRelocations) throws Exception {
+    private static Library.Builder createLibraryBuilder(Dependency dependency, String group, String name, String relocationFrom, String relocationTo, Map<String, String> manualRelocations) throws Exception {
         Library.Builder libraryBuilder = Library.builder()
                 .groupId(group)
                 .artifactId(name)
-                .version((String) dependency.getClass().getMethod("getVersion").invoke(dependency));
+                .version(dependency.getVersion());
 
         if (!name.contains("stickynote") && !name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect")) {
             if (manualRelocations.containsKey(group)) {

@@ -5,6 +5,7 @@ dependencies {
     api(libs.libby.paper)
 
     compileOnly(project(":stickynote-bukkit"))
+    compileOnly(project(":stickynote-loader"))
 }
 
 tasks {
