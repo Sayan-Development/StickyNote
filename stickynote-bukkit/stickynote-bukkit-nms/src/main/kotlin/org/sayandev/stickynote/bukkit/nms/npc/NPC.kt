@@ -81,7 +81,7 @@ abstract class NPC: Viewable() {
      */
     fun lookAt(position: Vector3) {
         val targetLocation: Location = position.toLocation(null)
-        val dirLocation: Location = position.toLocation(null)
+        val dirLocation: Location = this.position.toLocation(null)
         dirLocation.setDirection(targetLocation.subtract(dirLocation).toVector())
         look(dirLocation.yaw, dirLocation.pitch)
     }
