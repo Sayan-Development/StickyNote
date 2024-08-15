@@ -10,7 +10,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.sayandev.plugin.output.ClassGenerator
-import kotlin.jvm.optionals.getOrNull
 
 abstract class StickyNoteTask : DefaultTask() {
 
@@ -33,32 +32,20 @@ abstract class StickyNoteTask : DefaultTask() {
     @KotlinPoetJavaPoetPreview
     fun run() {
         for (module in modules.get()) {
-            println("adding module ${module.type.artifact} from stickynote")
             project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}-shaded:${module.version}")
         }
 
         val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
         val libs = versionCatalogs.named("stickyNoteLibs")
-
-        println("- stickynote-core:")
-        for (library in libs.findBundle("implementation-core").get().get()) {
-            println("  + ${library.module}")
-        }
-
-        for (module in modules.get()) {
-            println("- ${module.type.artifact}:")
-            val bundleName = module.type.artifact.removePrefix("stickynote-")
-            val bundleProvider = libs.findBundle("implementation-${bundleName}").getOrNull()
-            if (bundleProvider == null) {
-                println("  * Couldn't find bundle for module ${module.type.project} with bundle ${bundleName}")
-                continue
-            }
-            for (library in bundleProvider.get()) {
-                println("  + ${library.module}")
+        for (bundleAlias in libs.bundleAliases) {
+            for (library in libs.findBundle(bundleAlias).get().get()) {
+                if (library.name.contains("libby")) continue
+                if (library.group.contains("alessiodp")) continue
+                if (project.configurations.getByName("implementation").dependencies.any { it.name == library.name }) continue
+                project.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
             }
         }
 
-        println("relocation: ${relocation.get()}")
         val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocation.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()

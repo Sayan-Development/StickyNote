@@ -46,17 +46,11 @@ class ClassGenerator(
                 .apply {
                     val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
                     val libs = versionCatalogs.named("stickyNoteLibs")
-                    val coreBundleProvider = libs.findBundle("implementation-core").getOrNull()
-                    if (coreBundleProvider != null) {
-                        for (library in coreBundleProvider.get()) {
-                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_"))).uppercase())
-                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .initializer("new Dependency(\$S, \$S, \$S)", library.group.replace(".", "{}"), library.name, library.version)
-                                .build())
-                        }
-                    }
-
                     for (module in modules) {
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_")).uppercase())
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .initializer("new Dependency(\$S, \$S, \$S)", "org{}sayandev", module.type.artifact, module.version)
+                            .build())
                         val bundleName = module.type.artifact.removePrefix("stickynote-")
                         val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
                         for (library in moduleBundleProvider.get()) {

@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.*
+import kotlin.jvm.internal.Intrinsics.Kotlin
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
@@ -22,10 +23,14 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 this::class.java.`package`.implementationVersion
                     ?: throw IllegalStateException("Cannot determine the plugin version")
             } else config.loaderVersion.get()
+            println("Using stickynote version $finalVersion")
             config.loaderVersion.set(finalVersion)
 
             this.outputDir.set(config.outputDirectory)
             this.loaderVersion.set(config.loaderVersion.get())
+            if (!config.modules.get().map { it.type }.contains(StickyNoteModules.CORE)) {
+                config.modules.add(ModuleConfiguration(StickyNoteModules.CORE, finalVersion))
+            }
             this.modules.set(config.modules)
             this.relocation.set(config.relocation)
             this.useKotlin.set(config.useKotlin)
@@ -76,11 +81,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
-            val manualRelocations = mapOf(
-                "com.github.patheloper.pathetic" to "patheloper",
-                "com.github.cryptomorin" to "cryptomorin",
-                "com.google.code.gson" to "gson",
-            )
             val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
@@ -89,12 +89,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
-                        if (manualRelocations.contains(alias.group)) {
-                            val relocation = manualRelocations[alias.group]!!
-                            relocate(relocation, "${target.group}.${target.name.lowercase()}.libs.${relocation}")
-                        } else {
-                            relocate(alias.group, "${target.group}.${target.name.lowercase()}.libs.${alias.group!!.split(".").lastOrNull()!!}")
-                        }
+                        relocate(alias.group, "${target.group}.${target.name.lowercase()}.libs.${alias.group.split(".").last()}")
                     }
                 }
                 relocate("org.sayandev.stickynote", "${target.group}.${target.name.lowercase()}")
@@ -111,6 +106,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             }
 
             project.dependencies.add("compileOnly", "org.sayandev:stickynote-core-shaded:${createStickyNoteLoader.loaderVersion.get()}")
+            project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT }")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit-shaded:${createStickyNoteLoader.loaderVersion.get()}")

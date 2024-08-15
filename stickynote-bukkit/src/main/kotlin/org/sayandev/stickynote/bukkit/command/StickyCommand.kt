@@ -2,19 +2,18 @@ package org.sayandev.stickynote.bukkit.command
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.incendo.cloud.Command
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
-import org.incendo.cloud.execution.CommandExecutionHandler
+import org.incendo.cloud.description.Description
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.MutableCommandBuilder
+import org.incendo.cloud.kotlin.extension.buildAndRegister
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
@@ -26,9 +25,7 @@ import org.sayandev.stickynote.bukkit.command.interfaces.CommandExtension
 import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
-import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.bukkit.warn
 import java.util.concurrent.CompletableFuture
 
 abstract class StickyCommand(
@@ -36,12 +33,15 @@ abstract class StickyCommand(
     vararg val aliases: String
 ) : CommandExtension {
 
-    private var errorPrefix = "<dark_gray>[</dark_gray><dark_red><bold>✘</bold></dark_red><dark_gray>]</dark_gray><gradient:dark_red:red>".component()
+    open fun rootBuilder(builder: MutableCommandBuilder<StickySender>) { }
+    open fun rootHandler(context: CommandContext<StickySender>) { }
+
+    private var errorPrefix = Component.empty().asComponent()
 
     val manager: CommandManager<StickySender>
-    var builder: Command.Builder<StickySender>
-    var help: MinecraftHelp<StickySender>
-    var exceptionHandler: MinecraftExceptionHandler<SenderExtension>
+    val help: MinecraftHelp<StickySender>
+    val exceptionHandler: MinecraftExceptionHandler<SenderExtension>
+    val command: MutableCommandBuilder<StickySender>
 
     init {
         val stickySenderMapper = { commandSender: CommandSender -> StickySender(commandSender, null) }
@@ -83,7 +83,13 @@ abstract class StickyCommand(
             audienceMapper
         )
 
-        builder = manager.commandBuilder(name, *aliases)
+        command = manager.buildAndRegister(name, Description.empty(), aliases.toList().toTypedArray()) {
+            permission("${plugin.name.lowercase()}.commands.${name}")
+            handler { context ->
+                rootHandler(context)
+            }
+            rootBuilder(this)
+        }
     }
 
     override fun errorPrefix(): Component {
@@ -101,34 +107,31 @@ internal fun CommandComponent.Builder<*, *>.createStringSuggestion(suggestions: 
     }
 }
 
-fun MutableCommandBuilder<SenderExtension>.required(name: String, suggestions: Collection<String>): MutableCommandBuilder<SenderExtension> {
+fun MutableCommandBuilder<StickySender>.required(name: String, suggestions: Collection<String>): MutableCommandBuilder<StickySender> {
     return required(name, StringParser.stringParser()) {
         createStringSuggestion(suggestions)
     }
 }
 
-fun MutableCommandBuilder<SenderExtension>.optional(name: String, suggestions: Collection<String>): MutableCommandBuilder<SenderExtension> {
+fun MutableCommandBuilder<StickySender>.optional(name: String, suggestions: Collection<String>): MutableCommandBuilder<StickySender> {
     return optional(name, StringParser.stringParser()) {
         createStringSuggestion(suggestions)
     }
 }
 
-fun CommandContext<SenderExtension>.player(): Player? {
+fun CommandContext<StickySender>.player(): Player? {
     return this.sender().player()
 }
 
-fun CommandContext<SenderExtension>.sender(): CommandSender {
+fun CommandContext<StickySender>.bukkitSender(): CommandSender {
     return this.sender().bukkitSender()
 }
 
-fun CommandContext<SenderExtension>.audience(): Audience {
+fun CommandContext<StickySender>.audience(): Audience {
     return this.sender().audience()
 }
 
-fun MutableCommandBuilder<SenderExtension>.literalWithPermission(literal: String) {
-    val parentComponents = this.build().components()
-//    parentComponents.removeFirst()
-    for (command in parentComponents) {
-        warn("name: ${command.name()}")
-    }
+fun MutableCommandBuilder<StickySender>.literalWithPermission(literal: String) {
+    literal(literal)
+    permission("${plugin.name.lowercase()}.commands.${this.build().components().joinToString(".") { it.name() }}")
 }

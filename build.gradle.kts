@@ -36,7 +36,7 @@ allprojects {
     plugins.apply("com.github.johnrengelman.shadow")
 
     dependencies {
-//        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
     }
 
     tasks {
@@ -91,6 +91,7 @@ allprojects {
 subprojects {
     java {
         withSourcesJar()
+        withJavadocJar()
     }
 
     tasks {
@@ -100,28 +101,19 @@ subprojects {
         }
 
         afterEvaluate {
-            val manualRelocations = mapOf(
-                "com.github.patheloper.pathetic" to "patheloper",
-                "com.github.cryptomorin" to "cryptomorin",
-                "com.google.code.gson" to "gson",
-            )
             val versionCatalogs = extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
-            withType<ShadowJar> {
-                /*for (bundleAlias in libs.bundleAliases) {
+            tasks.withType<ShadowJar> {
+                if (this.name != "shadowJarNoDeps") return@withType
+                for (bundleAlias in libs.bundleAliases) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
-                        if (manualRelocations.contains(alias.group)) {
-                            val relocation = manualRelocations[alias.group]!!
-                            relocate(relocation, "${project.group}.${slug}.libs.${relocation}")
-                        } else {
-                            relocate(alias.group, "${project.group}.${slug}.libs.${alias.group!!.split(".").lastOrNull()!!}")
-                        }
+                        relocate(alias.group, "${project.group}.${slug}.libs.${alias.group!!.split(".").last()}")
                     }
-                }*/
-//                mergeServiceFiles()
+                }
+                mergeServiceFiles()
             }
         }
 
@@ -144,10 +136,9 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = rootProject.group as String
-                shadow.component(this)
+//                shadow.component(this)
+                artifact(tasks["shadowJarNoDeps"])
                 artifact(tasks["sourcesJar"])
-//                artifact(tasks["shadowJarNoDeps"])
-//                artifact(tasks["sourcesJar"])
                 setPom(this)
             }
             create<MavenPublication>("maven-shaded") {
