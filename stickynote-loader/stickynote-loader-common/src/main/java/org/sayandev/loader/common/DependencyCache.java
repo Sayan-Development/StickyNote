@@ -1,6 +1,4 @@
-package org.sayandev.stickynote.loader.bukkit;
-
-import org.sayandev.loader.common.Dependency;
+package org.sayandev.loader.common;
 
 import java.io.*;
 import java.util.HashSet;
