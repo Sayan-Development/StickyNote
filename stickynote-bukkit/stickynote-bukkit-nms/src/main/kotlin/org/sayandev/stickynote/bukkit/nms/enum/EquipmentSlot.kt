@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.EquipmentSlotAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EquipmentSlotAccessor
 
 enum class EquipmentSlot(val bukkitSlot: org.bukkit.inventory.EquipmentSlot, val nmsSlot: Any) {
     MAINHAND(org.bukkit.inventory.EquipmentSlot.HAND, EquipmentSlotAccessor.FIELD_MAINHAND!!),

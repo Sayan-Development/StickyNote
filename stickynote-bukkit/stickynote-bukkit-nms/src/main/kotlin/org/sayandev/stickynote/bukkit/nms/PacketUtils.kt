@@ -9,11 +9,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.*
 import java.lang.reflect.Array
 import java.util.*
 import kotlin.reflect.full.memberProperties
@@ -25,7 +25,7 @@ object PacketUtils {
         return if (ServerVersion.supports(13)) {
             ClientboundOpenScreenPacketAccessor.CONSTRUCTOR_0!!.newInstance(
                 containerId,
-                MenuTypeAccessor::class.java.getField("FIELD_GENERIC_9X" + (inventorySize / 9)).get(null),
+                MenuTypeAccessor::class.memberProperties.find { it.name == "GENERIC_9X" + (inventorySize / 9) }!!.getter.call(MenuTypeAccessor),
                 MinecraftComponentSerializer.get().serialize(component)
             )
         } else {
@@ -36,12 +36,8 @@ object PacketUtils {
 
     @JvmStatic
     fun getRespawnPacket(serverLevel: Any, newGameMode: GameMode, oldGameMode: GameMode, isFlat: Boolean): Any {
-        val nmsNewGameMode: Any = GameTypeAccessor::class.java.getField(
-            "FIELD_" + newGameMode.toString().uppercase()
-        ).get(null)
-        val nmsOldGameMode: Any = GameTypeAccessor::class.java.getField(
-            "FIELD_" + oldGameMode.toString().uppercase()
-        ).get(null)
+        val nmsNewGameMode = GameTypeAccessor::class.memberProperties.find { it.name == "FIELD_${newGameMode.name.uppercase()}" }!!.getter.call(GameTypeAccessor)!!
+        val nmsOldGameMode = GameTypeAccessor::class.memberProperties.find { it.name == "FIELD_${oldGameMode.name.uppercase()}" }!!.getter.call(GameTypeAccessor)!!
         return if (ServerVersion.supports(19)) {
             ClientboundRespawnPacketAccessor.CONSTRUCTOR_1!!.newInstance(
                 LevelAccessor.METHOD_DIMENSION_TYPE_ID!!.invoke(serverLevel),
@@ -69,9 +65,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getPlayerInfoPacket(serverPlayer: Any, action: PlayerInfoAction): Any {
-        if (ServerVersion.supports(20) || ServerVersion.completeVersion()
-                .equals("v1_19_R2") || ServerVersion.completeVersion().equals("v1_19_R3")
-        ) {
+        if (ServerVersion.isAtLeast(19, 4)) {
             return if (action == PlayerInfoAction.REMOVE_PLAYER) {
                 ClientboundPlayerInfoRemovePacketAccessor.CONSTRUCTOR_0!!
                     .newInstance(listOf(EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer)))
@@ -128,7 +122,7 @@ object PacketUtils {
     fun getMobEffectPacket(effect: PotionEffect): Any {
         val mobEffect = getMobEffectByEffectType(effect.type)
         val effectConstructor =
-            if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))
+            if (ServerVersion.isAtLeast(20, 5))
                 MobEffectInstanceAccessor.CONSTRUCTOR_1!!
             else
                 MobEffectInstanceAccessor.CONSTRUCTOR_0!!
@@ -145,8 +139,8 @@ object PacketUtils {
 
     @JvmStatic
     fun getMobEffectByEffectType(effect: PotionEffectType): Any {
-        return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
-            val memberProperty = if (ServerVersion.patchNumber() >= 5 || ServerVersion.supports(21)) {
+        return if (ServerVersion.isAtLeast(20, 2)) {
+            val memberProperty = if (ServerVersion.isAtLeast(20, 5)) {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}_1" }!!
             } else {
                 MobEffectsAccessor::class.memberProperties.find { it.name == "FIELD_${effect.name}" }!!
@@ -427,7 +421,7 @@ object PacketUtils {
 
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAME!!.set(packet, name)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAMETAG_VISIBILITY!!.set(packet, nameTagVisibility.nmsName)
-            ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.java.getField("FIELD_" + color.name).get(null))
+            ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.memberProperties.find { it.name == "FIELD_${color.name.uppercase()}" }!!.getter.call(ChatFormattingAccessor))
             ClientboundSetPlayerTeamPacketAccessor.FIELD_PLAYERS!!.set(packet, players)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_METHOD!!.set(packet, method)
             var options = 0
@@ -566,12 +560,30 @@ object PacketUtils {
 
     @JvmStatic
     fun getSetScorePacket(id: String, name: String, score: Int): Any {
-        return ClientboundSetScorePacketAccessor.CONSTRUCTOR_0!!.newInstance(
-            ServerScoreboard_MethodAccessor.FIELD_CHANGE,
-            id,
-            name,
-            score
-        )
+        if (ServerVersion.isAtLeast(20, 5)) {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_2!!.newInstance(
+                name,
+                id,
+                score,
+                Optional.empty<Any>(),
+                Optional.of(BlankFormatAccessor.FIELD_INSTANCE!!)
+            )
+        } else if (ServerVersion.containsPatch(20, 3)) {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_1!!.newInstance(
+                name,
+                id,
+                score,
+                null,
+                BlankFormatAccessor.FIELD_INSTANCE!!
+            )
+        } else {
+            return ClientboundSetScorePacketAccessor.CONSTRUCTOR_0!!.newInstance(
+                ServerScoreboard_MethodAccessor.FIELD_CHANGE,
+                id,
+                name,
+                score
+            )
+        }
     }
 
     /**
@@ -584,35 +596,49 @@ object PacketUtils {
         return ClientboundSetObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
             objective,
             method
-        )
+        ).apply {
+            ClientboundSetObjectivePacketAccessor.FIELD_NUMBER_FORMAT?.set(this, Optional.of(BlankFormatAccessor.FIELD_INSTANCE!!))
+        }
     }
 
     @JvmStatic
     fun getSetDisplayObjectivePacket(objective: Any): Any {
-        return ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
-            1,
-            objective
-        )
+        return if (ServerVersion.isAtLeast(20, 2)) {
+            ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_1!!.newInstance(
+                DisplaySlotAccessor.FIELD_SIDEBAR!!,
+                objective
+            )
+        } else {
+            ClientboundSetDisplayObjectivePacketAccessor.CONSTRUCTOR_0!!.newInstance(
+                1,
+                objective
+            )
+        }
     }
 
     @JvmStatic
     fun getEntityDataPacket(entity: Any): Any {
-        if (ServerVersion.supports(20) || ServerVersion.completeVersion()
-                .equals("v1_19_R2") || ServerVersion.completeVersion().equals("v1_19_R3")
-        ) {
-            val int2ObjectClass = Class.forName("it.unimi.dsi.fastutil.ints.Int2ObjectMap")
-            val valuesMethod = int2ObjectClass.getMethod("values")
-            val iteratorMethod = int2ObjectClass.getMethod("values").returnType.getMethod("iterator")
+        if (ServerVersion.isAtLeast(19, 3)) {
+            val entityData = EntityAccessor.METHOD_GET_ENTITY_DATA!!.invoke(
+                entity
+            )
+            val list: MutableList<Any> = mutableListOf()
+            if (ServerVersion.isAtLeast(20, 5)) {
+                @Suppress("UNCHECKED_CAST")
+                list.addAll((SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID_1!!.get(entityData)!! as kotlin.Array<Any>)
+                    .map { SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(it) })
+            } else {
+                val int2ObjectClass = Class.forName("it.unimi.dsi.fastutil.ints.Int2ObjectMap")
+                val valuesMethod = int2ObjectClass.getMethod("values")
+                val iteratorMethod = int2ObjectClass.getMethod("values").returnType.getMethod("iterator")
+                
+                val iterator = iteratorMethod.invoke(
+                    valuesMethod.invoke(SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID!!.get(entityData))
+                ) as Iterator<*>
 
-            val iterator = iteratorMethod.invoke(
-                valuesMethod.invoke(
-                    SynchedEntityDataAccessor.FIELD_ITEMS_BY_ID!!.get(EntityAccessor.METHOD_GET_ENTITY_DATA!!.invoke(entity))
-                )
-            ) as Iterator<*>
-            val list: MutableList<Any> = ArrayList()
-
-            while (iterator.hasNext()) {
-                list.add(SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(iterator.next()))
+                while (iterator.hasNext()) {
+                    list.add(SynchedEntityData_DataItemAccessor.METHOD_VALUE!!.invoke(iterator.next()))
+                }
             }
 
             return ClientboundSetEntityDataPacketAccessor.CONSTRUCTOR_1!!.newInstance(
@@ -643,6 +669,11 @@ object PacketUtils {
         }
 
         return ClientboundSetEntityDataPacketAccessor.CONSTRUCTOR_0!!.newInstance(id, synchedEntityData, true)
+    }
+
+    @JvmStatic
+    fun getUpdateAttributesPacket(id: Int, attributeInstances: Collection<Any>): Any {
+        return ClientboundUpdateAttributesPacketAccessor.CONSTRUCTOR_0!!.newInstance(id, attributeInstances)
     }
 
 }

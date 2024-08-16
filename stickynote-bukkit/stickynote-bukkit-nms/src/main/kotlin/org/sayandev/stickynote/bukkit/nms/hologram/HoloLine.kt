@@ -7,10 +7,10 @@ abstract class HoloLine(
     val distance: Float
 ) {
 
-    lateinit var npc: NPC; protected set
+    internal lateinit var npc: NPC
 
     fun isInitialized(): Boolean = this::npc.isInitialized
 
-    abstract fun initializeNPC(location: Location)
+    internal abstract fun initializeNPC(location: Location)
 
 }

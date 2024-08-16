@@ -9,18 +9,19 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.sayandev.stickynote.bukkit.extension.toLocation
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
+import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataSerializerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Vec3Accessor
 import org.sayandev.stickynote.bukkit.nms.enum.EntityAnimation
 import org.sayandev.stickynote.bukkit.nms.enum.EquipmentSlot
 import org.sayandev.stickynote.bukkit.nms.enum.Pose
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.EntityAccessor
-import org.sayandev.stickynote.nms.accessors.EntityDataSerializerAccessor
-import org.sayandev.stickynote.nms.accessors.SynchedEntityDataAccessor
-import org.sayandev.stickynote.nms.accessors.Vec3Accessor
 import java.util.*
 
 abstract class NPC: Viewable() {
@@ -81,7 +82,7 @@ abstract class NPC: Viewable() {
      */
     fun lookAt(position: Vector3) {
         val targetLocation: Location = position.toLocation(null)
-        val dirLocation: Location = position.toLocation(null)
+        val dirLocation: Location = this.position.toLocation(null)
         dirLocation.setDirection(targetLocation.subtract(dirLocation).toVector())
         look(dirLocation.yaw, dirLocation.pitch)
     }
@@ -352,11 +353,19 @@ abstract class NPC: Viewable() {
         viewer.sendPacket(PacketUtils.getEntityDataPacket(entity))
     }
 
+    fun sendEntityDataSync(viewer: Player) {
+        viewer.sendPacketSync(PacketUtils.getEntityDataPacket(entity))
+    }
+
     /**
      * Sends the entity data to all viewers
      */
     fun sendEntityData() {
-        getViewers().forEach(this::sendEntityData)
+        getViewers().sendPacket(PacketUtils.getEntityDataPacket(entity))
+    }
+
+    fun sendEntityDataSync() {
+        getViewers().sendPacketSync(PacketUtils.getEntityDataPacket(entity))
     }
 
     /**

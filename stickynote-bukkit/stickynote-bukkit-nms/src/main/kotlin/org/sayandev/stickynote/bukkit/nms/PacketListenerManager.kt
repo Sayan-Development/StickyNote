@@ -16,9 +16,9 @@ import org.sayandev.stickynote.bukkit.nms.event.PlayerActionEvent
 import org.sayandev.stickynote.bukkit.onlinePlayers
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.unregisterListener
-import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetContentPacketAccessor
-import org.sayandev.stickynote.nms.accessors.ClientboundContainerSetSlotPacketAccessor
-import org.sayandev.stickynote.nms.accessors.ServerboundPlayerActionPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetContentPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetSlotPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ServerboundPlayerActionPacketAccessor
 
 object PacketListenerManager: Listener {
 

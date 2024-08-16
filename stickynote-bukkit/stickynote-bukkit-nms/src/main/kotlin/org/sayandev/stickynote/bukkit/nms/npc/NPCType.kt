@@ -1,11 +1,7 @@
 package org.sayandev.stickynote.bukkit.nms.npc
 
 import org.bukkit.entity.EntityType
-import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.EntityTypeAccessor
-import org.sayandev.stickynote.nms.accessors.MobEffectsAccessor
-import java.lang.reflect.Field
-import java.util.*
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityTypeAccessor
 import kotlin.reflect.full.memberProperties
 
 enum class NPCType {
@@ -112,6 +108,9 @@ enum class NPCType {
     ZOMBIE_HORSE,
     ZOMBIE_VILLAGER,
     ZOMBIFIED_PIGLIN,
+    BLOCK_DISPLAY,
+    ITEM_DISPLAY,
+    TEXT_DISPLAY,
     PLAYER;
 
     val nmsEntityType: Any = EntityTypeAccessor::class.memberProperties.find { it.name == "FIELD_${name.uppercase()}" }!!.getter.call(EntityTypeAccessor)!!

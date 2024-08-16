@@ -12,7 +12,7 @@ import java.util.function.Function
 import java.util.function.UnaryOperator
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.1.4"
+    id("me.kcra.takenaka.accessor") version "1.2.0"
 }
 
 repositories {
@@ -40,11 +40,12 @@ tasks {
 
 @Suppress("LocalVariableName")
 accessors {
-    basePackage("org.sayandev.stickynote.nms.accessors")
-    accessedNamespaces("spigot", "mojang")
+    basePackage("org.sayandev.stickynote.bukkit.nms.accessors")
+    namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
     versionRange("1.8.8", "1.21")
+    mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketEntry = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Entry"
@@ -92,6 +93,7 @@ accessors {
     val ClientboundSetScorePacket = "net.minecraft.network.protocol.game.ClientboundSetScorePacket"
     val ClientboundUpdateMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket"
     val ClientboundRemoveMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket"
+    val ClientboundUpdateAttributesPacket = "net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket"
     val ServerboundPlayerActionPacket = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket"
     val ServerboundPlayerActionPacketAction = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket\$Action"
     val ServerboundInteractPacket = "net.minecraft.network.protocol.game.ServerboundInteractPacket"
@@ -246,6 +248,18 @@ accessors {
     val CommonListenerCookie = "net.minecraft.server.network.CommonListenerCookie"
     val GameProfile = "com.mojang.authlib.GameProfile"
     val Lifecycle = "com.mojang.serialization.Lifecycle"
+    val NumberFormat = "net.minecraft.network.chat.numbers.NumberFormat"
+    val BlankFormat = "net.minecraft.network.chat.numbers.BlankFormat"
+    val DisplaySlot = "net.minecraft.world.scores.DisplaySlot"
+    val Display = "net.minecraft.world.entity.Display"
+    val BlockDisplay = "net.minecraft.world.entity.Display\$BlockDisplay"
+    val ItemDisplay = "net.minecraft.world.entity.Display\$ItemDisplay"
+    val TextDisplay = "net.minecraft.world.entity.Display\$TextDisplay"
+    val BillboardConstraints = "net.minecraft.world.entity.Display\$BillboardConstraints"
+    val ItemDisplayContext = "net.minecraft.world.item.ItemDisplayContext"
+    val AttributeInstance = "net.minecraft.world.entity.ai.attributes.AttributeInstance"
+    val Attributes = "net.minecraft.world.entity.ai.attributes.Attributes"
+
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
     val Arrow = "net.minecraft.world.entity.projectile.Arrow"
@@ -485,13 +499,17 @@ accessors {
     }
     mapClass(ClientboundSetDisplayObjectivePacket) {
         constructor(Int::class, Objective)
+        constructor(DisplaySlot, Objective)
         methodInferred("getObjectiveName", "1.20.4")
     }
     mapClass(ClientboundSetObjectivePacket) {
         constructor(Objective, Int::class)
+        fieldInferred("numberFormat", "1.20.6")
     }
     mapClass(ClientboundSetScorePacket) {
         constructor(ServerScoreboardMethod, String::class, String::class, Int::class)
+        constructor(String::class, String::class, Int::class, Component, NumberFormat) //1.20.2 - 1.20.3
+        constructor(String::class, String::class, Int::class, Optional::class, Optional::class) //1.20.4 and above
     }
     mapClass(ClientboundUpdateMobEffectPacket) {
         constructor(Int::class, MobEffectInstance)
@@ -500,6 +518,10 @@ accessors {
     mapClass(ClientboundRemoveMobEffectPacket) {
         constructor(Int::class, MobEffect)
         constructor(Int::class, Holder)
+    }
+    mapClass(ClientboundUpdateAttributesPacket) {
+        constructor(Int::class, Collection::class)
+        constructor(Int::class, List::class)
     }
     mapClass(ServerboundPlayerActionPacket) {
         methodInferred("getPos", "1.20.4")
@@ -757,6 +779,7 @@ accessors {
         methodInferred("getUseItem", "1.20.4")
         methodInferred("getUseItemRemainingTicks", "1.20.4")
         methodInferred("setLivingEntityFlag", "1.20.4", Int::class, Boolean::class)
+        method(AttributeInstance, "getAttribute", Holder)
         fieldInferred("useItem", "1.20.4")
         fieldInferred("DATA_LIVING_ENTITY_FLAGS", "1.20.4")
         fieldInferred("DATA_HEALTH_ID", "1.20.4")
@@ -903,7 +926,10 @@ accessors {
             "ZOMBIE_VILLAGER",
             "ZOMBIFIED_PIGLIN",
             "PLAYER",
-            "FISHING_BOBBER"
+            "FISHING_BOBBER",
+            "BLOCK_DISPLAY",
+            "ITEM_DISPLAY",
+            "TEXT_DISPLAY"
         )
     }
     mapClass(EquipmentSlot) {
@@ -1024,6 +1050,7 @@ accessors {
     mapClass(SynchedEntityData) {
         constructor(Entity)
         fieldInferred("itemsById", "1.20.4")
+        field("$DataItem[]", "itemsById")
         methodInferred("packDirty", "1.20.4") //1.19.3 and higher
         methodInferred("getNonDefaultValues", "1.20.4") //1.19.3 and higher
         methodInferred("define", "1.20.4", EntityDataAccessor, Object::class)
@@ -1486,6 +1513,7 @@ accessors {
         methodInferred("getOrCreateObjective", "1.16.5", String::class)
         methodInferred("getObjective", "1.16.5", String::class)
         methodInferred("addObjective", "1.16.5", String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
+        method(Objective, "addObjective", String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType, Boolean::class, NumberFormat)
         methodInferred("getOrCreatePlayerScore", "1.16.5", String::class, Objective)
         methodInferred("getTrackedPlayers", "1.16.5")
         methodInferred("resetPlayerScore", "1.16.5", String::class, Objective)
@@ -1602,6 +1630,7 @@ accessors {
     }
     mapClass(Objective) {
         constructor(Scoreboard, String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType)
+        constructor(Scoreboard, String::class, ObjectiveCriteria, Component, ObjectiveCriteriaRenderType, Boolean::class, NumberFormat)
     }
     mapClass(ObjectiveCriteria) {
         fieldInferred("TRIGGER", "1.20.4")
@@ -1636,6 +1665,114 @@ accessors {
     mapClass(CommonListenerCookie) {
         constructor(GameProfile, Int::class, ClientInformation)
     }
+    mapClass(BlankFormat) {
+        field(BlankFormat, "INSTANCE")
+    }
+    mapClass(DisplaySlot) {
+        enumConstant("SIDEBAR", "BELOW_NAME")
+    }
+    mapClass(Display) {
+        constructor(EntityType, Level)
+        field(EntityDataAccessor, "DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID")
+        field(EntityDataAccessor, "DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID")
+        field(EntityDataAccessor, "DATA_POS_ROT_INTERPOLATION_DURATION_ID")
+        field(EntityDataAccessor, "DATA_TRANSLATION_ID")
+        field(EntityDataAccessor, "DATA_SCALE_ID")
+        field(EntityDataAccessor, "DATA_LEFT_ROTATION_ID")
+        field(EntityDataAccessor, "DATA_RIGHT_ROTATION_ID")
+        field(EntityDataAccessor, "DATA_BILLBOARD_RENDER_CONSTRAINTS_ID")
+        field(EntityDataAccessor, "DATA_BRIGHTNESS_OVERRIDE_ID")
+        field(EntityDataAccessor, "DATA_VIEW_RANGE_ID")
+        field(EntityDataAccessor, "DATA_SHADOW_RADIUS_ID")
+        field(EntityDataAccessor, "DATA_SHADOW_STRENGTH_ID")
+        field(EntityDataAccessor, "DATA_WIDTH_ID")
+        field(EntityDataAccessor, "DATA_HEIGHT_ID")
+        field(EntityDataAccessor, "DATA_GLOW_COLOR_OVERRIDE_ID")
+        field(String::class, "TAG_POS_ROT_INTERPOLATION_DURATION")
+        field(String::class, "TAG_TRANSFORMATION_INTERPOLATION_DURATION")
+        field(String::class, "TAG_TRANSFORMATION_START_INTERPOLATION")
+        field(String::class, "TAG_TRANSFORMATION")
+        field(String::class, "TAG_BILLBOARD")
+        field(String::class, "TAG_BRIGHTNESS")
+        field(String::class, "TAG_VIEW_RANGE")
+        field(String::class, "TAG_SHADOW_RADIUS")
+        field(String::class, "TAG_SHADOW_STRENGTH")
+        field(String::class, "TAG_WIDTH")
+        field(String::class, "TAG_HEIGHT")
+        field(String::class, "TAG_GLOW_COLOR_OVERRIDE")
+    }
+    mapClass(BlockDisplay) {
+        constructor(EntityType, Level)
+        field(EntityDataAccessor, "DATA_BLOCK_STATE_ID")
+        method(Void.TYPE, "defineSynchedData")
+    }
+    mapClass(ItemDisplay) {
+        constructor(EntityType, Level)
+        field(EntityDataAccessor, "DATA_ITEM_STACK_ID")
+        field(EntityDataAccessor, "DATA_ITEM_DISPLAY_ID")
+        method(Void.TYPE, "defineSynchedData")
+    }
+    mapClass(TextDisplay) {
+        constructor(EntityType, Level)
+        field(EntityDataAccessor, "DATA_TEXT_ID")
+        field(EntityDataAccessor, "DATA_LINE_WIDTH_ID")
+        field(EntityDataAccessor, "DATA_BACKGROUND_COLOR_ID")
+        field(EntityDataAccessor, "DATA_TEXT_OPACITY_ID")
+        field(EntityDataAccessor, "DATA_STYLE_FLAGS_ID")
+        method(Void.TYPE, "defineSynchedData")
+    }
+    mapClass(BillboardConstraints) {
+        enumConstant(
+            "FIXED",
+            "VERTICAL",
+            "HORIZONTAL",
+            "CENTER"
+        )
+        method(Byte::class, "getId")
+    }
+    mapClass(ItemDisplayContext) {
+        enumConstant(
+            "NONE",
+            "THIRD_PERSON_LEFT_HAND",
+            "THIRD_PERSON_RIGHT_HAND",
+            "FIRST_PERSON_LEFT_HAND",
+            "FIRST_PERSON_RIGHT_HAND",
+            "HEAD",
+            "GUI",
+            "GROUND",
+            "FIXED"
+        )
+        method(Byte::class, "getId")
+    }
+    mapClass(AttributeInstance) {
+        method(Double::class, "getBaseValue")
+        method(Void.TYPE, "setBaseValue", Double::class)
+    }
+    mapClass(Attributes) {
+        field(Holder, "ARMOR")
+        field(Holder, "ARMOR_TOUGHNESS")
+        field(Holder, "ATTACK_DAMAGE")
+        field(Holder, "ATTACK_KNOCKBACK")
+        field(Holder, "ATTACK_SPEED")
+        field(Holder, "BLOCK_BREAK_SPEED")
+        field(Holder, "BLOCK_INTERACTION_RANGE")
+        field(Holder, "ENTITY_INTERACTION_RANGE")
+        field(Holder, "FALL_DAMAGE_MULTIPLIER")
+        field(Holder, "FLYING_SPEED")
+        field(Holder, "FOLLOW_RANGE")
+        field(Holder, "GRAVITY")
+        field(Holder, "JUMP_STRENGTH")
+        field(Holder, "KNOCKBACK_RESISTANCE")
+        field(Holder, "LUCK")
+        field(Holder, "MAX_ABSORPTION")
+        field(Holder, "MAX_HEALTH")
+        field(Holder, "MOVEMENT_SPEED")
+        field(Holder, "SAFE_FALL_DISTANCE")
+        field(Holder, "SCALE")
+        field(Holder, "SPAWN_REINFORCEMENTS_CHANCE")
+        field(Holder, "STEP_HEIGHT")
+    }
+
     mapClass(CrossbowItem) {
         methodInferred("isCharged", "1.16.5", ItemStack)
         methodInferred("setCharged", "1.16.5", ItemStack, Boolean::class)

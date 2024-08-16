@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.EntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
 
 abstract class EntityNPC(
     entity: Any,

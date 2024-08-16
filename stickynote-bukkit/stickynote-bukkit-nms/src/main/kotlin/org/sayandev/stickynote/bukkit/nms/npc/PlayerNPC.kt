@@ -10,55 +10,87 @@ import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.CollisionRule
+import org.sayandev.stickynote.bukkit.nms.enum.ModelPart
 import org.sayandev.stickynote.bukkit.nms.enum.NameTagVisibility
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
+import org.sayandev.stickynote.bukkit.nms.skin.Skin
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.ClientInformationAccessor
-import org.sayandev.stickynote.nms.accessors.ServerGamePacketListenerImplAccessor
-import org.sayandev.stickynote.nms.accessors.ServerPlayerAccessor
-import org.sayandev.stickynote.nms.accessors.ServerPlayerGameModeAccessor
 import sun.reflect.ReflectionFactory
 import java.lang.reflect.Constructor
 import java.util.*
 
 class PlayerNPC(
     val name: String,
-    private val location: Location
-): HumanEntityNPC(createServerPlayerObject(name, location.world), location, NPCType.PLAYER) {
+    private val location: Location,
+    skin: Skin? = null
+): LivingEntityNPC(createServerPlayerObject(name, location.world), location, NPCType.PLAYER) {
 
-    val tabName16 = "[NPC] " + UUID.randomUUID().toString().replace("-", "").substring(0, 10)
+    constructor(name: String, location: Location): this(name, location, null)
 
-    var collision = true; private set
-
-    fun setCollision(collision: Boolean) {
-        this.collision = collision
-        getViewers().sendPacket(createModifyPlayerTeamPacket())
+    init {
+        skin?.let { setSkin(skin) }
     }
 
-    /*fun setModelParts(vararg modelParts: me.mohamad82.ruom.npc.PlayerNPC.ModelPart?) {
-        Ruom.run {
-            SynchedEntityDataAccessor.getMethodSet1().invoke(
-                getEntityData(),
-                PlayerAccessor.getFieldDATA_PLAYER_MODE_CUSTOMISATION().get(null),
-                PlayerNPC.ModelPart.getMasks(*modelParts)
-            )
+    var skin = skin; private set
+    val tabName16 = "[NPC] " + UUID.randomUUID().toString().replace("-", "").substring(0, 10)
+
+    var collision = true
+        set(value) {
+            field = value
+            getViewers().sendPacket(createModifyPlayerTeamPacket())
         }
+
+    var nameTagVisibility = NameTagVisibility.ALWAYS
+        set(value) {
+            field = value
+            getViewers().sendPacket(createModifyPlayerTeamPacket())
+        }
+
+    /**
+     * Sets the skin of the NPC and applies it to the NPC.
+     * @param skin The skin to set.
+     * @param modelParts The model parts to apply the skin to. Default is all model parts.
+     * @see Skin
+     * @see [org.sayandev.stickynote.bukkit.nms.skin.SkinUtils]
+     */
+    fun setSkin(skin: Skin, vararg modelParts: ModelPart = ModelPart.entries.toTypedArray()) {
+        this.skin = skin
+        skin.apply(this)
+        setModelParts(*modelParts)
+    }
+
+    /**
+     * Sets the model parts of the NPC.
+     * @param modelParts The model parts to set.
+     * @see ModelPart
+     */
+    fun setModelParts(vararg modelParts: ModelPart) {
+        SynchedEntityDataAccessor.METHOD_SET!!.invoke(
+            getEntityData(),
+            PlayerAccessor.FIELD_DATA_PLAYER_MODE_CUSTOMISATION!!,
+            ModelPart.getMasks(*modelParts)
+        )
         sendEntityData()
-    }*/
+    }
 
     fun setTabList(component: Component?) {
         getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER))
         if (component != null) {
             listNameField[entity] = MinecraftComponentSerializer.get().serialize(component)
-            getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER))
+            getViewers().sendPacket(
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_DISPLAY_NAME),
+                PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_LISTED)
+            )
         }
     }
 
     override fun addViewer(viewer: Player) {
         viewer.sendPacket(
             PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
-            if ((ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)))
+            if (ServerVersion.isAtLeast(20, 2))
                 PacketUtils.getAddEntityPacket(entity)
             else
                 PacketUtils.getAddPlayerPacket(entity),
@@ -79,9 +111,9 @@ class PlayerNPC(
             tabName16,
             Component.empty(),
             Component.empty(),
-            NameTagVisibility.NEVER,
+            nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
-            ChatColor.BLUE,
+            ChatColor.WHITE,
             listOf(name),
             false
         )
@@ -92,9 +124,9 @@ class PlayerNPC(
             tabName16,
             Component.empty(),
             Component.empty(),
-            NameTagVisibility.NEVER,
+            nameTagVisibility,
             if (collision) CollisionRule.ALWAYS else CollisionRule.NEVER,
-            ChatColor.BLUE,
+            ChatColor.WHITE,
             false
         )
     }
@@ -107,7 +139,7 @@ class PlayerNPC(
             val serverLevel: Any = NMSUtils.getServerLevel(world)
             val profile = GameProfile(UUID.randomUUID(), name)
             val serverPlayer: Any
-            if (ServerVersion.supports(21) || (ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 2)) {
+            if (ServerVersion.isAtLeast(20, 2)) {
                 serverPlayer = ServerPlayerAccessor.CONSTRUCTOR_3!!.newInstance(
                     NMSUtils.getDedicatedServer(),
                     serverLevel,
@@ -149,9 +181,6 @@ class PlayerNPC(
                         .newInstance(serverLevel)
                 )
             }
-            /*if (skin.isPresent()) {
-                skin.get().apply(serverPlayer)
-            }*/
 
             return serverPlayer
         }
