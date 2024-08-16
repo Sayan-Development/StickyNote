@@ -119,9 +119,9 @@ enum class NPCType {
         @JvmStatic
         fun getByEntityType(entityType: EntityType): NPCType {
             return when (entityType) {
-                EntityType.SPLASH_POTION -> POTION
-                EntityType.DROPPED_ITEM -> ITEM
-                EntityType.FISHING_HOOK -> FISHING_BOBBER
+                EntityType.valueOf("SPLASH_POTION") -> POTION
+                EntityType.valueOf("DROPPED_ITEM") -> ITEM
+                EntityType.valueOf("FISHING_HOOK") -> FISHING_BOBBER
                 else -> valueOf(entityType.toString())
             }
         }

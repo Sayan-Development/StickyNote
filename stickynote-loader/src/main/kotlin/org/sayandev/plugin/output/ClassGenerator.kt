@@ -1,23 +1,26 @@
 package org.sayandev.plugin.output
 
+import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.kotlinpoet.javapoet.JClassName
 import com.squareup.kotlinpoet.javapoet.JTypeSpec
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
+import org.apache.groovy.json.internal.Type
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.file.Directory
 import org.sayandev.plugin.ModuleConfiguration
 import javax.lang.model.element.Modifier
+import kotlin.jvm.optionals.getOrNull
 
 @KotlinPoetJavaPoetPreview
 class ClassGenerator(
     val project: Project,
     val outputDir: Directory,
     val modules: List<ModuleConfiguration>,
-    val useLoader: Boolean,
-    val relocate: Boolean,
     val relocation: Pair<String, String>
 ) {
     private val basePackage = "org.sayandev.stickynote.generated"
@@ -27,14 +30,6 @@ class ClassGenerator(
         val file = JavaFile.builder(basePackage,
             JTypeSpec.classBuilder(stickynotesClass)
                 .addModifiers(Modifier.PUBLIC)
-                .addField(FieldSpec.builder(Boolean::class.java, "USE_LOADER")
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                    .initializer("$useLoader")
-                    .build())
-                .addField(FieldSpec.builder(Boolean::class.java, "RELOCATE")
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                    .initializer("$relocate")
-                    .build())
                 /*.addField(FieldSpec.builder(Boolean::class.java, "LOAD_KOTLIN")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .initializer("$loadKotlin")
@@ -49,10 +44,27 @@ class ClassGenerator(
                     .build()
                 )
                 .apply {
+                    val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
+                    val libs = versionCatalogs.named("stickyNoteLibs")
                     for (module in modules) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), module.type.artifact.replace("-", "_").uppercase())
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("new Dependency(\$S, \$S, \$S)", "org.sayandev", module.type.artifact, module.version)
+                            .initializer("new Dependency(\$S, \$S, \$S)", "org{}sayandev", module.type.artifact, module.version)
+                            .build())
+                        val bundleName = module.type.artifact.removePrefix("stickynote-")
+                        val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
+                        for (library in moduleBundleProvider.get()) {
+                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_"))).uppercase())
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                .initializer("new Dependency(\$S, \$S, \$S)", library.group.replace(".", "{}"), library.name, library.version)
+                                .build())
+                        }
+                    }
+
+                    for (repository in project.repositories.filterIsInstance<MavenArtifactRepository>().distinctBy { it.url }) {
+                        this.addField(FieldSpec.builder(String::class.java, "REPOSITORY_".plus(repository.name.replace("-", "_")).uppercase())
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .initializer("\$S", repository.url.toString().replace(".", "{}"))
                             .build())
                     }
                 }

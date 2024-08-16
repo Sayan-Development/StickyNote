@@ -1,1 +1,0 @@
-//group = "${rootProject.group}.proxy"

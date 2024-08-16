@@ -2,6 +2,7 @@ package org.sayandev.plugin
 
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.DefaultTask
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -25,23 +26,27 @@ abstract class StickyNoteTask : DefaultTask() {
     abstract val relocation: Property<Pair<String, String>>
 
     @get:Input
-    abstract val useLoader: Property<Boolean>
-
-    @get:Input
     abstract val useKotlin: Property<Boolean>
-
-    @get:Input
-    abstract val relocate: Property<Boolean>
-
 
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
         for (module in modules.get()) {
-            project.dependencies.add(if (useLoader.get()) "compileOnly" else "implementation", "org.sayandev:${module.type.artifact}:${module.version}")
+            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}-shaded:${module.version}")
         }
 
-        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), useLoader.get(), relocate.get(), relocation.get())
+        val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
+        val libs = versionCatalogs.named("stickyNoteLibs")
+        for (bundleAlias in libs.bundleAliases) {
+            for (library in libs.findBundle(bundleAlias).get().get()) {
+                if (library.name.contains("libby")) continue
+                if (library.group.contains("alessiodp")) continue
+                if (project.configurations.getByName("implementation").dependencies.any { it.name == library.name }) continue
+                project.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
+            }
+        }
+
+        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocation.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()
         classGenerator.generateStickyNotesClass()

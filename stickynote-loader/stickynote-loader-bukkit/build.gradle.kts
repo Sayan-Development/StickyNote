@@ -1,20 +1,16 @@
-import org.sayandev.Module
-import org.sayandev.applyDependencies
-import org.sayandev.applyRepositories
-import org.sayandev.applyShadowRelocation
-
-repositories {
-    applyRepositories(Module.LOADER_BUKKIT)
-    maven("https://repo.codemc.org/repository/maven-public/")
-}
-
 dependencies {
-    applyDependencies(Module.LOADER_BUKKIT)
+    compileOnly(libs.folia)
+
+    api(libs.libby.bukkit)
+    api(libs.libby.paper)
+
+    api(project(":stickynote-loader:stickynote-loader-common"))
+
     compileOnly(project(":stickynote-bukkit"))
 }
 
 tasks {
-    shadowJar {
-        applyShadowRelocation(Module.LOADER_BUKKIT)
+    java {
+        disableAutoTargetJvm()
     }
 }

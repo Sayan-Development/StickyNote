@@ -1,0 +1,133 @@
+[versions]
+# core
+kotlin-poet = "1.17.0"
+snakeyaml = "2.2"
+configurate = "4.1.2"
+cloud = "2.0.0-rc.2"
+cloud-paper = "2.0.0-beta.8"
+adventure = "4.17.0"
+adventure-examination = "1.3.0"
+mysql-connector = "8.4.0"
+jedis = "5.0.0"
+reflections = "0.10.2"
+hikari = "5.1.0"
+guava = "31.1-jre"
+gson = "2.10.1"
+kotlin-reflect = "2.0.0"
+netty = "4.1.111.Final"
+exposed = "0.53.0"
+libby = "2.0.0-SNAPSHOT"
+
+# minecraft
+adventure-platform = "4.3.3"
+
+# bukkit
+paper = "1.21-R0.1-SNAPSHOT"
+folia = "1.20.4-R0.1-SNAPSHOT"
+inventoryframework = "0.10.15"
+xseries = "11.2.0"
+pathetic-pathfinder-bukkit = "2.4.6"
+authlib = "6.0.54"
+skinsrestorer-api = "15.3.1"
+placeholderapi = "2.11.6"
+
+# proxy - velocity
+velocity = "3.3.0-SNAPSHOT"
+
+# proxy - bungeecord
+bungeecord = "1.19-R0.1-SNAPSHOT"
+
+[libraries]
+# core
+kotlin-poet-kotlin = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlin-poet" }
+kotlin-poet-java = { group = "com.squareup", name = "kotlinpoet-javapoet", version.ref = "kotlin-poet" }
+snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
+configurate-yaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
+configurate-extra-kotlin = { group = "org.spongepowered", name = "configurate-extra-kotlin", version.ref = "configurate" }
+cloud-core = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
+cloud-kotlin-extensions = { group = "org.incendo", name = "cloud-kotlin-extensions", version.ref = "cloud" }
+adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
+adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
+adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventure" }
+mysql-connector = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-connector" }
+jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
+hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin-reflect" }
+netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
+exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
+libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
+
+# bukkit
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+folia = { group = "dev.folia", name = "folia-api", version.ref = "folia" }
+cloud-paper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloud-paper" }
+cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloud-paper" }
+inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
+xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
+adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
+libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
+libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
+pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = "pathetic-mapping", version.ref = "pathetic-pathfinder-bukkit" }
+authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+skinsrestorer-api = { group = "net.skinsrestorer", name = "skinsrestorer-api", version.ref = "skinsrestorer-api" }
+
+# proxy - velocity
+velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
+libby-velocity = { group = "com.alessiodp.libby", name = "libby-velocity", version.ref = "libby" }
+
+# proxy - bungeecord
+bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
+adventure-platform-bungeecord = { group = "net.kyori", name = "adventure-platform-bungeecord", version.ref = "adventure-platform" }
+libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.ref = "libby" }
+
+
+[bundles]
+kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]
+configurate = ["configurate-yaml", "configurate-extra-kotlin"]
+cloud = ["cloud-core", "cloud-kotlin-extensions"]
+cloud-bukkit = ["cloud-paper", "cloud-minecraft-extras"]
+
+# implementation modules
+implementation-loader = [
+    "kotlin-poet-java",
+    "kotlin-poet-kotlin"
+]
+implementation-core = [
+#    "snakeyaml",
+    "configurate-yaml",
+    "configurate-extra-kotlin",
+    "cloud-core",
+    "cloud-kotlin-extensions",
+    "adventure-api",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-gson",
+    "reflections",
+    "kotlin-reflect",
+    "hikari",
+#    "gson",
+    "exposed-core",
+    "exposed-jdbc"
+]
+implementation-bukkit = [
+    "cloud-paper",
+    "cloud-minecraft-extras",
+    "inventoryframework",
+    "xseries",
+    "adventure-platform-bukkit",
+    "pathetic-pathfinder-bukkit"
+]
+implementation-bukkit-nms = [
+]
+implementation-proxy = [
+    "mysql-connector"
+]
+implementation-velocity = [
+]
+implementation-bungeecord = [
+    "adventure-platform-bungeecord"
+]

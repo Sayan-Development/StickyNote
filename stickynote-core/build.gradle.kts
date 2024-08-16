@@ -1,19 +1,19 @@
-import org.sayandev.Module
-import org.sayandev.applyDependencies
-import org.sayandev.applyRepositories
-import org.sayandev.applyShadowRelocation
-
-repositories {
-    applyRepositories(Module.CORE)
-}
-
 dependencies {
-    applyDependencies(Module.CORE)
-    implementation(kotlin("stdlib", version = "2.0.0"))
-}
+    api(libs.snakeyaml)
+    api(libs.configurate.yaml)
+    api(libs.configurate.extra.kotlin)
+    api(libs.cloud.core)
+    api(libs.cloud.kotlin.extensions)
+    api(libs.adventure.api)
+    api(libs.adventure.text.minimessage)
+    api(libs.adventure.text.serializer.gson)
+    api(libs.mysql.connector)
+    api(libs.jedis)
+    api(libs.reflections)
+    api(libs.hikari)
+    api(libs.gson)
+    api(libs.kotlin.reflect)
 
-tasks {
-    shadowJar {
-        applyShadowRelocation(Module.CORE)
-    }
+    compileOnlyApi(libs.guava)
+    compileOnlyApi(libs.netty.all)
 }

@@ -17,22 +17,22 @@ object AdventureUtils {
     @JvmStatic
     val miniMessage = MiniMessage.miniMessage()
 
-    fun CommandSender.sendComponent(message: String, vararg tagResolvers: TagResolver) {
-        audience.sender(this).sendMessage(PlaceholderAPIHook.injectPlaceholders(this as? Player, message).component(*tagResolvers))
+    @JvmStatic
+    fun sendComponent(sender: CommandSender, message: String, vararg placeholder: TagResolver) {
+        audience.sender(sender).sendMessage(PlaceholderAPIHook.injectPlaceholders(sender as? Player, message).component(*placeholder))
     }
 
-    fun Player.sendMiniMessage(message: String, vararg tagResolvers: TagResolver) {
-        audience.sender(this).sendMessage(toComponent(this, message, *tagResolvers))
+    @JvmStatic
+    fun sendComponentActionbar(player: Player, content: String, vararg placeholder: TagResolver) {
+        audience.player(player).sendActionBar(PlaceholderAPIHook.injectPlaceholders(player, content).component(*placeholder))
     }
 
-    fun Player.sendComponentActionbar(content: String, vararg tagResolvers: TagResolver) {
-        audience.player(this).sendActionBar(PlaceholderAPIHook.injectPlaceholders(this, content).component(*tagResolvers))
-    }
-
+    @JvmStatic
     fun toComponent(content: String, vararg placeholder: TagResolver): Component {
         return miniMessage.deserialize(content, *placeholder)
     }
 
+    @JvmStatic
     fun toComponent(player: Player?, content: String, vararg placeholder: TagResolver): Component {
         return miniMessage.deserialize(PlaceholderAPIHook.injectPlaceholders(player, content), *placeholder)
     }
