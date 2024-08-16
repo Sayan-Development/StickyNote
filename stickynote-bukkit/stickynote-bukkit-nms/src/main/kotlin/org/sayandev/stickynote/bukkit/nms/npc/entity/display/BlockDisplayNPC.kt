@@ -27,7 +27,6 @@ class BlockDisplayNPC(
                 Display_BlockDisplayAccessor.FIELD_DATA_BLOCK_STATE_ID,
                 NMSUtils.getBlockState(value)
             )
-            sendEntityData()
         }
 
     init {

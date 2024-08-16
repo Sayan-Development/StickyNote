@@ -26,7 +26,6 @@ class TextDisplayNPC(
                 Display_TextDisplayAccessor.FIELD_DATA_TEXT_ID,
                 MinecraftComponentSerializer.get().serialize(value)
             )
-            sendEntityData()
         }
 
     var lineWidth: Int = 0
@@ -38,7 +37,6 @@ class TextDisplayNPC(
                 Display_TextDisplayAccessor.FIELD_DATA_LINE_WIDTH_ID,
                 value
             )
-            sendEntityData()
         }
 
     var backgroundColor: Int = 0
@@ -50,7 +48,6 @@ class TextDisplayNPC(
                 Display_TextDisplayAccessor.FIELD_DATA_BACKGROUND_COLOR_ID,
                 value
             )
-            sendEntityData()
         }
 
     var textOpacity: Byte = 0
@@ -62,7 +59,6 @@ class TextDisplayNPC(
                 Display_TextDisplayAccessor.FIELD_DATA_TEXT_OPACITY_ID,
                 value
             )
-            sendEntityData()
         }
 
     var styleFlags: Byte = 0
@@ -74,7 +70,6 @@ class TextDisplayNPC(
                 Display_TextDisplayAccessor.FIELD_DATA_STYLE_FLAGS_ID,
                 value
             )
-            sendEntityData()
         }
 
     init {
