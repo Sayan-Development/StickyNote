@@ -9,28 +9,13 @@ plugins {
 
 val slug = "stickynote"
 
-catalog {
-    versionCatalog {
-        from(files("${rootProject.projectDir}/gradle/libs.versions.toml"))
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("catalog") {
-            artifactId = ("${artifactId.lowercase()}-catalog")
-            from(components["versionCatalog"])
-            setPom(this)
-        }
-    }
-}
-
 allprojects {
     group = "org.sayandev"
     version = "1.6.0"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
+    plugins.apply("version-catalog")
     plugins.apply("java-library")
     plugins.apply("kotlin")
     plugins.apply("com.github.johnrengelman.shadow")
@@ -89,6 +74,12 @@ allprojects {
 }
 
 subprojects {
+    catalog {
+        versionCatalog {
+            from(files("${rootProject.projectDir}/gradle/libs.versions.toml"))
+        }
+    }
+
     java {
         withSourcesJar()
         withJavadocJar()
@@ -134,6 +125,11 @@ subprojects {
 
     publishing {
         publications {
+            create<MavenPublication>("catalog") {
+                artifactId = "${rootProject.name.lowercase()}-catalog"
+                from(components["versionCatalog"])
+                setPom(this)
+            }
             create<MavenPublication>("maven") {
                 groupId = rootProject.group as String
 //                shadow.component(this)
