@@ -109,11 +109,11 @@ abstract class DisplayNPC(
 
     var brightnessOverride: Int = 0
         set(value) {
-            field = value
+            field = value.coerceIn(-1, 255)
             SynchedEntityDataAccessor.METHOD_SET!!.invoke(
                 getEntityData(),
                 DisplayAccessor.FIELD_DATA_BRIGHTNESS_OVERRIDE_ID!!,
-                value
+                field
             )
             sendEntityData()
         }
