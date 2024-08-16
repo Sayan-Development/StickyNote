@@ -17,10 +17,10 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.bukkit.nms.accessors.*
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.net.InetSocketAddress
@@ -610,10 +610,7 @@ object NMSUtils {
      * @param passengers The passengers that are going to ride on the entity.
      */
     fun setPassengers(viewers: Set<Player>, entity: Any, vararg passengers: Int) {
-        viewers.sendPacket(
-            viewers,
-            PacketUtils.getEntityPassengersPacket(entity, *passengers)
-        )
+        viewers.sendPacket(PacketUtils.getEntityPassengersPacket(entity, *passengers))
     }
 
     /**
