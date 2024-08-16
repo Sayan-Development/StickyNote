@@ -5,7 +5,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.npc.EntityNPC
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
 import org.sayandev.stickynote.bukkit.nms.utils.Rotations
-import org.sayandev.stickynote.nms.accessors.ArmorStandAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ArmorStandAccessor
 
 class ArmorStandNPC(
     location: Location

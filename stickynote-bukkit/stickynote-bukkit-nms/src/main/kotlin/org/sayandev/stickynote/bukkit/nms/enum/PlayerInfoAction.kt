@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.enum
 
-import org.sayandev.stickynote.nms.accessors.ClientboundPlayerInfoUpdatePacket_ActionAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundPlayerInfoUpdatePacket_ActionAccessor
 
 /**
  * @param nmsObject The nms object of the PlayerInfoAction.

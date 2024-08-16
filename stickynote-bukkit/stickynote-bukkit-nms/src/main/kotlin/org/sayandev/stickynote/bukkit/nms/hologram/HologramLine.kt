@@ -7,8 +7,8 @@ import org.sayandev.stickynote.bukkit.extension.toNmsComponent
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.npc.entity.ArmorStandNPC
-import org.sayandev.stickynote.nms.accessors.EntityAccessor
-import org.sayandev.stickynote.nms.accessors.EntityDataAccessorAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.EntityDataAccessorAccessor
 
 /**
  * HologramLine displays a Component in a Hologram
@@ -47,7 +47,7 @@ class HologramLine(
         getArmorStandNPC().setMarker(true)
     }
 
-    fun getArmorStandNPC(): ArmorStandNPC {
+    internal fun getArmorStandNPC(): ArmorStandNPC {
         return npc as ArmorStandNPC
     }
 }

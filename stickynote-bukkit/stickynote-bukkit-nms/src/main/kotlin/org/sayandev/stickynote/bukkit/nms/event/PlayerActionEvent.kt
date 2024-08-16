@@ -2,10 +2,10 @@ package org.sayandev.stickynote.bukkit.nms.event
 
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.DirectionAccessor
-import org.sayandev.stickynote.nms.accessors.ServerboundPlayerActionPacketAccessor
-import org.sayandev.stickynote.nms.accessors.ServerboundPlayerActionPacket_ActionAccessor
-import org.sayandev.stickynote.nms.accessors.Vec3iAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.DirectionAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ServerboundPlayerActionPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ServerboundPlayerActionPacket_ActionAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.Vec3iAccessor
 import java.util.*
 
 abstract class PlayerActionEvent : PacketListener {

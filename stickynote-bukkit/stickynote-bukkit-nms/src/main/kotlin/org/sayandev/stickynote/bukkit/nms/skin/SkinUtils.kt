@@ -11,7 +11,7 @@ import org.sayandev.stickynote.bukkit.hasPlugin
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.nms.accessors.PlayerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.PlayerAccessor
 import java.io.InputStreamReader
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -87,12 +87,12 @@ object SkinUtils {
 
         var signature: String? = null
         if (property.hasSignature()) {
-            val signatureMethod = if ((ServerVersion.version() == 20 && ServerVersion.patchNumber() >= 3) || ServerVersion.supports(21)) {
+            val signatureMethod = if (ServerVersion.isAtLeast(20, 3)) {
                 Property::class.java.getMethod("signature")
             } else {
                 Property::class.java.getMethod("getSignature")
             }
-            signature = signatureMethod.invoke(gameProfile) as String
+            signature = signatureMethod.invoke(property) as String
         }
 
         return Skin(PlayerProfiles.getSkinValue(gameProfile)!!, signature)

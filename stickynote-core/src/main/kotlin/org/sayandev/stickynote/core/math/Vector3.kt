@@ -10,6 +10,9 @@ data class Vector3(
     var y: Double,
     var z: Double
 ) {
+
+    constructor(x: Int, y: Int, z: Int) : this(x.toDouble(), y.toDouble(), z.toDouble())
+
     val blockX: Int
         get() {
             if (x > 0) return x.toInt()
@@ -48,11 +51,27 @@ data class Vector3(
         return this
     }
 
+    fun add(x: Int, y: Int, z: Int): Vector3 {
+        this.x += x
+        this.y += y
+        this.z += z
+
+        return this
+    }
+
     fun add(other: Vector3): Vector3 {
         return add(other.x, other.y, other.z)
     }
 
     fun subtract(x: Double, y: Double, z: Double): Vector3 {
+        this.x -= x
+        this.y -= y
+        this.z -= z
+
+        return this
+    }
+
+    fun subtract(x: Int, y: Int, z: Int): Vector3 {
         this.x -= x
         this.y -= y
         this.z -= z
@@ -103,10 +122,13 @@ data class Vector3(
 
     companion object {
         private val ZERO = at(0, 0, 0)
+        private val ONE = at(1, 1, 1)
 
         @JvmStatic
         val zero: Vector3
             get() = ZERO.copy()
+        val one: Vector3
+            get() = ONE.copy()
 
         @JvmStatic
         fun at(x: Double, y: Double, z: Double): Vector3 {

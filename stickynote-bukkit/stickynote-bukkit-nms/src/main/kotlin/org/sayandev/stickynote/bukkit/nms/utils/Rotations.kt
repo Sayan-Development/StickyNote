@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.utils
 
-import org.sayandev.stickynote.nms.accessors.RotationsAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.RotationsAccessor
 
 class Rotations(
     x: Float,

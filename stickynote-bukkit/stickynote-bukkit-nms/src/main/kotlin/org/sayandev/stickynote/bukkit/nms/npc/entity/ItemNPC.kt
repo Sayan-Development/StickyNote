@@ -6,7 +6,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.toNmsItemStack
 import org.sayandev.stickynote.bukkit.nms.npc.EntityNPC
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
-import org.sayandev.stickynote.nms.accessors.ItemEntityAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ItemEntityAccessor
 
 class ItemNPC(
     location: Location,

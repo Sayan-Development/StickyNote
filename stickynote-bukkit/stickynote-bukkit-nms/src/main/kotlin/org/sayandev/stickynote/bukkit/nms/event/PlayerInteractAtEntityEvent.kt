@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.enum.InteractionHand
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.*
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 
 /**
  * A packet-based event that triggers whenever a player interact on both server-sided and client-sided (sent by packets) entities.

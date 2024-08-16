@@ -11,7 +11,7 @@ import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.enum.PlayerInfoAction
 import org.sayandev.stickynote.bukkit.nms.npc.PlayerNPC
-import org.sayandev.stickynote.nms.accessors.PlayerAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.PlayerAccessor
 
 class Skin(
     val texture: String,
@@ -51,7 +51,7 @@ class Skin(
      * Applies the skin to a player NPC
      * @param playerNPC The player NPC to apply the skin to
      */
-    fun apply(playerNPC: PlayerNPC) {
+    internal fun apply(playerNPC: PlayerNPC) {
         val gameProfile = PlayerAccessor.METHOD_GET_GAME_PROFILE!!.invoke(playerNPC.entity) as GameProfile
         gameProfile.properties.removeAll("textures")
         gameProfile.properties.put("textures", Property("textures", texture, signature))

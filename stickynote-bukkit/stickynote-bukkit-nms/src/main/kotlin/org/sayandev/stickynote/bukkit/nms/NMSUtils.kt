@@ -13,12 +13,14 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
-import org.sayandev.stickynote.nms.accessors.*
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.net.InetSocketAddress
@@ -36,9 +38,6 @@ object NMSUtils {
     private val CRAFT_BLOCK_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockState") }
     private val CRAFT_LIVING_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftLivingEntity") }
     private val CRAFT_ENTITY: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftEntity") }
-    /**
-     * mc-1.9 and above
-     */
     private val CRAFT_BLOCK_ENTITY_STATE: Result<Class<*>> = runCatching { XReflection.getCraftClass("block.CraftBlockEntityState") }
     private val CRAFT_CHUNK: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftChunk") }
 
@@ -47,22 +46,12 @@ object NMSUtils {
     private val CRAFT_PLAYER_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_PLAYER.getOrThrow().getMethod("getHandle") }
     private val CRAFT_WORLD_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_WORLD.getOrThrow().getMethod("getHandle") }
     private val CRAFT_SERVER_GET_SERVER_METHOD: Result<Method> = runCatching { CRAFT_SERVER.getOrThrow().getMethod("getServer") }
-    /**
-     * mc-1.13 and above
-     */
     private val CRAFT_BLOCK_STATE_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_BLOCK_STATE.getOrThrow().getMethod("getHandle") }
     private val CRAFT_LIVING_ENTITY_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_LIVING_ENTITY.getOrThrow().getMethod("getHandle") }
     private val CRAFT_ENTITY_GET_HANDLE_METHOD: Result<Method> = runCatching { CRAFT_ENTITY.getOrThrow().getMethod("getHandle") }
     private val ENTITY_GET_BUKKIT_ENTITY_METHOD: Result<Method> = runCatching { EntityAccessor.TYPE!!.getMethod("getBukkitEntity") }
-    /**
-     * mc-1.9 and above
-     */
     private val CRAFT_BLOCK_ENTITY_STATE_GET_TITE_ENTITY_METHOD: Result<Method> = runCatching { CRAFT_BLOCK_ENTITY_STATE.getOrThrow().getDeclaredMethod("getTileEntity").apply { isAccessible = true } }
     private val CRAFT_CHUNK_GET_HANDLE_METHOD: Result<Method> = runCatching { if (ServerVersion.supports(19)) CRAFT_CHUNK.getOrThrow().getMethod("getHandle", ChunkStatusAccessor.TYPE) else CRAFT_CHUNK.getOrThrow().getMethod("getHandle") }
-
-    /**
-     * mc-1.13 and above
-     */
     private val LIVING_ENTITY_DROPS_FIELD: Result<Field> = runCatching { LivingEntityAccessor.TYPE!!.getField("drops") }
 
     fun getNmsItemStack(item: ItemStack): Any {
@@ -621,10 +610,7 @@ object NMSUtils {
      * @param passengers The passengers that are going to ride on the entity.
      */
     fun setPassengers(viewers: Set<Player>, entity: Any, vararg passengers: Int) {
-        viewers.sendPacket(
-            viewers,
-            PacketUtils.getEntityPassengersPacket(entity, *passengers)
-        )
+        viewers.sendPacket(PacketUtils.getEntityPassengersPacket(entity, *passengers))
     }
 
     /**
@@ -643,6 +629,29 @@ object NMSUtils {
         )
 
         viewers.sendPacket(chestAnimationPacket)
+    }
+
+    /**
+     * Sets the title of the opened chest GUI to the given component. The method will not do anything if a chest isn't opened by the player.
+     * @param player The player
+     * @param title The new title
+     */
+    fun setChestGUITitle(player: Player, title: Component) {
+        if (player.openInventory.type == InventoryType.PLAYER || player.openInventory.type == InventoryType.CRAFTING) return
+        val topInventory: Inventory = player.openInventory.topInventory
+        if (topInventory.size % 9 != 0) return
+
+        val serverPlayer = getServerPlayer(player)
+        val containerMenu = PlayerAccessor.FIELD_CONTAINER_MENU!!.get(serverPlayer)
+
+        player.sendPacketSync(
+            PacketUtils.getOpenScreenPacket(
+                AbstractContainerMenuAccessor.FIELD_CONTAINER_ID!!.get(containerMenu) as Int,
+                topInventory.size,
+                title
+            )
+        )
+        player.updateInventory()
     }
 
     fun createConnection(): Any {
@@ -667,16 +676,26 @@ object NMSUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            throw Error(e)
         }
     }
 
     /**
-     * Sends one or more packets to a group of player.
+     * Sends one or more packets to a collection of players.
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
     fun Collection<Player>.sendPacketSync(vararg packets: Any) {
+        for (player in this) {
+            player.sendPacketSync(*packets)
+        }
+    }
+
+    /**
+     * Sends one or more packets to multiple players.
+     * @param packets The packet(s) that are going to be sent to the player(s).
+     */
+    @JvmStatic
+    fun Array<out Player>.sendPacketSync(vararg packets: Any) {
         for (player in this) {
             player.sendPacketSync(*packets)
         }
@@ -688,7 +707,25 @@ object NMSUtils {
      */
     @JvmStatic
     fun Player.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { this.sendPacketSync(*packets) }
+        return runEAsync { sendPacketSync(*packets) }
+    }
+
+    /**
+     * Sends one or more packets to a collection of players asynchronously. Packets are thread safe.
+     * @param packets The packet(s) that are going to be sent to the player.
+     */
+    @JvmStatic
+    fun Player.sendPacket(packets: Collection<Any>): Future<*> {
+        return runEAsync { sendPacketSync(*packets.toTypedArray()) }
+    }
+
+    /**
+     * Sends one or more packets to multiple players asynchronously. Packets are thread safe.
+     * @param packets The packet(s) that are going to be sent to the player.
+     */
+    @JvmStatic
+    fun Array<out Player>.sendPacket(vararg packets: Any): Future<*> {
+        return runEAsync { this.toSet().sendPacketSync(*packets) }
     }
 
     /**
