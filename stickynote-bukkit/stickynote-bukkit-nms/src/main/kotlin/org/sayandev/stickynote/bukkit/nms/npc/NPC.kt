@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.sayandev.stickynote.bukkit.extension.toLocation
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
+import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable
 import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
@@ -352,11 +353,19 @@ abstract class NPC: Viewable() {
         viewer.sendPacket(PacketUtils.getEntityDataPacket(entity))
     }
 
+    fun sendEntityDataSync(viewer: Player) {
+        viewer.sendPacketSync(PacketUtils.getEntityDataPacket(entity))
+    }
+
     /**
      * Sends the entity data to all viewers
      */
     fun sendEntityData() {
         getViewers().sendPacket(PacketUtils.getEntityDataPacket(entity))
+    }
+
+    fun sendEntityDataSync() {
+        getViewers().sendPacketSync(PacketUtils.getEntityDataPacket(entity))
     }
 
     /**
