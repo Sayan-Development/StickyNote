@@ -1,13 +1,19 @@
 package org.sayandev.stickynote.bukkit
 
+import com.github.shynixn.mccoroutine.folia.launch
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.withContext
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.scheduler.BukkitRunnable
+import org.sayandev.stickynote.bukkit.coroutine.dispatcher.BukkitDispatcher
+import org.sayandev.stickynote.bukkit.coroutine.dispatcher.FoliaDispatcher
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
 object StickyNote {
 
@@ -195,6 +201,29 @@ object StickyNote {
         asyncExecutor.shutdown()
     }
 
+}
+
+fun dispatcher(async: Boolean = false): CoroutineContext {
+    return if (StickyNote.isFolia()) {
+        FoliaDispatcher.get(async)
+    } else {
+        BukkitDispatcher.get(async)
+    }
+}
+
+fun launch(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    plugin.launch(dispatcher(), start, block)
+}
+
+suspend fun <T> sync(scope: CoroutineScope.() -> T): T {
+    return withContext(dispatcher(), scope)
+}
+
+suspend fun <T> async(scope: CoroutineScope.() -> T): T {
+    return withContext(dispatcher(true), scope)
 }
 
 fun runSync(runnable: Runnable) {

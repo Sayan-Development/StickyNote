@@ -1,13 +1,19 @@
 package org.sayandev.stickynote.velocity
 
+import com.github.shynixn.mccoroutine.velocity.launch
+import com.github.shynixn.mccoroutine.velocity.velocityDispatcher
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.velocitypowered.api.event.EventHandler
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.scheduler.Scheduler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
 object StickyNote {
 
@@ -135,6 +141,21 @@ object StickyNote {
 
     @JvmStatic
     fun plugin() = wrappedPlugin
+}
+
+fun dispatcher(): CoroutineContext {
+    return plugin.container.velocityDispatcher
+}
+
+fun launch(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    plugin.container.launch(dispatcher(), start, block)
+}
+
+suspend fun <T> async(scope: CoroutineScope.() -> T): T {
+    return withContext(dispatcher(), scope)
 }
 
 fun run(runnable: Runnable) {

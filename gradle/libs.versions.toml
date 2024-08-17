@@ -62,6 +62,7 @@ netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -77,19 +78,23 @@ pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = 
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 skinsrestorer-api = { group = "net.skinsrestorer", name = "skinsrestorer-api", version.ref = "skinsrestorer-api" }
-mccoroutines-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-api", version.ref = "mccoroutines" }
-mccoroutines-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutines" }
-kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+mccoroutines-bukkit-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-api", version.ref = "mccoroutines" }
+mccoroutines-bukkit-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutines" }
+mccoroutines-folia-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-api", version.ref = "mccoroutines" }
+mccoroutines-folia-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-core", version.ref = "mccoroutines" }
 
 # proxy - velocity
 velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
 libby-velocity = { group = "com.alessiodp.libby", name = "libby-velocity", version.ref = "libby" }
+mccoroutines-velocity-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-api", version.ref = "mccoroutines" }
+mccoroutines-velocity-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-core", version.ref = "mccoroutines" }
 
 # proxy - bungeecord
 bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
 adventure-platform-bungeecord = { group = "net.kyori", name = "adventure-platform-bungeecord", version.ref = "adventure-platform" }
 libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.ref = "libby" }
-
+mccoroutines-bungeecord-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-api", version.ref = "mccoroutines" }
+mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-core", version.ref = "mccoroutines" }
 
 [bundles]
 kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]
@@ -116,7 +121,8 @@ implementation-core = [
     "hikari",
 #    "gson",
     "exposed-core",
-    "exposed-jdbc"
+    "exposed-jdbc",
+    "kotlinx-coroutines"
 ]
 implementation-bukkit = [
     "cloud-paper",
@@ -125,9 +131,10 @@ implementation-bukkit = [
     "xseries",
     "adventure-platform-bukkit",
     "pathetic-pathfinder-bukkit",
-    "mccoroutines-api",
-    "mccoroutines-core",
-    "kotlinx-coroutines",
+    "mccoroutines-bukkit-api",
+    "mccoroutines-bukkit-core",
+    "mccoroutines-folia-api",
+    "mccoroutines-folia-core",
 ]
 implementation-bukkit-nms = [
 ]
@@ -135,7 +142,11 @@ implementation-proxy = [
     "mysql-connector"
 ]
 implementation-velocity = [
+    "mccoroutines-velocity-api",
+    "mccoroutines-velocity-core",
 ]
 implementation-bungeecord = [
-    "adventure-platform-bungeecord"
+    "adventure-platform-bungeecord",
+    "mccoroutines-bungeecord-api",
+    "mccoroutines-bungeecord-core",
 ]

@@ -1,6 +1,11 @@
 package org.sayandev.stickynote.bungeecord
 
+import com.github.shynixn.mccoroutine.bungeecord.bungeeCordDispatcher
+import com.github.shynixn.mccoroutine.bungeecord.launch
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.withContext
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.api.scheduler.TaskScheduler
@@ -8,6 +13,7 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
 object StickyNote {
 
@@ -140,6 +146,21 @@ object StickyNote {
 
     @JvmStatic
     fun plugin() = wrappedPlugin.plugin
+}
+
+fun dispatcher(): CoroutineContext {
+    return plugin.bungeeCordDispatcher
+}
+
+fun launch(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    plugin.launch(dispatcher(), start, block)
+}
+
+suspend fun <T> async(scope: CoroutineScope.() -> T): T {
+    return withContext(dispatcher(), scope)
 }
 
 fun run(runnable: Runnable) {
