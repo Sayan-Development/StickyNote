@@ -7,6 +7,9 @@ dependencies {
     api(libs.inventoryframework)
     api(libs.xseries) { isTransitive = false }
     api(libs.pathetic.pathfinder.bukkit)
+    api(libs.mccoroutines.api)
+    api(libs.mccoroutines.core)
+    api(libs.kotlinx.coroutines)
 
     compileOnlyApi(libs.authlib)
     compileOnlyApi(libs.placeholderapi)
