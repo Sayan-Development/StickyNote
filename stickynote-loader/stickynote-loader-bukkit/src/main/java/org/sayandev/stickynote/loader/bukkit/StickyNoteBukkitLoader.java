@@ -20,7 +20,7 @@ public class StickyNoteBukkitLoader extends StickyNoteLoader {
         File dataFolder = javaPlugin.getDataFolder();
         Logger logger = javaPlugin.getLogger();
         LibraryManager libraryManager = getLibraryManager(javaPlugin);
-        this.load(dataFolder, logger, libraryManager);
+        this.load(javaPlugin.getName(), dataFolder, logger, libraryManager);
     }
 
     @Override

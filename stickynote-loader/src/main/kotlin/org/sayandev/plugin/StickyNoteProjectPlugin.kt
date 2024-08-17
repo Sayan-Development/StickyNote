@@ -81,7 +81,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
-            val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
+            /*val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             target.tasks.withType<ShadowJar> {
@@ -94,7 +94,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 }
                 relocate("org.sayandev.stickynote", "${target.group}.${target.name.lowercase()}")
                 mergeServiceFiles()
-            }
+            }*/
 
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
             val defaultLocation = layout.buildDirectory.dir("stickynote/output").get().asFile
@@ -106,7 +106,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             }
 
             project.dependencies.add("compileOnly", "org.sayandev:stickynote-core-shaded:${createStickyNoteLoader.loaderVersion.get()}")
-            project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT }")
+            project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit-shaded:${createStickyNoteLoader.loaderVersion.get()}")

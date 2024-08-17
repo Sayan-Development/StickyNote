@@ -50,6 +50,15 @@ public class Dependency implements Serializable {
         this.transitiveDependencies = transitiveDependencies;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Dependency) {
+            Dependency other = (Dependency) obj;
+            return group.equals(other.group) && name.equals(other.name) && version.equals(other.version);
+        }
+        return false;
+    }
+
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.writeUTF(group);
         oos.writeUTF(name);

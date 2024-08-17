@@ -31,6 +31,9 @@ authlib = "6.0.54"
 skinsrestorer-api = "15.3.1"
 placeholderapi = "2.11.6"
 
+# bukkit - nms
+takenaka = "1.2.0"
+
 # proxy - velocity
 velocity = "3.3.0-SNAPSHOT"
 
@@ -75,6 +78,9 @@ pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = 
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 skinsrestorer-api = { group = "net.skinsrestorer", name = "skinsrestorer-api", version.ref = "skinsrestorer-api" }
+
+# bukkit - nms
+takenaka = { group = "me.kcra.takenaka", name = "generator-accessor-runtime", version.ref = "takenaka" }
 
 # proxy - velocity
 velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
@@ -122,6 +128,7 @@ implementation-bukkit = [
     "pathetic-pathfinder-bukkit"
 ]
 implementation-bukkit-nms = [
+    "takenaka"
 ]
 implementation-proxy = [
     "mysql-connector"

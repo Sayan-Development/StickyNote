@@ -19,7 +19,7 @@ public class StickyNoteBungeeLoader extends StickyNoteLoader {
         File dataFolder = plugin.getDataFolder();
         Logger logger = plugin.getLogger();
         LibraryManager libraryManager = new BungeeLibraryManager(plugin);
-        this.load(dataFolder, logger, libraryManager);
+        this.load(plugin.getDescription().getName(), dataFolder, logger, libraryManager);
     }
 
     @Override

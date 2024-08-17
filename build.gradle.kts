@@ -11,7 +11,7 @@ val slug = "stickynote"
 
 allprojects {
     group = "org.sayandev"
-    version = "1.6.0"
+    version = "1.6.8"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -91,22 +91,33 @@ subprojects {
             enabled = true
         }
 
-        afterEvaluate {
+        /*afterEvaluate {
             val versionCatalogs = extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
+            val excludedRelocations = setOf(
+                "stickynote",
+                "kotlin-stdlib",
+                "kotlin-reflect",
+                "kotlin",
+                "kotlin-stdlib-jdk8",
+                "kotlinx",
+                "kotlinx-coroutines"
+            )
+
             tasks.withType<ShadowJar> {
-                if (this.name != "shadowJarNoDeps") return@withType
+//                if (this.name != "shadowJarNoDeps") return@withType
                 for (bundleAlias in libs.bundleAliases) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
-                        if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
+                        if (excludedRelocations.contains(alias.group)) continue
                         relocate(alias.group, "${project.group}.${slug}.libs.${alias.group!!.split(".").last()}")
+
                     }
                 }
                 mergeServiceFiles()
             }
-        }
+        }*/
 
         val shadowJarNoDeps by creating(ShadowJar::class) {
             configurations = emptyList()
