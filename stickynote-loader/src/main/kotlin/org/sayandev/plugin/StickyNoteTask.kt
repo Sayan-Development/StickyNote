@@ -28,11 +28,14 @@ abstract class StickyNoteTask : DefaultTask() {
     @get:Input
     abstract val useKotlin: Property<Boolean>
 
+    @get:Input
+    abstract val stickyLoadDependencies: ListProperty<StickyLoadDependency>
+
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
         for (module in modules.get()) {
-            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}-shaded:${module.version}")
+            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}:${module.version}")
         }
 
         val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
@@ -46,7 +49,7 @@ abstract class StickyNoteTask : DefaultTask() {
             }
         }
 
-        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocation.get())
+        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocation.get(), stickyLoadDependencies.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()
         classGenerator.generateStickyNotesClass()

@@ -1,9 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "2.0.0"
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 dependencies {
@@ -23,6 +25,34 @@ tasks {
                 "Implementation-Title" to project.name,
                 "Implementation-Version" to project.version
             )
+        }
+    }
+}
+
+allprojects {
+    plugins.apply("com.github.johnrengelman.shadow")
+
+    tasks {
+        shadowJar {
+            archiveFileName.set("${rootProject.name}-${version}-${this@allprojects.name.removePrefix("stickynote-")}.jar")
+            archiveClassifier.set(null as String?)
+            destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
+        }
+
+        build {
+            dependsOn(shadowJar)
+        }
+    }
+
+    publishing {
+        publications {
+            if (project.name.contains("loader")) {
+                create<MavenPublication>("maven") {
+                    groupId = rootProject.group as String
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["shadowJar"])
+                }
+            }
         }
     }
 }

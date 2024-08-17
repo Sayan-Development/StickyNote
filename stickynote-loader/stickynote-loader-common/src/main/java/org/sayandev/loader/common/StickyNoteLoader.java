@@ -2,6 +2,7 @@ package org.sayandev.loader.common;
 
 import com.alessiodp.libby.Library;
 import com.alessiodp.libby.LibraryManager;
+import com.alessiodp.libby.RepositoryResolutionMode;
 import com.alessiodp.libby.logging.LogLevel;
 import com.alessiodp.libby.transitive.TransitiveDependencyHelper;
 
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 public abstract class StickyNoteLoader {
 
-    private static final ConcurrentHashMap<String, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -166,7 +167,7 @@ public abstract class StickyNoteLoader {
     }
 
     private CompletableFuture<Void> loadDependencyAsync(Dependency dependency, String relocationFrom, String relocationTo, LibraryManager libraryManager) {
-        return loadingLibraries.computeIfAbsent(dependency.getGroup() + ":" + dependency.getName(), key -> CompletableFuture.runAsync(() -> {
+        return loadingLibraries.computeIfAbsent(dependency, key -> CompletableFuture.runAsync(() -> {
             try {
                 Library.Builder libraryBuilder = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo);
                 Library library = libraryBuilder.build();

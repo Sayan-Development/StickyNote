@@ -13,6 +13,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.file.Directory
 import org.sayandev.plugin.ModuleConfiguration
+import org.sayandev.plugin.StickyLoadDependency
 import javax.lang.model.element.Modifier
 import kotlin.jvm.optionals.getOrNull
 
@@ -21,7 +22,8 @@ class ClassGenerator(
     val project: Project,
     val outputDir: Directory,
     val modules: List<ModuleConfiguration>,
-    val relocation: Pair<String, String>
+    val relocation: Pair<String, String>,
+    val stickyLoadDependencies: List<StickyLoadDependency>
 ) {
     private val basePackage = "org.sayandev.stickynote.generated"
 
@@ -61,10 +63,17 @@ class ClassGenerator(
                         }
                     }
 
+                    for (externalDependency in stickyLoadDependencies) {
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(externalDependency.name.replace("-", "_")).uppercase())
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .initializer("new Dependency(\$S, \$S, \$S)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version)
+                            .build())
+                    }
+
                     for (repository in project.repositories.filterIsInstance<MavenArtifactRepository>().distinctBy { it.url }) {
                         this.addField(FieldSpec.builder(String::class.java, "REPOSITORY_".plus(repository.name.replace("-", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("\$S", repository.url.toString().replace(".", "{}"))
+                            .initializer("\$S", repository.url.toString())
                             .build())
                     }
                 }
