@@ -86,7 +86,7 @@ public abstract class StickyNoteLoader {
     }
 
     private void loadMissingDependencies(String id, Logger logger, LibraryManager libraryManager, TransitiveDependencyHelper transitiveDependencyHelper, DependencyCache dependencyCache, List<Dependency> dependencies, Set<Dependency> missingDependencies, String relocationFrom, String relocationTo) throws InterruptedException, ExecutionException {
-        List<CompletableFuture<Void>> resolveFutures = missingDependencies.stream()
+        List<CompletableFuture<Void>> resolveFutures = dependencies.stream()
                 .map(dependency -> resolveTransitiveDependenciesAsync(id, transitiveDependencyHelper, dependency))
                 .toList();
 
@@ -97,7 +97,7 @@ public abstract class StickyNoteLoader {
         resolveAll.thenRunAsync(() -> {
             dependencyCache.saveCache(new HashSet<>(dependencies));
 
-            List<CompletableFuture<Void>> futures = missingDependencies.stream()
+            List<CompletableFuture<Void>> futures = dependencies.stream()
                     .map(dependency -> loadDependencyAndTransitives(libraryManager, dependency, relocationFrom, relocationTo))
                     .flatMap(Collection::stream)
                     .toList();
@@ -121,10 +121,12 @@ public abstract class StickyNoteLoader {
         cachedDependencies.forEach(dependency -> {
             try {
                 Library library = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo).build();
+                logger.info("Loading cached library: " + library.getArtifactId());
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
+                        logger.warning("Loading cached transitive library: " + transitiveDependency.getName());
                         Library transitiveLibrary = createLibraryBuilder(transitiveDependency, transitiveDependency.getGroup(), transitiveDependency.getName(), relocationFrom, relocationTo).build();
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
