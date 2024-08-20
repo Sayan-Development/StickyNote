@@ -12,7 +12,7 @@ abstract class ContainerItemEvent : PacketListener {
         register()
     }
 
-    abstract fun onItemUpdate(player: Player?, item: ItemStack): ItemStack
+    abstract fun onItemUpdate(player: Player, item: ItemStack): ItemStack
 
     final override fun register() {
         HANDLER_LIST.add(this)
