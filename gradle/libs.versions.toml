@@ -2,6 +2,7 @@
 
 [versions]
 # core
+kotlin = "2.0.0"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 configurate = "4.1.2"
@@ -45,6 +46,7 @@ bungeecord = "1.19-R0.1-SNAPSHOT"
 
 [libraries]
 # core
+kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-poet-kotlin = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlin-poet" }
 kotlin-poet-java = { group = "com.squareup", name = "kotlinpoet-javapoet", version.ref = "kotlin-poet" }
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
@@ -115,7 +117,8 @@ implementation-loader = [
     "kotlin-poet-kotlin"
 ]
 implementation-core = [
-#    "snakeyaml",
+    "kotlin",
+    "snakeyaml",
     "configurate-yaml",
     "configurate-extra-kotlin",
     "cloud-core",
