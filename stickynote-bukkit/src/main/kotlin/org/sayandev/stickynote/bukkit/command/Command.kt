@@ -14,6 +14,7 @@ import org.incendo.cloud.description.Description
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.MutableCommandBuilder
 import org.incendo.cloud.kotlin.extension.buildAndRegister
+import org.incendo.cloud.kotlin.extension.commandBuilder
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
@@ -45,9 +46,11 @@ abstract class Command(
     val exceptionHandler: MinecraftExceptionHandler<SenderExtension>
     val command: MutableCommandBuilder<StickySender>
 
+    fun rawCommandBuilder() = manager.commandBuilder(name, Description.empty(), aliases.toList().toTypedArray()) { }
+
     fun registerHelpLiteral() {
-        command.registerCopy {
-            literal("help")
+        manager.buildAndRegister(name, Description.empty(), aliases.toList().toTypedArray()) {
+            literalWithPermission("help")
             optional("query", StringArrayParser.stringArrayParser())
             handler { context ->
                 help.queryCommands(context.optional<Array<String>>("query").getOrNull()?.joinToString(" ")?.let { args ->
@@ -115,8 +118,8 @@ abstract class Command(
     }
 }
 
-internal fun CommandComponent.Builder<*, *>.createStringSuggestion(suggestions: Collection<String>) {
-    this.suggestionProvider { context, input ->
+internal fun CommandComponent.Builder<StickySender, String>.createStringSuggestion(suggestions: Collection<String>) {
+    this.suggestionProvider { _, _ ->
         CompletableFuture.completedFuture(suggestions.map { Suggestion.suggestion(it) })
     }
 }
