@@ -30,7 +30,7 @@ import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
 
-abstract class StickyCommand(
+abstract class Command(
     val name: String,
     vararg val aliases: String
 ) : CommandExtension {
