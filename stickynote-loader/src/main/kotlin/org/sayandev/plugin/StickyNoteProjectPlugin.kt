@@ -27,7 +27,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 this::class.java.`package`.implementationVersion
                     ?: throw IllegalStateException("Cannot determine the plugin version")
             } else config.loaderVersion.get()
-            println("Using stickynote version $finalVersion")
             config.loaderVersion.set(finalVersion)
 
             this.outputDir.set(config.outputDirectory)
