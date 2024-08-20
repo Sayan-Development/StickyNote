@@ -1,24 +1,21 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "2.0.0"
     `version-catalog`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 val slug = "stickynote"
 
 allprojects {
     group = "org.sayandev"
-    version = "1.6.8"
+    version = "1.7.15"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("version-catalog")
     plugins.apply("java-library")
     plugins.apply("kotlin")
-    plugins.apply("com.github.johnrengelman.shadow")
 
     dependencies {
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
@@ -119,41 +116,31 @@ subprojects {
             }
         }*/
 
-        val shadowJarNoDeps by creating(ShadowJar::class) {
+        /*val shadowJarNoDeps by creating(ShadowJar::class) shadowJar {
             configurations = emptyList()
             from(sourceSets.main.get().output)
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}-no-dep.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-        }
+        }*/
 
-        shadowJar {
+        /*shadowJar {
             archiveFileName.set("${rootProject.name}-${version}-${this@subprojects.name.removePrefix("stickynote-")}.jar")
             archiveClassifier.set(null as String?)
             destinationDirectory.set(file(rootProject.projectDir.path + "/bin"))
-        }
+        }*/
     }
 
     publishing {
         publications {
-            create<MavenPublication>("catalog") {
-                artifactId = "${rootProject.name.lowercase()}-catalog"
-                from(components["versionCatalog"])
-                setPom(this)
-            }
-            create<MavenPublication>("maven") {
-                groupId = rootProject.group as String
-//                shadow.component(this)
-                artifact(tasks["shadowJarNoDeps"])
-                artifact(tasks["sourcesJar"])
-                setPom(this)
-            }
-            create<MavenPublication>("maven-shaded") {
-                groupId = rootProject.group as String
-                artifactId += "-shaded"
-                shadow.component(this)
-                artifact(tasks["sourcesJar"])
-                setPom(this)
+            if (!project.name.contains("loader")) {
+                create<MavenPublication>("maven") {
+                    groupId = rootProject.group as String
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["jar"])
+
+                    setPom(this)
+                }
             }
         }
 

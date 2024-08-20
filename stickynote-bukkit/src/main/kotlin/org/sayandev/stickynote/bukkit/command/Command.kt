@@ -14,10 +14,12 @@ import org.incendo.cloud.description.Description
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.MutableCommandBuilder
 import org.incendo.cloud.kotlin.extension.buildAndRegister
+import org.incendo.cloud.kotlin.extension.commandBuilder
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
 import org.incendo.cloud.paper.PaperCommandManager
+import org.incendo.cloud.parser.standard.StringArrayParser
 import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.setting.ManagerSetting
 import org.incendo.cloud.suggestion.Suggestion
@@ -27,8 +29,9 @@ import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
-abstract class StickyCommand(
+abstract class Command(
     val name: String,
     vararg val aliases: String
 ) : CommandExtension {
@@ -42,6 +45,20 @@ abstract class StickyCommand(
     val help: MinecraftHelp<StickySender>
     val exceptionHandler: MinecraftExceptionHandler<SenderExtension>
     val command: MutableCommandBuilder<StickySender>
+
+    fun rawCommandBuilder() = manager.commandBuilder(name, Description.empty(), aliases.toList().toTypedArray()) { }
+
+    fun registerHelpLiteral() {
+        manager.buildAndRegister(name, Description.empty(), aliases.toList().toTypedArray()) {
+            literalWithPermission("help")
+            optional("query", StringArrayParser.stringArrayParser())
+            handler { context ->
+                help.queryCommands(context.optional<Array<String>>("query").getOrNull()?.joinToString(" ")?.let { args ->
+                    "$name $args"
+                } ?: "", context.sender())
+            }
+        }
+    }
 
     init {
         val stickySenderMapper = { commandSender: CommandSender -> StickySender(commandSender, null) }
@@ -101,8 +118,8 @@ abstract class StickyCommand(
     }
 }
 
-internal fun CommandComponent.Builder<*, *>.createStringSuggestion(suggestions: Collection<String>) {
-    this.suggestionProvider { context, input ->
+internal fun CommandComponent.Builder<StickySender, String>.createStringSuggestion(suggestions: Collection<String>) {
+    this.suggestionProvider { _, _ ->
         CompletableFuture.completedFuture(suggestions.map { Suggestion.suggestion(it) })
     }
 }

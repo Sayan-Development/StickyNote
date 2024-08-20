@@ -15,6 +15,10 @@ class StickyNoteProjectPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val config = target.extensions.create<StickyNoteLoaderExtension>("stickynote", target)
 
+        target.configurations {
+            create("stickyload")
+        }
+
         val createStickyNoteLoader by target.tasks.creating(StickyNoteTask::class) {
             group = "stickynote"
             description = "stickynote configurations and setup task"
@@ -23,7 +27,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 this::class.java.`package`.implementationVersion
                     ?: throw IllegalStateException("Cannot determine the plugin version")
             } else config.loaderVersion.get()
-            println("Using stickynote version $finalVersion")
             config.loaderVersion.set(finalVersion)
 
             this.outputDir.set(config.outputDirectory)
@@ -35,6 +38,8 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             this.relocation.set(config.relocation)
             this.useKotlin.set(config.useKotlin)
         }
+
+        target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
         target.plugins.apply("io.github.goooler.shadow")
 
@@ -105,18 +110,24 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
-            project.dependencies.add("compileOnly", "org.sayandev:stickynote-core-shaded:${createStickyNoteLoader.loaderVersion.get()}")
+            project.dependencies.add("compileOnly", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
             project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit-shaded:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")
             }
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.VELOCITY)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity-shaded:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity:${createStickyNoteLoader.loaderVersion.get()}")
             }
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUNGEECORD)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord-shaded:${createStickyNoteLoader.loaderVersion.get()}")
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord:${createStickyNoteLoader.loaderVersion.get()}")
             }
+
+            project.configurations.getByName("stickyload").dependencies.forEach {
+                project.dependencies.add("compileOnly", "${it.group}:${it.name}:${it.version}")
+            }
+
+            createStickyNoteLoader.stickyLoadDependencies.set(project.configurations.getByName("stickyload").dependencies.map { StickyLoadDependency(it.group!!, it.name, it.version!!) })
 
             createStickyNoteLoader.run()
         }
