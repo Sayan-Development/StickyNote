@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.bukkit.command.interfaces
+package org.sayandev.stickynote.core.command.interfaces
 
 import net.kyori.adventure.text.Component
 

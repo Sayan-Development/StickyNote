@@ -21,6 +21,8 @@ public abstract class StickyNoteLoader {
 
     private static final String LIB_FOLDER = "lib";
 
+    private final List<String> transitiveExcluded = Arrays.asList("xseries");
+
     protected abstract void onComplete();
 
     public void load(String id, File dataFolder, Logger logger, LibraryManager libraryManager) {
@@ -121,12 +123,10 @@ public abstract class StickyNoteLoader {
         cachedDependencies.forEach(dependency -> {
             try {
                 Library library = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo).build();
-                logger.info("Loading cached library: " + library.getArtifactId());
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-                        logger.warning("Loading cached transitive library: " + transitiveDependency.getName());
                         Library transitiveLibrary = createLibraryBuilder(transitiveDependency, transitiveDependency.getGroup(), transitiveDependency.getName(), relocationFrom, relocationTo).build();
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
@@ -221,7 +221,7 @@ public abstract class StickyNoteLoader {
 
     private CompletableFuture<Void> resolveTransitiveDependenciesAsync(String id, TransitiveDependencyHelper transitiveDependencyHelper, Dependency dependency) {
         return CompletableFuture.runAsync(() -> {
-            dependency.setTransitiveResolved(true);
+            dependency.setTransitiveResolved(transitiveExcluded.stream().anyMatch(excluded -> dependency.getName().contains(excluded)));
             dependency.setTransitiveDependencies(resolveTransitiveLibraries(id, transitiveDependencyHelper, dependency).stream()
                     .map(library -> new Dependency(library.getGroupId(), library.getArtifactId(), library.getVersion()))
                     .toList());
