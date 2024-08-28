@@ -7,7 +7,7 @@ kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 configurate = "4.1.2"
 cloud = "2.0.0-rc.2"
-cloud-paper = "2.0.0-beta.9"
+cloud-platform = "2.0.0-beta.9"
 adventure = "4.17.0"
 mysql-connector = "8.4.0"
 jedis = "5.0.0"
@@ -67,14 +67,15 @@ kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", vers
 netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
+exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
 folia = { group = "dev.folia", name = "folia-api", version.ref = "folia" }
-cloud-paper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloud-paper" }
-cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloud-paper" }
+cloud-paper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloud-platform" }
+cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloud-platform" }
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
@@ -97,6 +98,7 @@ velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref =
 libby-velocity = { group = "com.alessiodp.libby", name = "libby-velocity", version.ref = "libby" }
 mccoroutines-velocity-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-api", version.ref = "mccoroutines" }
 mccoroutines-velocity-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-core", version.ref = "mccoroutines" }
+cloud-velocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloud-platform" }
 
 # proxy - bungeecord
 bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
@@ -132,6 +134,7 @@ implementation-core = [
 #    "gson",
     "exposed-core",
     "exposed-jdbc",
+    "exposed-dao",
     "kotlinx-coroutines"
 ]
 implementation-bukkit = [
@@ -152,11 +155,12 @@ implementation-bukkit-nms = [
 implementation-proxy = [
     "mysql-connector"
 ]
-implementation-velocity = [
+implementation-proxy-velocity = [
     "mccoroutines-velocity-api",
     "mccoroutines-velocity-core",
+    "cloud-velocity"
 ]
-implementation-bungeecord = [
+implementation-proxy-bungeecord = [
     "adventure-platform-bungeecord",
     "mccoroutines-bungeecord-api",
     "mccoroutines-bungeecord-core",

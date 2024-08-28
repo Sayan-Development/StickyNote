@@ -24,7 +24,7 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
 
-        LibraryManager libraryManager = new VelocityLibraryManager(plugin, logger, dataDirectory, server.getPluginManager());
+        LibraryManager libraryManager = new VelocityLibraryManager<>(plugin, logger, dataDirectory, server.getPluginManager());
         this.load(id, dataDirectory.toFile(), java.util.logging.Logger.getLogger(id), libraryManager);
     }
 

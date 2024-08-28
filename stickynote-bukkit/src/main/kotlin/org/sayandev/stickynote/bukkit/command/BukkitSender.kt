@@ -6,13 +6,13 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.sayandev.stickynote.bukkit.command.interfaces.SenderExtension
+import org.sayandev.stickynote.core.command.interfaces.SenderExtension
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 
-open class StickySender(
+open class BukkitSender(
     private var commandSender: CommandSender,
     val sourceStack: CommandSourceStack?
-): SenderExtension {
+): SenderExtension<CommandSender, Player> {
 
     private var onlinePlayersMessage = Component.text("Only players can use this command.")
         .color(TextColor.color(192, 32, 16))
@@ -32,12 +32,12 @@ open class StickySender(
         return AdventureUtils.audience.sender(commandSender)
     }
 
-    override fun bukkitSender(sender: CommandSender) {
-        commandSender = sender
+    override fun platformSender(): CommandSender {
+        return commandSender
     }
 
-    override fun bukkitSender(): CommandSender {
-        return commandSender
+    override fun platformSender(sender: CommandSender) {
+        commandSender = sender
     }
 
     override fun onlyPlayersComponent(message: Component) {
