@@ -208,6 +208,11 @@ public abstract class StickyNoteLoader {
                 .artifactId(name)
                 .version(dependency.getVersion());
 
+        // relocate yaml in configurate to fix NoSuchMethod in 1.8 servers (1.8 servers uses a very old version of snakeyaml)
+        if (name.contains("yaml") || name.contains("configurate")) {
+            libraryBuilder.relocate("org.yaml.snakeyaml", "org.sayandev.stickynote.snakeyaml");
+        }
+
         /*if (!name.contains("stickynote") && !name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect") && !name.equals("kotlin") && !name.equals("kotlin-stdlib-jdk8") && !name.equals("kotlin-stdlib-jdk7") && !name.equals("kotlinx") && !name.equals("kotlinx-coroutines")) {
             String replacedGroup = group.replace("{}", ".");
             String[] groupParts = replacedGroup.split("\\.");
