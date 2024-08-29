@@ -3,14 +3,15 @@ package org.sayandev.stickynote.bukkit.nms.toast
 import com.cryptomorin.xseries.XMaterial
 import com.google.gson.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
+import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.bukkit.nms.accessors.*
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -20,7 +21,8 @@ class Toast(
     title: String,
     icon: XMaterial,
     frameType: FrameType,
-    trimCharacters: Boolean = true
+    trimCharacters: Boolean = true,
+    vararg placeholder: TagResolver = emptyArray()
 ) {
 
     private val addPacket: Any
@@ -50,7 +52,7 @@ class Toast(
 
         descJson.addProperty("text", "")
 
-        displayJson.add("title", parseTitle(title, trimCharacters))
+        displayJson.add("title", parseTitle(title, trimCharacters, *placeholder))
         displayJson.add("icon", iconJson)
         displayJson.add("description", descJson)
         displayJson.addProperty("frame", frameType.toString().lowercase(Locale.getDefault()))
@@ -196,10 +198,10 @@ class Toast(
         AdvancementProgressAccessor.METHOD_REVOKE_PROGRESS!!.invoke(advancementProgress, "elytra")
     }
 
-    private fun parseTitle(rawTitle: String, trimCharacters: Boolean): JsonElement {
+    private fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
         val title = if (trimCharacters) trimCharacters(rawTitle) else rawTitle
 
-        val component: Component = title.component()
+        val component: Component = title.component(*placeholder)
         return JsonParser.parseString(GsonComponentSerializer.gson().serialize(component))
     }
 
