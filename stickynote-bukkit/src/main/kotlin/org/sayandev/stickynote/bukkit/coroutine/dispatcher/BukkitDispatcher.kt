@@ -2,6 +2,7 @@ package org.sayandev.stickynote.bukkit.coroutine.dispatcher
 
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.sayandev.stickynote.bukkit.plugin
 import kotlin.coroutines.CoroutineContext
 
@@ -14,4 +15,8 @@ object BukkitDispatcher {
             plugin.minecraftDispatcher
         }
     }
+}
+
+fun Dispatchers.bukkit(async: Boolean = false): CoroutineContext {
+    return BukkitDispatcher.get(async)
 }
