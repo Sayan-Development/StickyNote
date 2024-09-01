@@ -18,7 +18,9 @@ import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.unregisterListener
 import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetContentPacketAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.ClientboundContainerSetSlotPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.accessors.ServerboundInteractPacketAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.ServerboundPlayerActionPacketAccessor
+import org.sayandev.stickynote.bukkit.nms.event.PlayerInteractAtEntityEvent
 
 object PacketListenerManager: Listener {
 
@@ -45,13 +47,18 @@ object PacketListenerManager: Listener {
     private fun injectPlayer(player: Player) {
         val channelDuplexHandler: ChannelDuplexHandler = object : ChannelDuplexHandler() {
             override fun channelRead(context: ChannelHandlerContext, packet: Any) {
+                var packet = packet
                 try {
                     val packetContainer = PacketContainer(packet)
                     var isCancelled = false
 
                     for (packetEvent in packetEvents) {
                         try {
-                            isCancelled = !packetEvent.onServerboundPacket(player, packetContainer)
+                            val result = packetEvent.onServerboundPacket(player, packetContainer)
+                            isCancelled = result.isCancelled
+                            if (!isCancelled) {
+                                packet = result.packetContainer.packet
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                             error(
@@ -64,10 +71,9 @@ object PacketListenerManager: Listener {
                     if (!isCancelled) {
                         if (packet.javaClass == ServerboundPlayerActionPacketAccessor.TYPE && PlayerActionEvent.HANDLER_LIST.isNotEmpty()) {
                             PlayerActionEvent.HANDLER_LIST.forEach { event -> event.handle(player, packet) }
-                        } /*TODO PlayerInteractAtEntityEvent
-                            else if (packet.javaClass == ServerboundInteractPacketAccessor.getType() && !PlayerInteractAtEntityEvent.HANDLER_LIST.isEmpty()) {
+                        } else if (packet.javaClass == ServerboundInteractPacketAccessor.TYPE && PlayerInteractAtEntityEvent.HANDLER_LIST.isNotEmpty()) {
                             PlayerInteractAtEntityEvent.HANDLER_LIST.forEach { event -> event.handle(player, packet) }
-                        }*/
+                        }
 
                         try {
                             super.channelRead(context, packet)
@@ -80,13 +86,18 @@ object PacketListenerManager: Listener {
             }
 
             override fun write(context: ChannelHandlerContext, packet: Any, channelPromise: ChannelPromise) {
+                var packet = packet
                 try {
                     val packetContainer = PacketContainer(packet)
                     var isCancelled = false
 
                     for (packetEvent in packetEvents) {
                         try {
-                            isCancelled = !packetEvent.onClientboundPacket(player, packetContainer)
+                            val result = packetEvent.onClientboundPacket(player, packetContainer)
+                            isCancelled = result.isCancelled
+                            if (!isCancelled) {
+                                packet = result.packetContainer.packet
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                             error(

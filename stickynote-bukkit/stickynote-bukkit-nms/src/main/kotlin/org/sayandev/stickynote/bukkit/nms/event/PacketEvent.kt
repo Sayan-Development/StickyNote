@@ -21,7 +21,7 @@ abstract class PacketEvent {
      * @param packetContainer The packet that is going to be sent to the client.
      * @return Declear that the packet should be sent or not. Return false to cancel the packet from sending.
      */
-    abstract fun onClientboundPacket(player: Player, packetContainer: PacketContainer): Boolean
+    abstract fun onClientboundPacket(player: Player, packetContainer: PacketContainer): Result
 
     /**
      * Calls when a packet is going to be sent to the server by a client.
@@ -29,9 +29,11 @@ abstract class PacketEvent {
      * @param packetContainer The packet that the client is sending to the server.
      * @return Declear that the packet should be received or not. Return false to cancel the packet from receiving.
      */
-    abstract fun onServerboundPacket(player: Player, packetContainer: PacketContainer): Boolean
+    abstract fun onServerboundPacket(player: Player, packetContainer: PacketContainer): Result
 
     fun unregister() {
         PacketListenerManager.unregister(this)
     }
+
+    class Result(val isCancelled: Boolean, val packetContainer: PacketContainer)
 }

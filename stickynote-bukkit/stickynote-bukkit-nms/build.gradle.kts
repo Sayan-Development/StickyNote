@@ -4,10 +4,8 @@ import me.kcra.takenaka.generator.accessor.plugin.accessorRuntime
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.time.Instant
-import java.util.BitSet
-import java.util.EnumSet
+import java.util.*
 import java.util.Optional
-import java.util.UUID
 import java.util.function.Function
 import java.util.function.UnaryOperator
 
@@ -1792,9 +1790,14 @@ accessors {
     }
     mapClass(SignedMessageBodyPacked) {
         constructor(String::class, Instant::class, Long::class, LastSeenMessagesPacked)
+        field(String::class, "content")
+        field(Instant::class, "timeStamp")
+        field(Long::class, "salt")
+        field(LastSeenMessagesPacked, "lastSeen")
     }
     mapClass(LastSeenMessagesPacked) {
         constructor(List::class)
+        field(LastSeenMessagesPacked, "EMPTY")
     }
     mapClass(FilterMask) {
         field(FilterMask, "FULLY_FILTERED")
