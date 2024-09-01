@@ -86,36 +86,31 @@ object PacketUtils {
 
     @JvmStatic
     fun getUpdateGameModePacket(serverPlayer: Any, gameMode: GameMode): Any {
-        try {
-            val profile: Any = PlayerAccessor.METHOD_GET_GAME_PROFILE!!.invoke(serverPlayer)
-            val infoPacket = getPlayerInfoPacket(serverPlayer, PlayerInfoAction.UPDATE_GAME_MODE)
+        val profile: Any = PlayerAccessor.METHOD_GET_GAME_PROFILE!!.invoke(serverPlayer)
+        val infoPacket = getPlayerInfoPacket(serverPlayer, PlayerInfoAction.UPDATE_GAME_MODE)
 
-            val entries: MutableList<Any> = ArrayList<Any>(
-                ClientboundPlayerInfoUpdatePacketAccessor.METHOD_ENTRIES!!.invoke(infoPacket) as List<*>
-            )
-            val ping = NMSUtils.getPing(serverPlayer)
+        val entries: MutableList<Any> = ArrayList<Any>(
+            ClientboundPlayerInfoUpdatePacketAccessor.METHOD_ENTRIES!!.invoke(infoPacket) as List<*>
+        )
+        val ping = NMSUtils.getPing(serverPlayer)
 
-            entries.add(
-                ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_0!!.newInstance(
-                    EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
-                    profile,
-                    true,
-                    ping,
-                    GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
-                    null,
-                    null
-                )
+        entries.add(
+            ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_0!!.newInstance(
+                EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
+                profile,
+                true,
+                ping,
+                GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
+                null,
+                null
             )
-            ClientboundPlayerInfoUpdatePacketAccessor.FIELD_ENTRIES!!.set(
-                infoPacket,
-                entries
-            )
+        )
+        ClientboundPlayerInfoUpdatePacketAccessor.FIELD_ENTRIES!!.set(
+            infoPacket,
+            entries
+        )
 
-            return infoPacket
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw Error(e)
-        }
+        return infoPacket
     }
 
     @JvmStatic

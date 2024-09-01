@@ -6,6 +6,7 @@ on:
 
 jobs:
   publish:
+    if: startsWith(github.event.head_commit.message, '[publish]')
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
@@ -28,11 +29,6 @@ jobs:
             ${{ runner.OS }}-gradle-
       - name: Publish to SayanDevelopment snapshot repo
         run: ./gradlew publish
-        env:
-          REPO_SAYAN_USER: ${{ secrets.REPO_SAYAN_USER }}
-          REPO_SAYAN_TOKEN: ${{ secrets.REPO_SAYAN_TOKEN }}
-      - name: Publish to gradle plugin portal
-        run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
         env:
           REPO_SAYAN_USER: ${{ secrets.REPO_SAYAN_USER }}
           REPO_SAYAN_TOKEN: ${{ secrets.REPO_SAYAN_TOKEN }}
