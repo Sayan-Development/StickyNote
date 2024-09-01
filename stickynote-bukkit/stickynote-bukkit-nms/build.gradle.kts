@@ -184,6 +184,7 @@ accessors {
     val DifficultyInstance = "net.minecraft.world.DifficultyInstance"
     val SpawnGroupData = "net.minecraft.world.entity.SpawnGroupData"
     val ChatType = "net.minecraft.network.chat.ChatType"
+    val ChatTypeBound = "net.minecraft.network.chat.ChatType\$Bound"
     val VillagerData = "net.minecraft.world.entity.npc.VillagerData"
     val VillagerType = "net.minecraft.world.entity.npc.VillagerType"
     val VillagerProfession = "net.minecraft.world.entity.npc.VillagerProfession"
@@ -259,6 +260,10 @@ accessors {
     val ItemDisplayContext = "net.minecraft.world.item.ItemDisplayContext"
     val AttributeInstance = "net.minecraft.world.entity.ai.attributes.AttributeInstance"
     val Attributes = "net.minecraft.world.entity.ai.attributes.Attributes"
+    val MessageSignature = "net.minecraft.network.chat.MessageSignature"
+    val SignedMessageBodyPacked = "net.minecraft.network.chat.SignedMessageBody\$Packed"
+    val LastSeenMessagesPacked = "net.minecraft.network.chat.LastSeenMessages\$Packed"
+    val FilterMask = "net.minecraft.network.chat.FilterMask"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
@@ -467,13 +472,13 @@ accessors {
     }
     mapClass(ClientboundPlayerChatPacket) {
         constructor(Component, Optional::class, Int::class, ChatSender, Instant::class, CryptSaltSignaturePair)
-        //methodInferred("getMessage")
-        //fieldInferred("signedContent", "1.20.4")
-        //fieldInferred("unsignedContent", "1.20.4")
-        //fieldInferred("typeId", "1.20.4")
-        //fieldInferred("sender", "1.20.4")
-        //fieldInferred("timeStamp", "1.20.4")
-        //fieldInferred("saltSignature", "1.20.4")
+        field(UUID::class, "sender")
+        field(Int::class, "index")
+        field(MessageSignature, "signature")
+        field(SignedMessageBodyPacked, "body")
+        field(Component, "unsignedContent")
+        field(FilterMask, "filterMask")
+        field(ChatTypeBound, "chatType")
     }
     mapClass(ClientboundSystemChatPacket) {
         methodInferred("content", "1.20.4")
@@ -1233,6 +1238,16 @@ accessors {
             "SYSTEM",
             "GAME_INFO"
         )
+        field(ResourceKey, "CHAT")
+        field(ResourceKey, "SAY_COMMAND")
+        field(ResourceKey, "MSG_COMMAND_INCOMING")
+        field(ResourceKey, "MSG_COMMAND_OUTGOING")
+        field(ResourceKey, "TEAM_MSG_COMMAND_INCOMING")
+        field(ResourceKey, "TEAM_MSG_COMMAND_OUTGOING")
+        field(ResourceKey, "EMOTE_COMMAND")
+    }
+    mapClass(ChatTypeBound) {
+        constructor(Holder, Component, Optional::class)
     }
     mapClass(VillagerData) {
         constructor(VillagerType, VillagerProfession, Int::class)
@@ -1771,6 +1786,19 @@ accessors {
         field(Holder, "SCALE")
         field(Holder, "SPAWN_REINFORCEMENTS_CHANCE")
         field(Holder, "STEP_HEIGHT")
+    }
+    mapClass(MessageSignature) {
+        constructor(ByteArray::class)
+    }
+    mapClass(SignedMessageBodyPacked) {
+        constructor(String::class, Instant::class, Long::class, LastSeenMessagesPacked)
+    }
+    mapClass(LastSeenMessagesPacked) {
+        constructor(List::class)
+    }
+    mapClass(FilterMask) {
+        field(FilterMask, "FULLY_FILTERED")
+        field(FilterMask, "PASS_THROUGH")
     }
 
     mapClass(CrossbowItem) {
