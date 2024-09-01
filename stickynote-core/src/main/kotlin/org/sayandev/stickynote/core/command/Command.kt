@@ -9,7 +9,6 @@ import org.incendo.cloud.kotlin.MutableCommandBuilder
 import org.incendo.cloud.kotlin.extension.buildAndRegister
 import org.incendo.cloud.kotlin.extension.commandBuilder
 import org.incendo.cloud.parser.standard.StringParser
-import org.incendo.cloud.setting.ManagerSetting
 import org.incendo.cloud.suggestion.Suggestion
 import org.sayandev.stickynote.core.command.interfaces.CommandExtension
 import org.sayandev.stickynote.core.command.interfaces.SenderExtension
@@ -27,13 +26,12 @@ abstract class Command<S: SenderExtension<*, *>>(
 
     private var errorPrefix = Component.empty().asComponent()
 
-    val command: MutableCommandBuilder<S>
+    lateinit var command: MutableCommandBuilder<S>
 
     fun rawCommandBuilder() = manager.commandBuilder(name, Description.empty(), aliases.toList().toTypedArray()) { }
 
-    init {
+    fun initializeManagerAndRoot() {
         manager.createHelpHandler()
-        manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
 
         command = manager.buildAndRegister(name, Description.empty(), aliases.toList().toTypedArray()) {
             permission("$rootId.commands.${name}")

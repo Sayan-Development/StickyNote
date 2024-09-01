@@ -32,8 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 fun commandManager(): CommandManager<BukkitSender> {
     val bukkitSenderMapper = { commandSender: CommandSender -> BukkitSender(commandSender, null) }
     val backwardsMapper = { sayanSenderExtension: BukkitSender -> sayanSenderExtension.platformSender() }
-
-    return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
+    val manager = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
         val modernMapper = { sourceStack: CommandSourceStack -> BukkitSender(sourceStack.sender, sourceStack) }
         val sourceMapper = { bukkitSender: BukkitSender -> bukkitSender.sourceStack!! }
         PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
@@ -46,6 +45,8 @@ fun commandManager(): CommandManager<BukkitSender> {
             SenderMapper.create(bukkitSenderMapper, backwardsMapper),
         )
     }
+    manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
+    return manager
 }
 
 abstract class BukkitCommand(
@@ -76,11 +77,6 @@ abstract class BukkitCommand(
     }
 
     init {
-        val audienceMapper = { sayanSenderExtension: BukkitSender -> AdventureUtils.audience.sender(sayanSenderExtension.platformSender()) }
-        exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
-
-        manager.createHelpHandler()
-        manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
         try {
             (manager as? LegacyPaperCommandManager)?.registerAsynchronousCompletions()
         } catch (_: IllegalStateException) { }
@@ -88,11 +84,16 @@ abstract class BukkitCommand(
             (manager as? LegacyPaperCommandManager)?.registerBrigadier()
         }
 
+        val audienceMapper = { sayanSenderExtension: BukkitSender -> AdventureUtils.audience.sender(sayanSenderExtension.platformSender()) }
+        exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
+
         help = MinecraftHelp.create(
             name,
             manager,
             audienceMapper
         )
+
+        initializeManagerAndRoot()
     }
 
     override fun errorPrefix(): Component {

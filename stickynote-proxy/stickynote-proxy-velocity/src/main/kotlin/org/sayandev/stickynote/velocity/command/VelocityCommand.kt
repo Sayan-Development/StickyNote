@@ -22,12 +22,14 @@ fun commandManager(): VelocityCommandManager<VelocitySender> {
     val velocitySenderMapper = { commandSender: CommandSource -> VelocitySender(commandSender) }
     val backwardsMapper = { sayanSenderExtension: VelocitySender -> sayanSenderExtension.platformSender() }
 
-    return VelocityCommandManager(
+    val manager = VelocityCommandManager(
         plugin.container,
         plugin.server,
         ExecutionCoordinator.simpleCoordinator(),
         SenderMapper.create(velocitySenderMapper, backwardsMapper),
     )
+    manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
+    return manager
 }
 
 abstract class BukkitCommand(
@@ -43,8 +45,7 @@ abstract class BukkitCommand(
     private var errorPrefix = Component.empty().asComponent()
 
     init {
-        manager.createHelpHandler()
-        manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
+        initializeManagerAndRoot()
     }
 
     override fun errorPrefix(): Component {
