@@ -1,3 +1,4 @@
+import groovy.util.Node
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -71,12 +72,6 @@ allprojects {
 }
 
 subprojects {
-    catalog {
-        versionCatalog {
-            from(files("${rootProject.projectDir}/gradle/libs.versions.toml"))
-        }
-    }
-
     java {
         withSourcesJar()
         withJavadocJar()
@@ -133,11 +128,33 @@ subprojects {
 
     publishing {
         publications {
-            if (!project.name.contains("loader")) {
-                create<MavenPublication>("maven") {
+            if (!project.name.contains("loader") && !project.name.contains("catalog")) {
+                create<MavenPublication>("mavenJava") {
                     groupId = rootProject.group as String
-                    artifact(tasks["sourcesJar"])
-                    artifact(tasks["jar"])
+//                    artifact(tasks["sourcesJar"])
+//                    artifact(tasks["jar"])
+                    if (project.name.contains("catalog")) {
+                        from(components["versionCatalog"])
+                    } else {
+                        from(components["java"])
+                    }
+
+                    setPom(this)
+                }
+                /*create<MavenPublication>("catalog") {
+                    groupId = rootProject.group as String
+                    artifactId += "-catalog"
+//                    artifact(tasks["sourcesJar"])
+//                    artifact(tasks["jar"])
+                    from(components["versionCatalog"])
+
+                    setPom(this)
+                }*/
+            }
+            if (project.name.contains("catalog")) {
+                create<MavenPublication>("catalog") {
+                    groupId = rootProject.group as String
+                    from(components["versionCatalog"])
 
                     setPom(this)
                 }

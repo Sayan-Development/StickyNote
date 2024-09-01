@@ -21,7 +21,7 @@ public abstract class StickyNoteLoader {
 
     private static final String LIB_FOLDER = "lib";
 
-    private final List<String> transitiveExcluded = Arrays.asList("xseries");
+    private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
 
     protected abstract void onComplete();
 
@@ -57,7 +57,7 @@ public abstract class StickyNoteLoader {
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
             } else {
-                loadCachedDependencies(logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
+                loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
             }
 
             long endTime = System.currentTimeMillis();
@@ -73,7 +73,11 @@ public abstract class StickyNoteLoader {
     }
 
     private static void configureLibraryManager(LibraryManager libraryManager, List<String> repositories) {
-        libraryManager.setLogLevel(LogLevel.WARN);
+        libraryManager.setLogLevel(LogLevel.ERROR);
+//        libraryManager.addMavenCentral();
+//        libraryManager.addSonatype();
+//        libraryManager.addJitPack();
+//        libraryManager.addJCenter();
         libraryManager.addRepository("https://repo.sayandev.org/snapshots");
         libraryManager.addMavenLocal();
         repositories.forEach(libraryManager::addRepository);
@@ -100,7 +104,7 @@ public abstract class StickyNoteLoader {
             dependencyCache.saveCache(new HashSet<>(dependencies));
 
             List<CompletableFuture<Void>> futures = dependencies.stream()
-                    .map(dependency -> loadDependencyAndTransitives(libraryManager, dependency, relocationFrom, relocationTo))
+                    .map(dependency -> loadDependencyAndTransitives(id, libraryManager, dependency, relocationFrom, relocationTo))
                     .flatMap(Collection::stream)
                     .toList();
 
@@ -109,25 +113,25 @@ public abstract class StickyNoteLoader {
         }, executorService).join();
     }
 
-    private List<CompletableFuture<Void>> loadDependencyAndTransitives(LibraryManager libraryManager, Dependency dependency, String relocationFrom, String relocationTo) {
+    private List<CompletableFuture<Void>> loadDependencyAndTransitives(String id, LibraryManager libraryManager, Dependency dependency, String relocationFrom, String relocationTo) {
         List<CompletableFuture<Void>> loadingFutures = new ArrayList<>();
         for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-            loadingFutures.add(loadDependencyAsync(transitiveDependency, relocationFrom, relocationTo, libraryManager));
+            loadingFutures.add(loadDependencyAsync(id, transitiveDependency, relocationFrom, relocationTo, libraryManager));
         }
-        loadingFutures.add(loadDependencyAsync(dependency, relocationFrom, relocationTo, libraryManager));
+        loadingFutures.add(loadDependencyAsync(id, dependency, relocationFrom, relocationTo, libraryManager));
         return loadingFutures;
     }
 
-    private void loadCachedDependencies(Logger logger, LibraryManager libraryManager, Set<Dependency> cachedDependencies, String relocationFrom, String relocationTo) {
+    private void loadCachedDependencies(String id, Logger logger, LibraryManager libraryManager, Set<Dependency> cachedDependencies, String relocationFrom, String relocationTo) {
         logger.info("Library cache found, loading cached libraries...");
         cachedDependencies.forEach(dependency -> {
             try {
-                Library library = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo).build();
+                Library library = createLibraryBuilder(id, dependency, relocationFrom, relocationTo).build();
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-                        Library transitiveLibrary = createLibraryBuilder(transitiveDependency, transitiveDependency.getGroup(), transitiveDependency.getName(), relocationFrom, relocationTo).build();
+                        Library transitiveLibrary = createLibraryBuilder(id, transitiveDependency, relocationFrom, relocationTo).build();
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
                 }
@@ -168,10 +172,10 @@ public abstract class StickyNoteLoader {
                 }).toList();
     }
 
-    private CompletableFuture<Void> loadDependencyAsync(Dependency dependency, String relocationFrom, String relocationTo, LibraryManager libraryManager) {
+    private CompletableFuture<Void> loadDependencyAsync(String id, Dependency dependency, String relocationFrom, String relocationTo, LibraryManager libraryManager) {
         return loadingLibraries.computeIfAbsent(dependency, key -> CompletableFuture.runAsync(() -> {
             try {
-                Library.Builder libraryBuilder = createLibraryBuilder(dependency, dependency.getGroup(), dependency.getName(), relocationFrom, relocationTo);
+                Library.Builder libraryBuilder = createLibraryBuilder(id, dependency, relocationFrom, relocationTo);
                 Library library = libraryBuilder.build();
                 retryWithDelay(() -> {
                     libraryManager.loadLibrary(library);
@@ -202,25 +206,28 @@ public abstract class StickyNoteLoader {
         }
     }
 
-    private Library.Builder createLibraryBuilder(Dependency dependency, String group, String name, String relocationFrom, String relocationTo) {
+    private Library.Builder createLibraryBuilder(String id, Dependency dependency, String relocationFrom, String relocationTo) {
         Library.Builder libraryBuilder = Library.builder()
-                .groupId(group)
-                .artifactId(name)
+                .groupId(dependency.getGroup())
+                .artifactId(dependency.getName())
                 .version(dependency.getVersion());
 
-        // relocate yaml in configurate to fix NoSuchMethod in 1.8 servers (1.8 servers uses a very old version of snakeyaml)
-        if (name.contains("yaml") || name.contains("configurate")) {
+        /*// relocate yaml in configurate to fix NoSuchMethod in 1.8 servers (1.8 servers uses a very old version of snakeyaml)
+        if (dependency.getName().contains("yaml") || dependency.getName().contains("configurate")) {
             libraryBuilder.relocate("org.yaml.snakeyaml", "org.sayandev.stickynote.snakeyaml");
         }
+        System.out.println("relocated " + dependency.getName());*/
+        String name = dependency.getName();
+        String group = dependency.getGroup();
 
-        /*if (!name.contains("stickynote") && !name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect") && !name.equals("kotlin") && !name.equals("kotlin-stdlib-jdk8") && !name.equals("kotlin-stdlib-jdk7") && !name.equals("kotlinx") && !name.equals("kotlinx-coroutines")) {
+        if (/*!name.contains("stickynote") && */!name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect") && !name.equals("kotlin") && !name.equals("kotlin-stdlib-jdk8") && !name.equals("kotlin-stdlib-jdk7") && !name.equals("kotlinx") && !name.equals("kotlinx-coroutines")) {
             String replacedGroup = group.replace("{}", ".");
             String[] groupParts = replacedGroup.split("\\.");
-            libraryBuilder.relocate(group, relocationTo + "{}libs{}" + groupParts[groupParts.length - 1]);
+ c            libraryBuilder.relocate(group, relocationTo + "{}libs{}" + groupParts[groupParts.length - 1]);
         }
         if (name.contains("stickynote")) {
             libraryBuilder.relocate(relocationFrom, relocationTo);
-        }*/
+        }
         return libraryBuilder;
     }
 
@@ -235,6 +242,7 @@ public abstract class StickyNoteLoader {
 
     private List<Library> resolveTransitiveLibraries(String id, TransitiveDependencyHelper transitiveDependencyHelper, Dependency dependency) {
         List<Library> transitiveDependencies = new ArrayList<>();
+        if (transitiveExcluded.stream().anyMatch(excluded -> dependency.getName().toLowerCase().contains(excluded))) return Collections.emptyList();
         try {
             Collection<Library> libraries = transitiveDependencyHelper.findTransitiveLibraries(
                     Library.builder()

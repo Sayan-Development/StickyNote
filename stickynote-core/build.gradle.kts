@@ -18,12 +18,3 @@ dependencies {
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.netty.all)
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("catalog") {
-            artifactId = "${rootProject.name.lowercase()}-catalog"
-            from(components["versionCatalog"])
-        }
-    }
-}

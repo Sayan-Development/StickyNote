@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 rootProject.name = "StickyNote"
 
 include("stickynote-core")
+include("stickynote-catalog")
 
 include("stickynote-bukkit")
 include("stickynote-bukkit:stickynote-bukkit-nms")
