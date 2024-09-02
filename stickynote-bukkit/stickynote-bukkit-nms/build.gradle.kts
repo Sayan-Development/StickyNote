@@ -470,6 +470,7 @@ accessors {
     }
     mapClass(ClientboundPlayerChatPacket) {
         constructor(Component, Optional::class, Int::class, ChatSender, Instant::class, CryptSaltSignaturePair)
+        constructor(UUID::class, Int::class, MessageSignature, SignedMessageBodyPacked, Component, FilterMask, ChatTypeBound)
         field(UUID::class, "sender")
         field(Int::class, "index")
         field(MessageSignature, "signature")
@@ -479,8 +480,9 @@ accessors {
         field(ChatTypeBound, "chatType")
     }
     mapClass(ClientboundSystemChatPacket) {
-        methodInferred("content", "1.20.4")
-        //methodInferred("typeId", "1.16.5")
+        constructor(Component, Boolean::class)
+        field(Component, "content")
+        field(Boolean::class, "overlay")
     }
     mapClass(ClientboundSetCameraPacket) {
         fieldInferred("cameraId", "1.20.4")
