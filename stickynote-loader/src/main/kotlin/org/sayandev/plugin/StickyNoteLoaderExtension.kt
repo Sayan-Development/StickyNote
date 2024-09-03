@@ -24,7 +24,7 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         loaderVersion.convention("0.0.0")
         modules.convention(listOf())
         basePackage.convention(project.group.toString())
-        relocation.convention("org.sayandev.stickynote" to "${project.group}.${project.name.lowercase()}")
+        relocation.convention("org.sayandev.stickynote" to "${project.rootProject.group}.${project.rootProject.name.lowercase()}")
         useKotlin.convention(false)
     }
 

@@ -11,6 +11,13 @@ import kotlin.jvm.internal.Intrinsics.Kotlin
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
+    /**
+    * Exclude dependency from relocations. should be the same in StickyNoteLoader
+    * We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
+    * @see org.sayandev.loader.common.StickyNoteLoader
+    * */
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure")
+
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
         val config = target.extensions.create<StickyNoteLoaderExtension>("stickynote", target)
@@ -86,25 +93,31 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
-            /*val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
+            val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             target.tasks.withType<ShadowJar> {
-                for (bundleAlias in libs.bundleAliases) {
+                relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
+                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
+                for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
-                        if (alias.module.name.contains("stickynote") || alias.module.name == "kotlin-stdlib" || alias.module.name == "kotlin-reflect") continue
-                        relocate(alias.group, "${target.group}.${target.name.lowercase()}.libs.${alias.group.split(".").last()}")
+                        if (relocateExclusion.any { alias.module.name == it }) continue
+                        if (alias.module.name =="adventure-text-minimessage") {
+                            relocate("net.kyori.adventure.text.minimessage", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                        } else {
+                            if (alias.module.name.contains("adventure")) continue
+                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                        }
                     }
                 }
-                relocate("org.sayandev.stickynote", "${target.group}.${target.name.lowercase()}")
                 mergeServiceFiles()
-            }*/
+            }
 
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
             val defaultLocation = layout.buildDirectory.dir("stickynote/output").get().asFile
 
-            config.relocation.set(Pair("org.sayandev.stickynote", "${project.group}.${project.name.lowercase()}"))
+            config.relocation.set(Pair("org.sayandev.stickynote", "${project.rootProject.group}.${project.rootProject.name.lowercase()}"))
 
             if (config.outputDirectory.get().asFile == defaultLocation) {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)

@@ -218,11 +218,11 @@ fun launch(
     plugin.launch(dispatcher(), start, block)
 }
 
-suspend fun <T> sync(scope: CoroutineScope.() -> T): T {
+suspend fun <T> sync(scope: suspend CoroutineScope.() -> T): T {
     return withContext(dispatcher(), scope)
 }
 
-suspend fun <T> async(scope: CoroutineScope.() -> T): T {
+suspend fun <T> async(scope: suspend CoroutineScope.() -> T): T {
     return withContext(dispatcher(true), scope)
 }
 
