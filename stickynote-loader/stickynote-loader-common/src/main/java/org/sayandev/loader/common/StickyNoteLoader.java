@@ -17,7 +17,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines");
     public static final Map<String, String> relocations = new HashMap<>();
 
     private static final String LIB_FOLDER = "lib";
@@ -58,17 +58,13 @@ public abstract class StickyNoteLoader {
             for (Dependency cachedDependency : dependencies) {
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
+                if (name.contains("adventure")) continue;
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");
-                if (name.equals("adventure-text-minimessage")) {
-                    relocations.put("net.kyori.adventure.text.minimessage", relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
-                } else {
-                    if (name.contains("adventure")) continue;
-                    relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
-                }
+                relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
             }
 
             if (!missingDependencies.isEmpty()) {

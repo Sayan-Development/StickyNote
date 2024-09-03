@@ -13,10 +13,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
     /**
     * Exclude dependency from relocations. should be the same in StickyNoteLoader
-    * We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
     * @see org.sayandev.loader.common.StickyNoteLoader
     * */
-    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure")
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines")
 
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
@@ -103,12 +102,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (relocateExclusion.any { alias.module.name == it }) continue
-                        if (alias.module.name =="adventure-text-minimessage") {
-                            relocate("net.kyori.adventure.text.minimessage", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
-                        } else {
-                            if (alias.module.name.contains("adventure")) continue
-                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
-                        }
+                        // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
+                        if (alias.module.name.contains("adventure")) continue
+                        relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
                     }
                 }
                 mergeServiceFiles()
