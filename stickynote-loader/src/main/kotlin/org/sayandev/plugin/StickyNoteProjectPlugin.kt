@@ -13,6 +13,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
     /**
     * Exclude dependency from relocations. should be the same in StickyNoteLoader
+    * We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
     * @see org.sayandev.loader.common.StickyNoteLoader
     * */
     val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure")
@@ -102,10 +103,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (relocateExclusion.any { alias.module.name == it }) continue
-                        /*
-                        * DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
-                        * We're going to only relocate minimessage to reduce incompatibility issues with other plugins using adventure without relocation
-                        * */
                         if (alias.module.name =="adventure-text-minimessage") {
                             relocate("net.kyori.adventure.text.minimessage", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
                         } else {
