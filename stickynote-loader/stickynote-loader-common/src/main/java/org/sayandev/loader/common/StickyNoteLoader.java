@@ -249,8 +249,8 @@ public abstract class StickyNoteLoader {
                             .groupId(dependency.getGroup())
                             .artifactId(dependency.getName())
                             .version(dependency.getVersion())
-                            .loaderId(id + "_" + dependency.getName())
-                            .isolatedLoad(true)
+//                            .loaderId(id + "_" + dependency.getName())
+//                            .isolatedLoad(true)
                             .build()
             );
 
