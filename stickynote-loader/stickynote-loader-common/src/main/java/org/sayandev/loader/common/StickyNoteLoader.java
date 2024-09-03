@@ -2,7 +2,6 @@ package org.sayandev.loader.common;
 
 import com.alessiodp.libby.Library;
 import com.alessiodp.libby.LibraryManager;
-import com.alessiodp.libby.RepositoryResolutionMode;
 import com.alessiodp.libby.logging.LogLevel;
 import com.alessiodp.libby.transitive.TransitiveDependencyHelper;
 
@@ -18,6 +17,8 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure");
+    public static final Map<String, String> relocations = new HashMap<>();
 
     private static final String LIB_FOLDER = "lib";
 
@@ -53,6 +54,22 @@ public abstract class StickyNoteLoader {
             DependencyCache dependencyCache = new DependencyCache(libFolder);
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
+
+            for (Dependency cachedDependency : dependencies) {
+                String name = cachedDependency.getName();
+                String group = cachedDependency.getGroup();
+                if (name.contains("stickynote")) {
+                    relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
+                }
+                if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
+                String[] groupParts = group.split("\\{}");
+                if (name.equals("adventure-text-minimessage")) {
+                    relocations.put("net.kyori.adventure.text.minimessage", relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
+                } else {
+                    if (name.contains("adventure")) continue;
+                    relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
+                }
+            }
 
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
@@ -116,9 +133,9 @@ public abstract class StickyNoteLoader {
     private List<CompletableFuture<Void>> loadDependencyAndTransitives(String id, LibraryManager libraryManager, Dependency dependency, String relocationFrom, String relocationTo) {
         List<CompletableFuture<Void>> loadingFutures = new ArrayList<>();
         for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-            loadingFutures.add(loadDependencyAsync(id, transitiveDependency, relocationFrom, relocationTo, libraryManager));
+            loadingFutures.add(loadDependencyAsync(id, transitiveDependency, libraryManager));
         }
-        loadingFutures.add(loadDependencyAsync(id, dependency, relocationFrom, relocationTo, libraryManager));
+        loadingFutures.add(loadDependencyAsync(id, dependency, libraryManager));
         return loadingFutures;
     }
 
@@ -126,12 +143,12 @@ public abstract class StickyNoteLoader {
         logger.info("Library cache found, loading cached libraries...");
         cachedDependencies.forEach(dependency -> {
             try {
-                Library library = createLibraryBuilder(id, dependency, relocationFrom, relocationTo).build();
+                Library library = createLibraryBuilder(dependency).build();
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-                        Library transitiveLibrary = createLibraryBuilder(id, transitiveDependency, relocationFrom, relocationTo).build();
+                        Library transitiveLibrary = createLibraryBuilder(transitiveDependency).build();
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
                 }
@@ -172,10 +189,10 @@ public abstract class StickyNoteLoader {
                 }).toList();
     }
 
-    private CompletableFuture<Void> loadDependencyAsync(String id, Dependency dependency, String relocationFrom, String relocationTo, LibraryManager libraryManager) {
+    private CompletableFuture<Void> loadDependencyAsync(String id, Dependency dependency, LibraryManager libraryManager) {
         return loadingLibraries.computeIfAbsent(dependency, key -> CompletableFuture.runAsync(() -> {
             try {
-                Library.Builder libraryBuilder = createLibraryBuilder(id, dependency, relocationFrom, relocationTo);
+                Library.Builder libraryBuilder = createLibraryBuilder(dependency);
                 Library library = libraryBuilder.build();
                 retryWithDelay(() -> {
                     libraryManager.loadLibrary(library);
@@ -206,27 +223,14 @@ public abstract class StickyNoteLoader {
         }
     }
 
-    private Library.Builder createLibraryBuilder(String id, Dependency dependency, String relocationFrom, String relocationTo) {
+    private Library.Builder createLibraryBuilder(Dependency dependency) {
         Library.Builder libraryBuilder = Library.builder()
                 .groupId(dependency.getGroup())
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion());
 
-        /*// relocate yaml in configurate to fix NoSuchMethod in 1.8 servers (1.8 servers uses a very old version of snakeyaml)
-        if (dependency.getName().contains("yaml") || dependency.getName().contains("configurate")) {
-            libraryBuilder.relocate("org.yaml.snakeyaml", "org.sayandev.stickynote.snakeyaml");
-        }
-        System.out.println("relocated " + dependency.getName());*/
-        String name = dependency.getName();
-        String group = dependency.getGroup();
-
-        if (/*!name.contains("stickynote") && */!name.equals("kotlin-stdlib") && !name.equals("kotlin-reflect") && !name.equals("kotlin") && !name.equals("kotlin-stdlib-jdk8") && !name.equals("kotlin-stdlib-jdk7") && !name.equals("kotlinx") && !name.equals("kotlinx-coroutines")) {
-            String replacedGroup = group.replace("{}", ".");
-            String[] groupParts = replacedGroup.split("\\.");
- c            libraryBuilder.relocate(group, relocationTo + "{}libs{}" + groupParts[groupParts.length - 1]);
-        }
-        if (name.contains("stickynote")) {
-            libraryBuilder.relocate(relocationFrom, relocationTo);
+        for (Map.Entry<String, String> relocation : relocations.entrySet()) {
+            libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
         }
         return libraryBuilder;
     }

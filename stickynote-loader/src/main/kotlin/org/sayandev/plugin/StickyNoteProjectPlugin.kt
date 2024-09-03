@@ -11,15 +11,11 @@ import kotlin.jvm.internal.Intrinsics.Kotlin
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
-    val relocateExclusion = setOf(
-        "kotlin-stdlib",
-        "kotlin-reflect",
-        "kotlin",
-        "kotlin-stdlib-jdk8",
-        "kotlin-stdlib-jdk7",
-        "kotlinx",
-        "kotlinx-coroutines"
-    )
+    /**
+    * Exclude dependency from relocations. should be the same in StickyNoteLoader
+    * @see org.sayandev.loader.common.StickyNoteLoader
+    * */
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "adventure")
 
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
@@ -100,15 +96,24 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             target.tasks.withType<ShadowJar> {
-                for (bundleAlias in libs.bundleAliases) {
+                relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
+                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
+                for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
-                        if (alias.module.name.contains("stickynote") || relocateExclusion.any { alias.module.name == it }) continue
-                        relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.libs.${alias.group.split(".").last()}")
+                        if (relocateExclusion.any { alias.module.name == it }) continue
+                        /*
+                        * DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
+                        * We're going to only relocate minimessage to reduce incompatibility issues with other plugins using adventure without relocation
+                        * */
+                        if (alias.module.name =="adventure-text-minimessage") {
+                            relocate("net.kyori.adventure.text.minimessage", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                        } else {
+                            if (alias.module.name.contains("adventure")) continue
+                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                        }
                     }
                 }
-                relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}")
-//                relocate("org.incendo.cloud", "org.sayandev.stickynote.libs.cloud")
                 mergeServiceFiles()
             }
 
