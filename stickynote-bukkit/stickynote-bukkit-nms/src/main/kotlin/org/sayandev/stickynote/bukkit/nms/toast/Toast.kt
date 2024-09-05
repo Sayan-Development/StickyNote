@@ -198,71 +198,71 @@ class Toast(
         AdvancementProgressAccessor.METHOD_REVOKE_PROGRESS!!.invoke(advancementProgress, "elytra")
     }
 
-    fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
-        val title = if (trimCharacters) trimCharacters(rawTitle) else rawTitle
-
-        val component: Component = title.component(*placeholder)
-        return JsonParser.parseString(GsonComponentSerializer.gson().serialize(component))
-    }
-
-    private fun trimCharacters(string: String): String {
-        var input = string
-        val characterLimit = 45
-
-        input = input.replace(IGNORE_CHAR.toString(), ".")
-        val modifiedInput = replaceTokensWithIgnoreChar(input)
-
-        var i = 0
-        var j = 0
-        for (character in modifiedInput.toCharArray()) {
-            j++
-            if (character != IGNORE_CHAR) i++
-            if (i > characterLimit) break
-        }
-        input = input.substring(0, j)
-        if (i > characterLimit) input = "$input..."
-
-        return input
-    }
-
-    private fun replaceTokensWithIgnoreChar(richMessage: String): String {
-        val sb = StringBuilder()
-        val matcher: Matcher = ESCAPE_TOKEN_PATTERN.matcher(richMessage)
-        var lastEnd = 0
-        var i = 0
-        while (matcher.find()) {
-            i++
-            if (i > 20) {
-                break
-            }
-            val startIndex = matcher.start()
-            val endIndex = matcher.end()
-
-            if (startIndex > lastEnd) {
-                sb.append(richMessage, lastEnd, startIndex)
-            }
-            lastEnd = endIndex
-
-            var token = matcher.group("token")
-            val inner = matcher.group("inner")
-
-            // also escape inner
-            if (inner != null) {
-                token = token.replace(inner, replaceTokensWithIgnoreChar(inner))
-            }
-
-            sb.append(IGNORE_CHAR).append(token.replace(".".toRegex(), IGNORE_CHAR.toString())).append(IGNORE_CHAR)
-        }
-
-        if (richMessage.length > lastEnd) {
-            sb.append(richMessage.substring(lastEnd))
-        }
-
-        return sb.toString()
-    }
-
     companion object {
         private const val IGNORE_CHAR = 'ˑ'
         private val ESCAPE_TOKEN_PATTERN = Pattern.compile("((?<start><)(?<token>[^<>]+(:(?<inner>['\"]?([^'\"](\\\\['\"])?)+['\"]?))*)(?<end>>))+?")
+
+        fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
+            val title = if (trimCharacters) trimCharacters(rawTitle) else rawTitle
+
+            val component: Component = title.component(*placeholder)
+            return JsonParser.parseString(GsonComponentSerializer.gson().serialize(component))
+        }
+
+        private fun trimCharacters(string: String): String {
+            var input = string
+            val characterLimit = 45
+
+            input = input.replace(IGNORE_CHAR.toString(), ".")
+            val modifiedInput = replaceTokensWithIgnoreChar(input)
+
+            var i = 0
+            var j = 0
+            for (character in modifiedInput.toCharArray()) {
+                j++
+                if (character != IGNORE_CHAR) i++
+                if (i > characterLimit) break
+            }
+            input = input.substring(0, j)
+            if (i > characterLimit) input = "$input..."
+
+            return input
+        }
+
+        private fun replaceTokensWithIgnoreChar(richMessage: String): String {
+            val sb = StringBuilder()
+            val matcher: Matcher = ESCAPE_TOKEN_PATTERN.matcher(richMessage)
+            var lastEnd = 0
+            var i = 0
+            while (matcher.find()) {
+                i++
+                if (i > 20) {
+                    break
+                }
+                val startIndex = matcher.start()
+                val endIndex = matcher.end()
+
+                if (startIndex > lastEnd) {
+                    sb.append(richMessage, lastEnd, startIndex)
+                }
+                lastEnd = endIndex
+
+                var token = matcher.group("token")
+                val inner = matcher.group("inner")
+
+                // also escape inner
+                if (inner != null) {
+                    token = token.replace(inner, replaceTokensWithIgnoreChar(inner))
+                }
+
+                sb.append(IGNORE_CHAR).append(token.replace(".".toRegex(), IGNORE_CHAR.toString())).append(IGNORE_CHAR)
+            }
+
+            if (richMessage.length > lastEnd) {
+                sb.append(richMessage.substring(lastEnd))
+            }
+
+            return sb.toString()
+        }
     }
 }
