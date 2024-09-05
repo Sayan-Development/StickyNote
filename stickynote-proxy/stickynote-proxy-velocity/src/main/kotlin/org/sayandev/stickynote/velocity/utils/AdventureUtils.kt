@@ -8,7 +8,11 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 object AdventureUtils {
 
     @JvmStatic
-    val miniMessage = MiniMessage.miniMessage()
+    var miniMessage = MiniMessage.miniMessage()
+
+    fun setTagResolver(vararg tagResolver: TagResolver) {
+        miniMessage = MiniMessage.builder().tags(TagResolver.resolver(TagResolver.standard(), *tagResolver)).build()
+    }
 
     @JvmStatic
     fun toComponent(content: String, vararg placeholder: TagResolver): Component {
@@ -18,5 +22,7 @@ object AdventureUtils {
     fun String.component(vararg placeholder: TagResolver): Component {
         return toComponent(this, *placeholder)
     }
+
+
 
 }
