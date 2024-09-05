@@ -241,7 +241,7 @@ public abstract class StickyNoteLoader {
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion());
 
-        if (!dependency.isStickyLoad()) {
+        if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
             for (Map.Entry<String, String> relocation : relocations.entrySet()) {
                 libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
             }
