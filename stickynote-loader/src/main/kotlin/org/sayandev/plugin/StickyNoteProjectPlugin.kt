@@ -124,14 +124,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                         relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
                     }
                 }
-                println("checking...")
-                println("checking...")
-                println("checking...")
                 for (stickyLoadDependency in stickyLoadDependencies) {
-                    println("checking ${stickyLoadDependency}")
                     if (stickyLoadDependency.relocation != null) {
                         val splitted = stickyLoadDependency.relocation!!.split(".")
-                        println("relocated ${stickyLoadDependency.group}:${stickyLoadDependency.name} to ${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                         relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                     }
                 }

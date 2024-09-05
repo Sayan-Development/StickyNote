@@ -58,13 +58,10 @@ public abstract class StickyNoteLoader {
             for (Dependency cachedDependency : dependencies) {
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
-                System.out.println("dependency: group=%s, name=%s, version=%s, relocation=%s, isStickyLoad=%s".formatted(group, name, cachedDependency.getVersion(), cachedDependency.getRelocation(), cachedDependency.isStickyLoad()));
                 if (cachedDependency.isStickyLoad()) {
                     if (cachedDependency.getRelocation() != null) {
-                        System.out.println("group: " + cachedDependency.getGroup());
                         String[] splitted = cachedDependency.getGroup().split("\\{}");
                         relocations.put(cachedDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
-                        System.out.println("added relocation: " + cachedDependency.getRelocation() + " -> " + relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
                     }
                     continue;
                 }
