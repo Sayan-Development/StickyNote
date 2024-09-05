@@ -198,7 +198,7 @@ class Toast(
         AdvancementProgressAccessor.METHOD_REVOKE_PROGRESS!!.invoke(advancementProgress, "elytra")
     }
 
-    private fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
+    fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
         val title = if (trimCharacters) trimCharacters(rawTitle) else rawTitle
 
         val component: Component = title.component(*placeholder)
