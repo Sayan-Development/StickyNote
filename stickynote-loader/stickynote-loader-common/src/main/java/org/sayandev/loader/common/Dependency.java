@@ -1,5 +1,7 @@
 package org.sayandev.loader.common;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,13 +14,17 @@ public class Dependency implements Serializable {
     private String group;
     private String name;
     private String version;
+    private String relocation;
+    private boolean stickyLoad;
     private boolean transitiveResolved;
     private List<Dependency> transitiveDependencies;
 
-    public Dependency(String group, String name, String version) {
+    public Dependency(String group, String name, String version, String relocation, boolean stickyLoad) {
         this.group = group;
         this.name = name;
         this.version = version;
+        this.stickyLoad = stickyLoad;
+        this.relocation = relocation;
         this.transitiveResolved = false;
     }
 
@@ -32,6 +38,18 @@ public class Dependency implements Serializable {
 
     public String getVersion() {
         return version;
+    }
+
+    public @Nullable String getRelocation() {
+        return relocation;
+    }
+
+    public boolean isStickyLoad() {
+        return stickyLoad;
+    }
+
+    public void setStickyLoad(boolean stickyLoad) {
+        this.stickyLoad = stickyLoad;
     }
 
     public boolean isTransitiveResolved() {

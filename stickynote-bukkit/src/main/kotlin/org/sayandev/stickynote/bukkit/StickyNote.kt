@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.bukkit
 
+import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
 import com.github.shynixn.mccoroutine.folia.launch
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -158,9 +159,12 @@ object StickyNote {
 
     @JvmStatic
     fun registerListener(listener: Listener) {
-        plugin.server.pluginManager.registerEvents(listener,
-            plugin
-        )
+        plugin.server.pluginManager.registerEvents(listener, plugin)
+    }
+
+    @JvmStatic
+    fun registerSuspendingListener(listener: Listener) {
+        plugin.server.pluginManager.registerSuspendingEvents(listener, plugin)
     }
 
     @JvmStatic
@@ -256,6 +260,10 @@ fun runEAsync(runnable: Runnable): Future<*> {
 
 fun registerListener(listener: Listener) {
     StickyNote.registerListener(listener)
+}
+
+fun registerSuspendingListener(listener: Listener) {
+    StickyNote.registerSuspendingListener(listener)
 }
 
 fun unregisterListener(listener: Listener) {

@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.*
-import kotlin.jvm.internal.Intrinsics.Kotlin
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
@@ -15,7 +14,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
     * Exclude dependency from relocations. should be the same in StickyNoteLoader
     * @see org.sayandev.loader.common.StickyNoteLoader
     * */
-    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines")
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "takenaka", "mappings")
 
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
@@ -92,19 +91,48 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
+            val stickyLoadDependencies = mutableListOf<StickyLoadDependency>()
+            project.configurations.getByName("stickyload").dependencies.forEach { stickyLoadDependency ->
+                var relocation: String? = null
+                var rawVersion = stickyLoadDependency.version!!
+                if (stickyLoadDependency.version!!.contains("+relocation-")) {
+                    stickyLoadDependency.version!!.split("+")[1].removePrefix("relocation-").let { relocation = it }
+                    rawVersion = stickyLoadDependency.version!!.split("+")[0]
+                }
+                stickyLoadDependencies.add(StickyLoadDependency(stickyLoadDependency.group!!, stickyLoadDependency.name!!, rawVersion, relocation))
+                project.dependencies.add("compileOnly", "${stickyLoadDependency.group}:${stickyLoadDependency.name}:${rawVersion}")
+            }
+
+            createStickyNoteLoader.stickyLoadDependencies.set(stickyLoadDependencies)
+
             val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             target.tasks.withType<ShadowJar> {
                 relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
-                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
+//                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
                 for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (relocateExclusion.any { alias.module.name == it }) continue
                         // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
-                        if (alias.module.name.contains("adventure")) continue
+                        if (alias.module.name.contains("adventure")) {
+//                            relocate("net.kyori.adventure.text.serializer", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.text.serializer")
+//                            relocate("net.kyori.option", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.option")
+                            continue
+                        }
                         relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                    }
+                }
+                println("checking...")
+                println("checking...")
+                println("checking...")
+                for (stickyLoadDependency in stickyLoadDependencies) {
+                    println("checking ${stickyLoadDependency}")
+                    if (stickyLoadDependency.relocation != null) {
+                        val splitted = stickyLoadDependency.relocation!!.split(".")
+                        println("relocated ${stickyLoadDependency.group}:${stickyLoadDependency.name} to ${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
+                        relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                     }
                 }
                 mergeServiceFiles()
@@ -131,12 +159,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUNGEECORD)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord:${createStickyNoteLoader.loaderVersion.get()}")
             }
-
-            project.configurations.getByName("stickyload").dependencies.forEach {
-                project.dependencies.add("compileOnly", "${it.group}:${it.name}:${it.version}")
-            }
-
-            createStickyNoteLoader.stickyLoadDependencies.set(project.configurations.getByName("stickyload").dependencies.map { StickyLoadDependency(it.group!!, it.name, it.version!!) })
 
             createStickyNoteLoader.run()
         }

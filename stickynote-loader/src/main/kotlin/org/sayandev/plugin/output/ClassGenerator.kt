@@ -51,22 +51,22 @@ class ClassGenerator(
                     for (module in modules) {
                         this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("new Dependency(\$S, \$S, \$S)", "org{}sayandev", module.type.artifact, module.version)
+                            .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", module.type.artifact, module.version, null, false)
                             .build())
                         val bundleName = module.type.artifact.removePrefix("stickynote-")
                         val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
                         for (library in moduleBundleProvider.get()) {
                             this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_"))).uppercase())
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .initializer("new Dependency(\$S, \$S, \$S)", library.group.replace(".", "{}"), library.name, library.version)
+                                .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
                                 .build())
                         }
                     }
 
                     for (externalDependency in stickyLoadDependencies) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(externalDependency.name.replace("-", "_")).uppercase())
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_STICKYLOAD_".plus(externalDependency.name.replace("-", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("new Dependency(\$S, \$S, \$S)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version)
+                            .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version, externalDependency.relocation?.replace(".", "{}"), true)
                             .build())
                     }
 
@@ -98,14 +98,20 @@ class ClassGenerator(
             .addField(String::class.java, "group", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String::class.java, "name", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String::class.java, "version", Modifier.PRIVATE, Modifier.FINAL)
+            .addField(String::class.java, "relocation", Modifier.PRIVATE, Modifier.FINAL)
+            .addField(Boolean::class.java, "isStickyLoad", Modifier.PRIVATE, Modifier.FINAL)
             .addMethod(
                 MethodSpec.constructorBuilder()
                     .addParameter(String::class.java, "group")
                     .addParameter(String::class.java, "name")
                     .addParameter(String::class.java, "version")
+                    .addParameter(String::class.java, "relocation")
+                    .addParameter(Boolean::class.java, "isStickyLoad")
                     .addStatement("this.\$N = \$N", "group", "group")
                     .addStatement("this.\$N = \$N", "name", "name")
                     .addStatement("this.\$N = \$N", "version", "version")
+                    .addStatement("this.\$N = \$N", "relocation", "relocation")
+                    .addStatement("this.\$N = \$N", "isStickyLoad", "isStickyLoad")
                     .build()
             )
             .addMethod(
@@ -127,6 +133,20 @@ class ClassGenerator(
                     .addModifiers(Modifier.PUBLIC)
                     .returns(String::class.java)
                     .addStatement("return \$N", "version")
+                    .build()
+            )
+            .addMethod(
+                MethodSpec.methodBuilder("getRelocation")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(String::class.java)
+                    .addStatement("return \$N", "relocation")
+                    .build()
+            )
+            .addMethod(
+                MethodSpec.methodBuilder("isStickyLoad")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(Boolean::class.java)
+                    .addStatement("return \$N", "isStickyLoad")
                     .build()
             )
             .build()

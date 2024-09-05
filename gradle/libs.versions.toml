@@ -6,7 +6,7 @@ kotlin = "2.0.0"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 configurate = "4.1.2"
-cloud = "2.0.0-rc.2"
+cloud = "2.0.0"
 cloud-platform = "2.0.0-beta.9"
 adventure = "4.17.0"
 mysql-connector = "8.4.0"
@@ -75,6 +75,7 @@ kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
 folia = { group = "dev.folia", name = "folia-api", version.ref = "folia" }
 cloud-paper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloud-platform" }
+cloud-kotlin-coroutines = { group = "org.incendo", name = "cloud-kotlin-coroutines", version.ref = "cloud" }
 cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloud-platform" }
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
@@ -110,7 +111,7 @@ mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name 
 [bundles]
 kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]
 configurate = ["configurate-yaml", "configurate-extra-kotlin"]
-cloud = ["cloud-core", "cloud-kotlin-extensions"]
+cloud = ["cloud-core", "cloud-kotlin-extensions", "cloud-kotlin-coroutines"]
 cloud-bukkit = ["cloud-paper", "cloud-minecraft-extras"]
 
 # implementation modules
@@ -125,6 +126,7 @@ implementation-core = [
     "configurate-extra-kotlin",
     "cloud-core",
     "cloud-kotlin-extensions",
+    "cloud-kotlin-coroutines",
     "adventure-api",
     "adventure-text-minimessage",
     "adventure-text-serializer-gson",

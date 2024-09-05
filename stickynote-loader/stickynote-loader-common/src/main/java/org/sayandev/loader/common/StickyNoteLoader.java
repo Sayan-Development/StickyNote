@@ -17,7 +17,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "takenaka", "mappings");
     public static final Map<String, String> relocations = new HashMap<>();
 
     private static final String LIB_FOLDER = "lib";
@@ -58,7 +58,21 @@ public abstract class StickyNoteLoader {
             for (Dependency cachedDependency : dependencies) {
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
-                if (name.contains("adventure")) continue;
+                System.out.println("dependency: group=%s, name=%s, version=%s, relocation=%s, isStickyLoad=%s".formatted(group, name, cachedDependency.getVersion(), cachedDependency.getRelocation(), cachedDependency.isStickyLoad()));
+                if (cachedDependency.isStickyLoad()) {
+                    if (cachedDependency.getRelocation() != null) {
+                        System.out.println("group: " + cachedDependency.getGroup());
+                        String[] splitted = cachedDependency.getGroup().split("\\{}");
+                        relocations.put(cachedDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
+                        System.out.println("added relocation: " + cachedDependency.getRelocation() + " -> " + relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
+                    }
+                    continue;
+                }
+                if (name.contains("adventure")) {
+//                    relocations.put("net{}kyori{}adventure{}text{}serializer", relocationTo + "{}lib{}adventure{}text{}serializer");
+//                    relocations.put("net{}kyori{}option", relocationTo + "{}lib{}adventure{}option");
+                    continue;
+                }
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
@@ -164,7 +178,9 @@ public abstract class StickyNoteLoader {
                         return new Dependency(
                                 (String) dependencyFieldClass.getMethod("getGroup").invoke(dependencyObject),
                                 (String) dependencyFieldClass.getMethod("getName").invoke(dependencyObject),
-                                (String) dependencyFieldClass.getMethod("getVersion").invoke(dependencyObject)
+                                (String) dependencyFieldClass.getMethod("getVersion").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getRelocation").invoke(dependencyObject),
+                                (boolean) dependencyFieldClass.getMethod("isStickyLoad").invoke(dependencyObject)
                         );
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -192,9 +208,9 @@ public abstract class StickyNoteLoader {
                 Library library = libraryBuilder.build();
                 retryWithDelay(() -> {
                     libraryManager.loadLibrary(library);
-                }, 3, 1000);
+                }, 5, 1000);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }, executorService));
     }
@@ -225,8 +241,10 @@ public abstract class StickyNoteLoader {
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion());
 
-        for (Map.Entry<String, String> relocation : relocations.entrySet()) {
-            libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
+        if (!dependency.isStickyLoad()) {
+            for (Map.Entry<String, String> relocation : relocations.entrySet()) {
+                libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
+            }
         }
         return libraryBuilder;
     }
@@ -235,7 +253,7 @@ public abstract class StickyNoteLoader {
         return CompletableFuture.runAsync(() -> {
             dependency.setTransitiveResolved(transitiveExcluded.stream().anyMatch(excluded -> dependency.getName().contains(excluded)));
             dependency.setTransitiveDependencies(resolveTransitiveLibraries(id, transitiveDependencyHelper, dependency).stream()
-                    .map(library -> new Dependency(library.getGroupId(), library.getArtifactId(), library.getVersion()))
+                    .map(library -> new Dependency(library.getGroupId(), library.getArtifactId(), library.getVersion(), dependency.getRelocation(), dependency.isStickyLoad()))
                     .toList());
         }, executorService);
     }
