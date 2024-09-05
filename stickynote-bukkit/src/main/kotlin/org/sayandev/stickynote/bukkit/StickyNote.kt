@@ -3,14 +3,14 @@ package org.sayandev.stickynote.bukkit
 import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
 import com.github.shynixn.mccoroutine.folia.launch
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import org.sayandev.stickynote.bukkit.async
 import org.sayandev.stickynote.bukkit.coroutine.dispatcher.BukkitDispatcher
 import org.sayandev.stickynote.bukkit.coroutine.dispatcher.FoliaDispatcher
+import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -224,6 +224,14 @@ fun launch(
 
 suspend fun <T> sync(scope: suspend CoroutineScope.() -> T): T {
     return withContext(dispatcher(), scope)
+}
+
+suspend fun <T> deferredAsync(scope: suspend CoroutineScope.() -> T): Deferred<T> {
+    return async {
+        async {
+            scope()
+        }
+    }
 }
 
 suspend fun <T> async(scope: suspend CoroutineScope.() -> T): T {
