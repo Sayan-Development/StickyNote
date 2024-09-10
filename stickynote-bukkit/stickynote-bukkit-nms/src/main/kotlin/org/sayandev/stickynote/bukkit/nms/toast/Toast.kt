@@ -52,7 +52,7 @@ class Toast(
 
         descJson.addProperty("text", "")
 
-        displayJson.add("title", parseTitle(title, trimCharacters, *placeholder))
+        displayJson.add("title", JsonParser.parseString(GsonComponentSerializer.gson().serialize(parseTitle(title, trimCharacters, *placeholder))))
         displayJson.add("icon", iconJson)
         displayJson.add("description", descJson)
         displayJson.addProperty("frame", frameType.toString().lowercase(Locale.getDefault()))
@@ -202,11 +202,10 @@ class Toast(
         private const val IGNORE_CHAR = 'ˑ'
         private val ESCAPE_TOKEN_PATTERN = Pattern.compile("((?<start><)(?<token>[^<>]+(:(?<inner>['\"]?([^'\"](\\\\['\"])?)+['\"]?))*)(?<end>>))+?")
 
-        fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): JsonElement {
+        fun parseTitle(rawTitle: String, trimCharacters: Boolean, vararg placeholder: TagResolver): Component {
             val title = if (trimCharacters) trimCharacters(rawTitle) else rawTitle
 
-            val component: Component = title.component(*placeholder)
-            return JsonParser.parseString(GsonComponentSerializer.gson().serialize(component))
+            return title.component(*placeholder)
         }
 
         private fun trimCharacters(string: String): String {
