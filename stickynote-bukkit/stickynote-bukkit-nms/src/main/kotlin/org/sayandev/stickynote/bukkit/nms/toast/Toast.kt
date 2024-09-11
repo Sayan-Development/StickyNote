@@ -18,12 +18,17 @@ import java.util.regex.Pattern
 
 
 class Toast(
-    title: String,
+    val title: Component,
     icon: XMaterial,
-    frameType: FrameType,
-    trimCharacters: Boolean = true,
-    vararg placeholder: TagResolver = emptyArray()
+    frameType: FrameType
 ) {
+    constructor(
+        title: String,
+        icon: XMaterial,
+        frameType: FrameType,
+        trimCharacters: Boolean = true,
+        vararg placeholder: TagResolver = emptyArray()
+    ): this(parseTitle(title, trimCharacters, *placeholder), icon, frameType)
 
     private val addPacket: Any
     private val removePacket: Any
@@ -52,7 +57,7 @@ class Toast(
 
         descJson.addProperty("text", "")
 
-        displayJson.add("title", JsonParser.parseString(GsonComponentSerializer.gson().serialize(parseTitle(title, trimCharacters, *placeholder))))
+        displayJson.add("title", JsonParser.parseString(GsonComponentSerializer.gson().serialize(title)))
         displayJson.add("icon", iconJson)
         displayJson.add("description", descJson)
         displayJson.addProperty("frame", frameType.toString().lowercase(Locale.getDefault()))
