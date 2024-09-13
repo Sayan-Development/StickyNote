@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.velocity
 
 import com.github.shynixn.mccoroutine.velocity.launch
+import com.github.shynixn.mccoroutine.velocity.registerSuspend
 import com.github.shynixn.mccoroutine.velocity.velocityDispatcher
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.velocitypowered.api.event.EventHandler
@@ -107,6 +108,11 @@ object StickyNote {
     }
 
     @JvmStatic
+    fun registerSuspend(listener: Any) {
+        plugin.server.eventManager.registerSuspend(plugin, listener)
+    }
+
+    @JvmStatic
     fun unregisterListener(listener: EventHandler<*>) {
         server.eventManager.unregister(mainInstance, listener)
     }
@@ -176,6 +182,10 @@ fun runEAsync(runnable: Runnable): Future<*> {
 
 fun registerListener(listener: Any) {
     StickyNote.registerListener(listener)
+}
+
+fun registerSuspend(listener: Any) {
+    StickyNote.registerSuspend(listener)
 }
 
 fun unregisterListener(listener: EventHandler<*>) {

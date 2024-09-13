@@ -1,24 +1,20 @@
 package org.sayandev.stickynote.core.messaging.publisher
 
 import kotlinx.coroutines.CompletableDeferred
+import java.util.*
 
 abstract class Publisher<P, S>(
     val channel: String
 ) {
 
-    val payloads: MutableMap<P, CompletableDeferred<S>> = mutableMapOf()
+    val payloads: MutableMap<UUID, CompletableDeferred<S>> = mutableMapOf()
 
-    fun publish(payload: P): CompletableDeferred<S> {
+    fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         val deferred = CompletableDeferred<S>()
-
-        payloads[payload] = deferred
-
-        //onPublish(payload)
+        payloads[payloadWrapper.uniqueId] = deferred
 
         return deferred
     }
-
-    //abstract fun onPublish(payload: P): S
 
     companion object {
         val HANDLER_LIST = mutableListOf<Publisher<*, *>>()

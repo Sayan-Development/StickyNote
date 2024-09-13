@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.core.messaging
 
-import java.util.UUID
+import java.util.*
 
 data class PermissionRequest(
     val player: UUID,

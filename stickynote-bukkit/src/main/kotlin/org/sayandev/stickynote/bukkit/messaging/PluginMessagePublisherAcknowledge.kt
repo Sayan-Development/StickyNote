@@ -20,7 +20,7 @@ class PluginMessagePublisherAcknowledge<S>(
     override fun onPluginMessageReceived(channel: String, player: Player, data: ByteArray) {
         for (publisher in Publisher.HANDLER_LIST.filterIsInstance<PluginMessagePublisher<*, S>>()) {
             if (publisher.channel == channel) {
-                val result = Gson().fromJson<PayloadWrapper<S>>(String(data), resultClass)
+                val result = Gson().fromJson<PayloadWrapper<S>>(String(data), PayloadWrapper::class.java)
                 publisher.payloads[result.uniqueId]?.apply {
                     this.complete(result.payload)
                     publisher.payloads.remove(result.uniqueId)
