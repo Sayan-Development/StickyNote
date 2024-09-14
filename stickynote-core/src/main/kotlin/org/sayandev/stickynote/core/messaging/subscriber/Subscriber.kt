@@ -3,10 +3,15 @@ package org.sayandev.stickynote.core.messaging.subscriber
 import kotlinx.coroutines.CompletableDeferred
 
 abstract class Subscriber<P, S>(
-    val channel: String,
+    val namespace: String,
+    val name: String,
 ) {
 
     abstract suspend fun onSubscribe(payload: P): CompletableDeferred<S>
+
+    fun id(): String {
+        return "$namespace:$name"
+    }
 
     fun register() {
         register(this)

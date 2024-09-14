@@ -2,8 +2,8 @@ package org.sayandev.stickynote.velocity.messaging
 
 import org.sayandev.stickynote.core.messaging.subscriber.Subscriber
 
-abstract class ProxySubscriber<P, S>(channel: String) : Subscriber<P, S>(channel) {
+abstract class ProxySubscriber<P, S>(namespace: String, name: String) : Subscriber<P, S>(namespace, name) {
     init {
-        PluginMessageSubscribeListener<Unit, Int>("stickynotetest", "count", Unit::class.java)
+        PluginMessageSubscribeListener<Unit, Int>(namespace, name, Unit::class.java)
     }
 }

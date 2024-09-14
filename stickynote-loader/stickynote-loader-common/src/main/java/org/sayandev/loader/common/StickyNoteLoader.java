@@ -31,7 +31,7 @@ public abstract class StickyNoteLoader {
 
         File[] files = libFolder.listFiles();
         if (files == null || !Arrays.stream(files).map(File::getName).toList().contains(LIB_FOLDER)) {
-            logger.info("Initializing first-time setup.. This may take up to a minute depending on your connection.");
+            logger.info("Some of the libraries are missing, Loading libraries... this might take up to a minute depending on your connection.");
         } else {
             logger.info("Loading libraries... this might take a few seconds.");
         }

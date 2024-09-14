@@ -14,6 +14,7 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
 
 object StickyNote {
@@ -26,6 +27,9 @@ object StickyNote {
 
     @JvmStatic
     val logger = plugin().logger
+
+    @JvmStatic
+    val javaLogger = Logger.getLogger(plugin().logger.name)
 
     @JvmStatic
     val server = plugin().server
