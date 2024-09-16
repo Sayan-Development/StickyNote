@@ -2,6 +2,7 @@ package org.sayandev.stickynote.loader.bungee;
 
 import com.alessiodp.libby.LibraryManager;
 import com.alessiodp.libby.VelocityLibraryManager;
+import com.github.shynixn.mccoroutine.velocity.SuspendingPluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.sayandev.loader.common.StickyNoteLoader;
 import org.sayandev.stickynote.velocity.WrappedStickyNotePlugin;
@@ -20,17 +21,19 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
+    private final SuspendingPluginContainer suspendingPluginContainer;
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory) {
-        this(plugin, id, server, logger, dataDirectory, false);
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) {
+        this(plugin, id, server, logger, dataDirectory, suspendingPluginContainer, false);
     }
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, boolean reloadStickyNote) {
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer, boolean reloadStickyNote) {
         this.plugin = plugin;
         this.id = id;
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
+        this.suspendingPluginContainer = suspendingPluginContainer;
 
         if (reloadStickyNote) {
             File libDirectory = new File(dataDirectory.toFile(), "lib");
@@ -60,7 +63,7 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
 
     @Override
     protected void onComplete() {
-        new WrappedStickyNotePlugin(plugin, id, server, logger, dataDirectory).initialize();
+        new WrappedStickyNotePlugin(plugin, id, server, logger, dataDirectory, suspendingPluginContainer).initialize();
     }
 
 }

@@ -36,7 +36,7 @@ abstract class PluginMessagePublisher<P, S>(
     private fun registerChannel() {
         plugin.server.messenger.registerOutgoingPluginChannel(plugin, this.id())
         if (withListener) {
-            subscriberListener = PluginMessageSubscribeListener(namespace, name, payloadClass, this)
+            subscriberListener = PluginMessageSubscribeListener(namespace, name, payloadClass, resultClass, this)
         }
     }
 

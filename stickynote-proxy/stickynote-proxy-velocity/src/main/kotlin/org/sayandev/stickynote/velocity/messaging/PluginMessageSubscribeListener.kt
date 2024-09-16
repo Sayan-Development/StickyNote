@@ -46,14 +46,33 @@ class PluginMessageSubscribeListener<P, S>(
                 }
             }
             PayloadWrapper.State.FORWARD -> {
-                for (server in StickyNote.server.allServers) {
-                    server.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, source.serverInfo.name).asJson().toByteArray())
+                launch {
+                    val targetServerName = payloadWrapper.target
+                    val targetServer = StickyNote.server.allServers.find { it.serverInfo.name == targetServerName }
+                    val result = (Subscriber.HANDLER_LIST.find { it.namespace == channelIdentifier.namespace && it.name == channelIdentifier.name } as? Subscriber<P, S>)?.onSubscribe(payloadWrapper.typedPayload(payloadClass))
+                    result?.invokeOnCompletion {
+                        if (targetServerName != null) {
+                            targetServer?.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, result.getCompleted(), payloadWrapper.state, source.serverInfo.name, targetServerName).asJson().toByteArray()) ?: warn("target server name was specified as ${targetServerName} but there's not server with this id. will ignore pluginmessage request")
+                        } else {
+                            for (server in StickyNote.server.allServers) {
+                                server.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, result.getCompleted(), payloadWrapper.state, source.serverInfo.name, server.serverInfo.name).asJson().toByteArray())
+                            }
+                        }
+                    } ?: let {
+                        if (targetServerName != null) {
+                            targetServer?.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, source.serverInfo.name, targetServerName).asJson().toByteArray()) ?: warn("target server name was specified as ${targetServerName} but there's not server with this id. will ignore pluginmessage request")
+                        } else {
+                            for (server in StickyNote.server.allServers) {
+                                server.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, source.serverInfo.name, server.serverInfo.name).asJson().toByteArray())
+                            }
+                        }
+                    }
                 }
             }
             PayloadWrapper.State.RESPOND -> {
                 val payloadSource = payloadWrapper.source ?: throw IllegalArgumentException("Can't respond a message if the source is null (payload: ${payloadWrapper})")
                 val sourceServer = StickyNote.server.allServers.find { it.serverInfo.name.lowercase() == payloadSource.lowercase() } ?: throw IllegalArgumentException("Can't find the source server on proxy (payload: ${payloadWrapper})")
-                sourceServer.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, payloadSource).asJson().toByteArray())
+                sourceServer.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, payloadSource, payloadWrapper.target).asJson().toByteArray())
             }
         }
     }

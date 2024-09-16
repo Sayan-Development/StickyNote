@@ -158,8 +158,9 @@ implementation-proxy = [
     "mysql-connector"
 ]
 implementation-proxy-velocity = [
-    "mccoroutines-velocity-api",
-    "mccoroutines-velocity-core",
+#    MCCoroutine velocity dependencies are shaded into velocity itself
+#    "mccoroutines-velocity-api",
+#    "mccoroutines-velocity-core",
     "cloud-velocity"
 ]
 implementation-proxy-bungeecord = [
