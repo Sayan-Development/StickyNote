@@ -29,6 +29,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     lateinit var command: MutableCommandBuilder<S>
 
     fun rawCommandBuilder() = manager.commandBuilder(name, Description.empty(), aliases.toList().toTypedArray()) { }
+    fun builder() = manager.commandBuilder(name, *aliases)
 
     fun initializeManagerAndRoot() {
         manager.createHelpHandler()

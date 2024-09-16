@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.velocity
 
 import com.github.shynixn.mccoroutine.velocity.launch
+import com.github.shynixn.mccoroutine.velocity.registerSuspend
 import com.github.shynixn.mccoroutine.velocity.velocityDispatcher
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.velocitypowered.api.event.EventHandler
@@ -13,6 +14,7 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
 
 object StickyNote {
@@ -25,6 +27,9 @@ object StickyNote {
 
     @JvmStatic
     val logger = plugin().logger
+
+    @JvmStatic
+    val javaLogger = Logger.getLogger(plugin().logger.name)
 
     @JvmStatic
     val server = plugin().server
@@ -107,6 +112,11 @@ object StickyNote {
     }
 
     @JvmStatic
+    fun registerSuspend(listener: Any) {
+        plugin.server.eventManager.registerSuspend(plugin, listener)
+    }
+
+    @JvmStatic
     fun unregisterListener(listener: EventHandler<*>) {
         server.eventManager.unregister(mainInstance, listener)
     }
@@ -176,6 +186,10 @@ fun runEAsync(runnable: Runnable): Future<*> {
 
 fun registerListener(listener: Any) {
     StickyNote.registerListener(listener)
+}
+
+fun registerSuspend(listener: Any) {
+    StickyNote.registerSuspend(listener)
 }
 
 fun unregisterListener(listener: EventHandler<*>) {

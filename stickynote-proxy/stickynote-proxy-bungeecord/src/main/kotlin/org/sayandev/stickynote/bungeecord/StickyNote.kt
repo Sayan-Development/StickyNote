@@ -2,6 +2,7 @@ package org.sayandev.stickynote.bungeecord
 
 import com.github.shynixn.mccoroutine.bungeecord.bungeeCordDispatcher
 import com.github.shynixn.mccoroutine.bungeecord.launch
+import com.github.shynixn.mccoroutine.bungeecord.registerSuspendingListener
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -112,6 +113,11 @@ object StickyNote {
     }
 
     @JvmStatic
+    fun registerSuspendingListener(listener: Listener) {
+        server.pluginManager.registerSuspendingListener(plugin, listener)
+    }
+
+    @JvmStatic
     fun unregisterListener(listener: Listener) {
         server.pluginManager.unregisterListener(listener)
     }
@@ -185,6 +191,10 @@ fun runEAsync(runnable: Runnable): Future<*> {
 
 fun registerListener(listener: Listener) {
     StickyNote.registerListener(listener)
+}
+
+fun registerSuspendingListener(listener: Listener) {
+    StickyNote.registerSuspendingListener(listener)
 }
 
 fun unregisterListener(listener: Listener) {

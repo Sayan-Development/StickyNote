@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.velocity
 
+import com.github.shynixn.mccoroutine.velocity.SuspendingPluginContainer
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
@@ -18,9 +19,10 @@ open class WrappedStickyNotePlugin @Inject constructor(
     val server: ProxyServer,
     val logger: Logger,
     @DataDirectory val dataDirectory: Path,
+    val suspendingPluginContainer: SuspendingPluginContainer,
     val exclusiveThreads: Int,
 ) {
-    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, @DataDirectory dataDirectory: Path) : this(instance, id, server, logger, dataDirectory, 1)
+    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, @DataDirectory dataDirectory: Path, suspendingPluginContainer: SuspendingPluginContainer) : this(instance, id, server, logger, dataDirectory, suspendingPluginContainer, 1)
 
     lateinit var container: PluginContainer
 
@@ -32,6 +34,7 @@ open class WrappedStickyNotePlugin @Inject constructor(
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         initialize()
+        suspendingPluginContainer.initialize(this)
     }
 
     fun initialize() {
