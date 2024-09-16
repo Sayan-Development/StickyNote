@@ -9,6 +9,7 @@ data class PayloadWrapper<P>(
     val state: State = State.FORWARD,
     var source: String? = null,
     val target: String? = null,
+    val excludeSource: Boolean = false
 ) {
     constructor(payload: P, state: State = State.FORWARD): this(UUID.randomUUID(), payload, state)
 

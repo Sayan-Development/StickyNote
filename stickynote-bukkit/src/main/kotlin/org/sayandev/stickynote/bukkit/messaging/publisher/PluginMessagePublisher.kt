@@ -2,24 +2,19 @@ package org.sayandev.stickynote.bukkit.messaging.publisher
 
 import kotlinx.coroutines.CompletableDeferred
 import org.bukkit.entity.Player
-import org.bukkit.plugin.messaging.PluginMessageListener
 import org.sayandev.stickynote.bukkit.StickyNote
-import org.sayandev.stickynote.bukkit.log
 import org.sayandev.stickynote.bukkit.messaging.subscriber.PluginMessageSubscribeListener
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
-import java.util.logging.Logger
 
 abstract class PluginMessagePublisher<P, S>(
     namespace: String,
     name: String,
     val payloadClass: Class<P>,
     val resultClass: Class<S>,
-    val withListener: Boolean
+    val withSubscriber: Boolean
 ): Publisher<P, S>(
     StickyNote.logger,
     namespace,
@@ -35,14 +30,14 @@ abstract class PluginMessagePublisher<P, S>(
 
     private fun registerChannel() {
         plugin.server.messenger.registerOutgoingPluginChannel(plugin, this.id())
-        if (withListener) {
+        if (withSubscriber) {
             subscriberListener = PluginMessageSubscribeListener(namespace, name, payloadClass, resultClass, this)
         }
     }
 
     private fun unregisterChannel() {
         plugin.server.messenger.unregisterOutgoingPluginChannel(plugin, this.id())
-        if (withListener) {
+        if (withSubscriber) {
             plugin.server.messenger.unregisterIncomingPluginChannel(plugin, this.id())
         }
     }
