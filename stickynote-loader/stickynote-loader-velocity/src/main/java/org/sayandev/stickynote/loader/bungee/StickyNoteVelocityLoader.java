@@ -23,39 +23,17 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
     private final Path dataDirectory;
     private final SuspendingPluginContainer suspendingPluginContainer;
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) {
-        this(plugin, id, server, logger, dataDirectory, suspendingPluginContainer, false);
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory) {
+        this(plugin, id, server, logger, dataDirectory, null);
     }
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer, boolean reloadStickyNote) {
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) {
         this.plugin = plugin;
         this.id = id;
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.suspendingPluginContainer = suspendingPluginContainer;
-
-        if (reloadStickyNote) {
-            File libDirectory = new File(dataDirectory.toFile(), "lib");
-            if (!libDirectory.exists()) return;
-            File orgDirectory = new File(libDirectory, "org");
-            if (!orgDirectory.exists()) return;
-            File sayandevDirectory = new File(orgDirectory, "sayandev");
-            if (sayandevDirectory.exists()) {
-                logger.info("Deleting old sayandev directory...");
-                try {
-                    Files.walk(sayandevDirectory.toPath()).sorted(Comparator.reverseOrder()).forEach(path -> {
-                        try {
-                            Files.deleteIfExists(path);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
 
         LibraryManager libraryManager = new VelocityLibraryManager<>(plugin, logger, dataDirectory, server.getPluginManager());
         this.load(id, dataDirectory.toFile(), java.util.logging.Logger.getLogger(id), libraryManager);

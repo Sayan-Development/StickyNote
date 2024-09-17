@@ -8,6 +8,7 @@ import java.nio.file.Path
 
 val plugin = wrappedPlugin
 
-abstract class StickyNotePlugin @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path, suspendingPluginContainer: SuspendingPluginContainer, exclusiveThreads: Int) : WrappedStickyNotePlugin(instance, id, server, logger, dataDirectory, suspendingPluginContainer, exclusiveThreads) {
-    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path, suspendingPluginContainer: SuspendingPluginContainer) : this(instance, id, server, logger, dataDirectory, suspendingPluginContainer, 1)
+abstract class StickyNotePlugin @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path, suspendingPluginContainer: SuspendingPluginContainer?, exclusiveThreads: Int) : WrappedStickyNotePlugin(instance, id, server, logger, dataDirectory, suspendingPluginContainer, exclusiveThreads) {
+    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path, suspendingPluginContainer: SuspendingPluginContainer?) : this(instance, id, server, logger, dataDirectory, suspendingPluginContainer, 1)
+    @Inject constructor(instance: Any, id: String, server: ProxyServer, logger: Logger, dataDirectory: Path) : this(instance, id, server, logger, dataDirectory, null, 1)
 }
