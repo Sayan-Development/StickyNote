@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.1"
 }
 
 dependencies {
@@ -12,7 +12,7 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("io.github.goooler.shadow:shadow-gradle-plugin:8.1.8")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.1")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
 }
 
@@ -28,7 +28,7 @@ tasks {
 }
 
 allprojects {
-    plugins.apply("com.github.johnrengelman.shadow")
+    plugins.apply("com.gradleup.shadow")
 
     tasks {
         shadowJar {
@@ -47,8 +47,9 @@ allprojects {
             if (project.name.contains("loader")) {
                 create<MavenPublication>("maven") {
                     groupId = rootProject.group as String
-                    artifact(tasks["sourcesJar"])
-                    artifact(tasks["shadowJar"])
+                    shadow.component(this)
+//                    artifact(tasks["sourcesJar"])
+//                    artifact(tasks["shadowJar"])
                 }
             }
         }
