@@ -46,7 +46,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
-        target.plugins.apply("io.github.goooler.shadow")
+        target.plugins.apply("com.gradleup.shadow")
 
         target.repositories {
             mavenLocal()
@@ -126,7 +126,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 }
                 for (stickyLoadDependency in stickyLoadDependencies) {
                     if (stickyLoadDependency.relocation != null) {
-                        val splitted = stickyLoadDependency.relocation!!.split(".")
+                        val splitted = stickyLoadDependency.relocation.split(".")
                         relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                     }
                 }
