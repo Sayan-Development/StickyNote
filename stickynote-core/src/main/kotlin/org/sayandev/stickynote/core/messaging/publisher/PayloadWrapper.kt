@@ -22,18 +22,20 @@ data class PayloadWrapper<P>(
     }
 
     companion object {
-        var gson = Gson()
-        val typeAdapters = mutableMapOf<Class<*>, TypeAdapter<*>>()
+        private var gson = Gson()
+        private val typeAdapters = mutableMapOf<Class<*>, TypeAdapter<*>>()
 
         fun registerAdapter(type: Class<*>, adapter: TypeAdapter<*>) {
             typeAdapters[type] = adapter
+            updateGson()
         }
 
         fun unregisterAdapter(type: Class<*>) {
             typeAdapters.remove(type)
+            updateGson()
         }
 
-        fun updateGson() {
+        private fun updateGson() {
             val builder = GsonBuilder()
             for ((clazz, adapter) in typeAdapters) {
                 builder.registerTypeAdapter(clazz, adapter)
