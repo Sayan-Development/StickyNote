@@ -23,6 +23,4 @@ object AdventureUtils {
         return toComponent(this, *placeholder)
     }
 
-
-
 }

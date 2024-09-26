@@ -14,7 +14,11 @@ object AdventureUtils {
     val audience = BungeeAudiences.create(plugin)
 
     @JvmStatic
-    val miniMessage = MiniMessage.miniMessage()
+    var miniMessage = MiniMessage.miniMessage()
+
+    fun setTagResolver(vararg tagResolver: TagResolver) {
+        miniMessage = MiniMessage.builder().tags(TagResolver.resolver(TagResolver.standard(), *tagResolver)).build()
+    }
 
     @JvmStatic
     fun CommandSender.sendMessage(message: Component) {
