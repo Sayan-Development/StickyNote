@@ -72,7 +72,7 @@ data class PayloadWrapper<P>(
         }
 
         fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {
-            return gson.fromJson(Gson().toJson(this.payload), payloadClass)
+            return gson.fromJson(gson.toJson(this.payload), payloadClass)
         }
     }
 }
