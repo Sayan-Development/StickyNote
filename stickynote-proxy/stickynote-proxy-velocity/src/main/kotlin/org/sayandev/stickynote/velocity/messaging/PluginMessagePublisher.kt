@@ -14,7 +14,7 @@ import org.sayandev.stickynote.velocity.StickyNote
 import org.sayandev.stickynote.velocity.registerListener
 import org.sayandev.stickynote.velocity.server
 
-abstract class PluginMessagePublisher<P, S>(
+abstract class PluginMessagePublisher<P: Any, S: Any>(
     namespace: String,
     name: String
 ): Publisher<P, S>(

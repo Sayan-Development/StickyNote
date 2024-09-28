@@ -3,7 +3,11 @@ package org.sayandev.stickynote.core.messaging.publisher
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
+import com.google.gson.reflect.TypeToken
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import java.util.*
+import java.util.logging.Logger
+import kotlin.reflect.KClass
 
 data class PayloadWrapper<P>(
     val uniqueId: UUID = UUID.randomUUID(),
@@ -67,12 +71,19 @@ data class PayloadWrapper<P>(
             return gson.toJson(this, PayloadWrapper::class.java)
         }
 
-        fun <P> String.asPayloadWrapper(): PayloadWrapper<P> {
+        fun <P: Any> String.asPayloadWrapper(): PayloadWrapper<P> {
             return gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)
         }
 
-        fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {
-            return gson.fromJson(gson.toJson(this.payload), payloadClass)
+        fun <P: Any> PayloadWrapper<*>.typedPayload(payloadClass: KClass<P>): P {
+//            return gson.fromJson(gson.toJson(this.payload), object : TypeToken<P>() {})
+            /*Logger.getGlobal().warning("payload wrapper: ${this}")
+            Logger.getGlobal().warning("payload: ${this.payload}")
+            Logger.getGlobal().warning("payload class: ${payloadClass}")
+            Logger.getGlobal().warning("payload class: ${payloadClass as List<*>::class.java}")
+            Logger.getGlobal().warning("payload to gson: ${gson.toJson(this.payload, payloadClass)}")
+            Logger.getGlobal().warning("payload from gson: ${gson.fromJson(gson.toJson(this.payload, payloadClass), payloadClass)}")*/
+            return gson.fromJson(gson.toJson(this.payload, payloadClass.java), payloadClass.java)
         }
     }
 }

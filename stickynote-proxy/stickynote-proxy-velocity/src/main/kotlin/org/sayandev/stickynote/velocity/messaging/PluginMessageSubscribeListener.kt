@@ -12,11 +12,12 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.subscriber.Subscriber
 import org.sayandev.stickynote.velocity.*
 import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
-class PluginMessageSubscribeListener<P, S>(
+class PluginMessageSubscribeListener<P: Any, S: Any>(
     namespace: String,
     name: String,
-    val payloadClass: Class<P>
+    val payloadClass: KClass<P>
 ) {
 
     val channelIdentifier = MinecraftChannelIdentifier.create(namespace, name)

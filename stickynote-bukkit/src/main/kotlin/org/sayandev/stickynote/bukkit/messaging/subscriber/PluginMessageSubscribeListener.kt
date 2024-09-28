@@ -10,12 +10,13 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher.Companion.HANDLER_LIST
+import kotlin.reflect.KClass
 
-class PluginMessageSubscribeListener<P, S>(
+class PluginMessageSubscribeListener<P : Any, S : Any>(
     val namespace: String,
     val name: String,
-    val payloadClass: Class<P>,
-    val resultClass: Class<S>,
+    val payloadClass: KClass<P>,
+    val resultClass: KClass<S>,
     val publisher: PluginMessagePublisher<P, S>?
 ): PluginMessageListener {
 
@@ -43,6 +44,9 @@ class PluginMessageSubscribeListener<P, S>(
                 for (publisher in HANDLER_LIST.filterIsInstance<PluginMessagePublisher<P, S>>()) {
                     if (publisher.id() == channel) {
                         publisher.payloads[result.uniqueId]?.apply {
+                            warn("result: ${result}")
+                            warn("result class: ${resultClass}")
+                            warn("result typed: ${result.typedPayload(resultClass)}")
                             this.complete(result.typedPayload(resultClass))
                             publisher.payloads.remove(result.uniqueId)
                         } ?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}")

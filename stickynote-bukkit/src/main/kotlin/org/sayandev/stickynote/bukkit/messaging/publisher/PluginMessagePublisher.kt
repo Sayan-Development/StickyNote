@@ -8,12 +8,13 @@ import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
+import kotlin.reflect.KClass
 
-abstract class PluginMessagePublisher<P, S>(
+abstract class PluginMessagePublisher<P: Any, S: Any>(
     namespace: String,
     name: String,
-    val payloadClass: Class<P>,
-    val resultClass: Class<S>,
+    val payloadClass: KClass<P>,
+    val resultClass: KClass<S>,
     val withSubscriber: Boolean
 ): Publisher<P, S>(
     StickyNote.logger,

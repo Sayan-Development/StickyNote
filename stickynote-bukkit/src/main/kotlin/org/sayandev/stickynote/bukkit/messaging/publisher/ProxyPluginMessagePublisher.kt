@@ -1,10 +1,12 @@
 package org.sayandev.stickynote.bukkit.messaging.publisher
 
-abstract class ProxyPluginMessagePublisher<P, S>(
+import kotlin.reflect.KClass
+
+abstract class ProxyPluginMessagePublisher<P: Any, S: Any>(
     namespace: String,
     name: String,
-    payloadClass: Class<P>,
-    resultClass: Class<S>,
+    payloadClass: KClass<P>,
+    resultClass: KClass<S>,
 ): PluginMessagePublisher<P, S>(
     namespace,
     name,
