@@ -63,6 +63,7 @@ abstract class Config(
             val yaml = YamlConfigurationLoader.builder()
                 .nodeStyle(NodeStyle.BLOCK)
                 .defaultOptions { options ->
+                    options.shouldCopyDefaults(true)
                     options.serializers { builder ->
                         builder.registerAnnotatedObjects(objectMapperFactory())
                         if (serializers != null) {
@@ -88,6 +89,7 @@ abstract class Config(
         }
 
         inline fun <reified T> fromConfig(file: File): T? {
+            if (!file.exists()) return null
             return fromConfig(file, null)
         }
     }

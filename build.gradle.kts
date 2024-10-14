@@ -1,5 +1,3 @@
-import groovy.util.Node
-
 plugins {
     kotlin("jvm") version "2.0.0"
     `version-catalog`
@@ -10,7 +8,7 @@ val slug = "stickynote"
 
 allprojects {
     group = "org.sayandev"
-    version = "1.7.57"
+    version = "1.7.60"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
