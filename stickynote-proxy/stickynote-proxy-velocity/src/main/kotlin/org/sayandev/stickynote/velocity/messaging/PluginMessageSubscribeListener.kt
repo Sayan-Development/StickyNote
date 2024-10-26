@@ -64,6 +64,7 @@ class PluginMessageSubscribeListener<P, S>(
                             targetServer?.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, source.serverInfo.name, targetServerName).asJson().toByteArray()) ?: warn("target server name was specified as ${targetServerName} but there's not server with this id. will ignore pluginmessage request")
                         } else {
                             for (server in StickyNote.server.allServers) {
+                                if (payloadWrapper.excludeSource && source.serverInfo.name == server.serverInfo.name) continue
                                 server.sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, payloadWrapper.payload, payloadWrapper.state, source.serverInfo.name, server.serverInfo.name).asJson().toByteArray())
                             }
                         }
