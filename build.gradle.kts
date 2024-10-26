@@ -8,7 +8,7 @@ val slug = "stickynote"
 
 allprojects {
     group = "org.sayandev"
-    version = "1.7.60"
+    version = "1.7.83"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
