@@ -144,7 +144,9 @@ abstract class LivingEntityNPC(
 
     override fun onPostAddViewers(vararg viewers: Player) {
         super.onPostAddViewers(*viewers)
-        viewers.sendPacket(PacketUtils.getUpdateAttributesPacket(entityId, listOf(getScaleAttribute())))
+        if (ServerVersion.isAtLeast(20, 6)) {
+            viewers.sendPacket(PacketUtils.getUpdateAttributesPacket(entityId, listOf(getScaleAttribute())))
+        }
     }
 
 }
