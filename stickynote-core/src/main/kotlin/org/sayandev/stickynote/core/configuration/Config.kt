@@ -51,14 +51,17 @@ abstract class Config(
     }
 
     open fun reload() {
+        createFile()
         yaml = builder.build()
         config = yaml.load(ConfigurationOptions.defaults().apply {
             shouldCopyDefaults(true)
         })
         config.set(config)
+        yaml.save(config)
     }
 
     companion object {
+        @JvmStatic
         fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
                 .nodeStyle(NodeStyle.BLOCK)
@@ -76,18 +79,33 @@ abstract class Config(
             return yaml
         }
 
+        @JvmStatic
         inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
             return getConfigBuilder(file, serializers).build().load().get(T::class.java)
         }
 
+        @JvmStatic
+        fun <T> fromConfigWithClass(file: File, type: Class<*>, serializers: TypeSerializerCollection?): T? {
+            return getConfigBuilder(file, serializers).build().load().get(type) as T
+        }
+
+        @JvmStatic
         fun getConfigFromFile(file: File): CommentedConfigurationNode? {
             return getConfigBuilder(file, null).build().load()
         }
 
+        @JvmStatic
         fun getConfigFromFile(file: File, serializers: TypeSerializerCollection?): CommentedConfigurationNode? {
             return getConfigBuilder(file, serializers).build().load()
         }
 
+        @JvmStatic
+        fun <T> fromConfigWithClass(file: File, type: Class<*>): T? {
+            if (!file.exists()) return null
+            return fromConfigWithClass(file, type, null) as T?
+        }
+
+        @JvmStatic
         inline fun <reified T> fromConfig(file: File): T? {
             if (!file.exists()) return null
             return fromConfig(file, null)
