@@ -570,6 +570,7 @@ accessors {
     }
     mapClass(ServerboundInteractPacketActionInteract) {
         fieldInferred("hand", "1.20.4")
+        method(ServerboundInteractPacketActionType, "getType")
     }
     mapClass(ServerPlayer) {
         constructor(MinecraftServer, ServerLevel, GameProfile)
