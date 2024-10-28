@@ -39,7 +39,7 @@ abstract class PlayerInteractAtEntityEvent : PacketListener {
             var location: Vector3? = null
 
             if (ServerVersion.supports(17)) {
-                val actionType: Any = ServerboundInteractPacket_InteractionActionAccessor.METHOD_GET_TYPE!!.invoke(action)
+                val actionType: Any = ServerboundInteractPacket_ActionAccessor.METHOD_GET_TYPE!!.apply { this.isAccessible = true }.invoke(action)
                 when (actionType) {
                     ServerboundInteractPacket_ActionTypeAccessor.FIELD_ATTACK!! -> {
                         actionId = 0
