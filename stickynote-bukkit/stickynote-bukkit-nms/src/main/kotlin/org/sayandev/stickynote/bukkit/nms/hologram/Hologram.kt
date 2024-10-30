@@ -6,6 +6,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.extension.toVector3
 import org.sayandev.stickynote.bukkit.nms.Viewable
+import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
 
 class Hologram(

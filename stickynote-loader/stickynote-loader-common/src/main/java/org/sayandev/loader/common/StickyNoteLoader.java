@@ -64,7 +64,7 @@ public abstract class StickyNoteLoader {
                     try {
                         Class.forName("org.sqlite.JDBC");
                         continue;
-                    } catch (Exception e) { }
+                    } catch (Exception ignored) {}
                 }
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
@@ -108,7 +108,7 @@ public abstract class StickyNoteLoader {
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
-                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
+//                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> missingDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");

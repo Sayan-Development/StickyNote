@@ -51,13 +51,11 @@ abstract class Config(
     }
 
     open fun reload() {
-        createFile()
         yaml = builder.build()
         config = yaml.load(ConfigurationOptions.defaults().apply {
             shouldCopyDefaults(true)
         })
         config.set(config)
-        yaml.save(config)
     }
 
     companion object {
