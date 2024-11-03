@@ -92,6 +92,7 @@ accessors {
     val ClientboundUpdateMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket"
     val ClientboundRemoveMobEffectPacket = "net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket"
     val ClientboundUpdateAttributesPacket = "net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket"
+    val ClientboundBlockUpdatePacket = "net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket"
     val ServerboundPlayerActionPacket = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket"
     val ServerboundPlayerActionPacketAction = "net.minecraft.network.protocol.game.ServerboundPlayerActionPacket\$Action"
     val ServerboundInteractPacket = "net.minecraft.network.protocol.game.ServerboundInteractPacket"
@@ -527,6 +528,10 @@ accessors {
     mapClass(ClientboundUpdateAttributesPacket) {
         constructor(Int::class, Collection::class)
         constructor(Int::class, List::class)
+    }
+    mapClass(ClientboundBlockUpdatePacket) {
+        method(BlockState, "getBlockState")
+        method(BlockPos, "getPos")
     }
     mapClass(ServerboundPlayerActionPacket) {
         methodInferred("getPos", "1.20.4")
