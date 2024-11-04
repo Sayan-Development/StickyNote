@@ -60,24 +60,14 @@ public abstract class StickyNoteLoader {
 
             // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
             for (Dependency cachedDependency : dependencies) {
-                if (cachedDependency.getName().equals("sqlite-jdbc")) {
-                    try {
-                        Class.forName("org.sqlite.JDBC");
-                        continue;
-                    } catch (Exception ignored) {}
-                }
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
+                if (!shouldDownloadDependency(cachedDependency)) continue;
                 if (cachedDependency.isStickyLoad()) {
                     if (cachedDependency.getRelocation() != null) {
                         String[] splitted = cachedDependency.getGroup().split("\\{}");
                         relocations.put(cachedDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
                     }
-                    continue;
-                }
-                if (name.contains("adventure")) {
-//                    relocations.put("net{}kyori{}adventure{}text{}serializer", relocationTo + "{}lib{}adventure{}text{}serializer");
-//                    relocations.put("net{}kyori{}option", relocationTo + "{}lib{}adventure{}option");
                     continue;
                 }
                 if (name.contains("stickynote")) {
@@ -90,39 +80,14 @@ public abstract class StickyNoteLoader {
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
             }
 
-            for (Dependency missingDependency : dependencies) {
-                String name = missingDependency.getName();
-                String group = missingDependency.getGroup();
-                if (missingDependency.isStickyLoad()) {
-                    if (missingDependency.getRelocation() != null) {
-                        String[] splitted = missingDependency.getGroup().split("\\{}");
-                        relocations.put(missingDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
-                    }
-                    continue;
-                }
-                if (name.contains("adventure")) {
-//                    relocations.put("net{}kyori{}adventure{}text{}serializer", relocationTo + "{}lib{}adventure{}text{}serializer");
-//                    relocations.put("net{}kyori{}option", relocationTo + "{}lib{}adventure{}option");
-                    continue;
-                }
-                if (name.contains("stickynote")) {
-                    relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
-                }
-//                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
-                relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
-                if (exclusions.stream().anyMatch(excluded -> missingDependency.getName().contains(excluded))) continue;
-                String[] groupParts = group.split("\\{}");
-                relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
-            }
-
             if (!missingDependencies.isEmpty()) {
-                loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
+                loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, relocationFrom, relocationTo);
             } else {
                 loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
             }
 
             long endTime = System.currentTimeMillis();
-            logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
+            logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + "ms.");
 
             onComplete();
         } catch (Exception e) {
@@ -152,8 +117,9 @@ public abstract class StickyNoteLoader {
         return missingDependencies;
     }
 
-    private void loadMissingDependencies(String id, Logger logger, LibraryManager libraryManager, TransitiveDependencyHelper transitiveDependencyHelper, DependencyCache dependencyCache, List<Dependency> dependencies, Set<Dependency> missingDependencies, String relocationFrom, String relocationTo) throws InterruptedException, ExecutionException {
+    private void loadMissingDependencies(String id, Logger logger, LibraryManager libraryManager, TransitiveDependencyHelper transitiveDependencyHelper, DependencyCache dependencyCache, List<Dependency> dependencies, String relocationFrom, String relocationTo) throws InterruptedException, ExecutionException {
         List<CompletableFuture<Void>> resolveFutures = dependencies.stream()
+                .filter(this::shouldDownloadDependency)
                 .map(dependency -> resolveTransitiveDependenciesAsync(id, transitiveDependencyHelper, dependency))
                 .toList();
 
@@ -165,6 +131,7 @@ public abstract class StickyNoteLoader {
             dependencyCache.saveCache(new HashSet<>(dependencies));
 
             List<CompletableFuture<Void>> futures = dependencies.stream()
+                    .filter(this::shouldDownloadDependency)
                     .map(dependency -> loadDependencyAndTransitives(id, libraryManager, dependency, relocationFrom, relocationTo))
                     .flatMap(Collection::stream)
                     .toList();
@@ -288,6 +255,7 @@ public abstract class StickyNoteLoader {
             dependency.setTransitiveResolved(transitiveExcluded.stream().anyMatch(excluded -> dependency.getName().contains(excluded)));
             dependency.setTransitiveDependencies(resolveTransitiveLibraries(id, transitiveDependencyHelper, dependency).stream()
                     .map(library -> new Dependency(library.getGroupId(), library.getArtifactId(), library.getVersion(), dependency.getRelocation(), dependency.isStickyLoad()))
+                    .filter(this::shouldDownloadDependency)
                     .toList());
         }, executorService);
     }
@@ -317,5 +285,52 @@ public abstract class StickyNoteLoader {
         long completed = futures.stream().filter(CompletableFuture::isDone).count();
         int percentage = (int) ((completed * 100) / totalDependencies);
         logger.info(String.format("Progress: %d%% (%d/%d dependencies loaded)", percentage, completed, totalDependencies));
+    }
+
+    private boolean shouldDownloadDependency(Dependency dependency) {
+        if (dependency.getName().contains("kotlin-stdlib")) {
+            System.out.println("Checking for kotlin");
+            try {
+                Class.forName("kotlin.Unit");
+                System.out.println("Kotlin found");
+                return false;
+            } catch (Exception ignored) {
+                System.out.println("Kotlin not found");
+            }
+        }
+        if (dependency.getName().equals("sqlite-jdbc")) {
+            try {
+                Class.forName("org.sqlite.JDBC");
+                return false;
+            } catch (Exception ignored) {
+            }
+        }
+        if (dependency.getName().contains("adventure")) {
+            if (dependency.getName().contains("mini")) {
+                try {
+                    Class<?> miniMessageClass = Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+                    miniMessageClass.getMethod("miniMessage");
+                    return false;
+                } catch (Exception ignored) { }
+            } else if (dependency.getName().contains("bukkit")) {
+                try {
+                    Class.forName("net.kyori.adventure.platform.bukkit.BukkitAudiences");
+                    return false;
+                } catch (Exception ignored) { }
+            } else if (dependency.getName().contains("api")) {
+                try {
+                    Class.forName("net.kyori.adventure.audience.Audience");
+                    return false;
+                } catch (Exception ignored) { }
+            }
+            return false;
+        }
+        if (dependency.getName().contains("configurate")) {
+            try {
+                Class.forName("org.spongepowered.configurate.ConfigurationNode");
+                return false;
+            } catch (Exception ignored) { }
+        }
+        return true;
     }
 }

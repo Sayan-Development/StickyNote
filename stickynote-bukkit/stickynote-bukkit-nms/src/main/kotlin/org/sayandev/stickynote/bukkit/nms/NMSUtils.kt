@@ -386,7 +386,7 @@ object NMSUtils {
     }
 
     fun getPing(serverPlayer: Any): Int {
-        return if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
+        return if (ServerVersion.isAtLeast(20, 2)) {
             ServerCommonPacketListenerImplAccessor.METHOD_LATENCY!!.invoke(
                 ServerPlayerAccessor.FIELD_CONNECTION!!.get(serverPlayer)
             ) as Int
@@ -668,7 +668,7 @@ object NMSUtils {
             //ReflectionUtils.sendPacketSync(player, packets);
             val commonGameConnection = getServerGamePacketListener(this)
             for (packet in packets) {
-                if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
+                if (ServerVersion.isAtLeast(20, 2)) {
                     ServerCommonPacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
                 } else {
                     ServerGamePacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)

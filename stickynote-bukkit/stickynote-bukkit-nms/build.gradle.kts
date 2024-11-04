@@ -23,6 +23,8 @@ repositories {
 dependencies {
     compileOnly(libs.paper)
 
+    api(libs.kotlin.reflect)
+
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
@@ -310,6 +312,7 @@ accessors {
         constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3)
         constructor(Entity, Int::class)
         constructor(Entity)
+        constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3, Double::class)
         methodInferred("getId", "1.20.4")
     }
     mapClass(ClientboundAddPlayerPacket) {

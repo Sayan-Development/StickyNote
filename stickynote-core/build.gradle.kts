@@ -13,7 +13,6 @@ dependencies {
     api(libs.reflections)
     api(libs.hikari)
     api(libs.gson)
-    api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines)
 
     compileOnlyApi(libs.guava)

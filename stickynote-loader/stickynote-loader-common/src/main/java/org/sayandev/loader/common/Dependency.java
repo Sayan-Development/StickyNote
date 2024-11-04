@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dependency implements Serializable {
@@ -17,7 +18,7 @@ public class Dependency implements Serializable {
     private String relocation;
     private boolean stickyLoad;
     private boolean transitiveResolved;
-    private List<Dependency> transitiveDependencies;
+    private List<Dependency> transitiveDependencies = new ArrayList<>();
 
     public Dependency(String group, String name, String version, String relocation, boolean stickyLoad) {
         this.group = group;

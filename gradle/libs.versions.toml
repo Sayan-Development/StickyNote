@@ -133,7 +133,6 @@ implementation-core = [
     "adventure-text-minimessage",
     "adventure-text-serializer-gson",
     "reflections",
-    "kotlin-reflect",
     "hikari",
 #    "gson",
     "exposed-core",
@@ -156,7 +155,8 @@ implementation-bukkit = [
     "mccoroutines-folia-core",
 ]
 implementation-bukkit-nms = [
-    "takenaka"
+    "takenaka",
+    "kotlin-reflect",
 ]
 implementation-proxy = [
 ]
