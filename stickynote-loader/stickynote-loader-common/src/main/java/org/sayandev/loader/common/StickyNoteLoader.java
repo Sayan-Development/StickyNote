@@ -40,12 +40,13 @@ public abstract class StickyNoteLoader {
 
         try {
             Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
-            List<Dependency> dependencies = getDependencies(stickyNotes);
-            List<String> repositories = getRepositories(stickyNotes);
 
             Object relocation = stickyNotes.getField("RELOCATION").get(stickyNotes);
             String relocationFrom = (String) relocation.getClass().getMethod("getFrom").invoke(relocation);
             String relocationTo = (String) relocation.getClass().getMethod("getTo").invoke(relocation);
+
+            List<Dependency> dependencies = getDependencies(stickyNotes, relocationTo);
+            List<String> repositories = getRepositories(stickyNotes);
 
             configureLibraryManager(libraryManager, repositories);
 
@@ -53,15 +54,16 @@ public abstract class StickyNoteLoader {
 
 //            relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
+            relocations.put("kotlin", relocationTo + "{}lib{}kotlin");
 
             DependencyCache dependencyCache = new DependencyCache(libFolder);
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
-            // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
             for (Dependency cachedDependency : dependencies) {
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
+                if (name.contains("kotlin")) continue;
                 if (!shouldDownloadDependency(cachedDependency)) continue;
                 if (cachedDependency.isStickyLoad()) {
                     if (cachedDependency.getRelocation() != null) {
@@ -144,9 +146,9 @@ public abstract class StickyNoteLoader {
     private List<CompletableFuture<Void>> loadDependencyAndTransitives(String id, LibraryManager libraryManager, Dependency dependency, String relocationFrom, String relocationTo) {
         List<CompletableFuture<Void>> loadingFutures = new ArrayList<>();
         for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-            loadingFutures.add(loadDependencyAsync(id, transitiveDependency, libraryManager));
+            loadingFutures.add(loadDependencyAsync(id, transitiveDependency, libraryManager, relocationTo));
         }
-        loadingFutures.add(loadDependencyAsync(id, dependency, libraryManager));
+        loadingFutures.add(loadDependencyAsync(id, dependency, libraryManager, relocationTo));
         return loadingFutures;
     }
 
@@ -154,12 +156,12 @@ public abstract class StickyNoteLoader {
         logger.info("Library cache found, loading cached libraries...");
         cachedDependencies.forEach(dependency -> {
             try {
-                Library library = createLibraryBuilder(dependency).build();
+                Library library = createLibraryBuilder(dependency, relocationTo).build();
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
-                        Library transitiveLibrary = createLibraryBuilder(transitiveDependency).build();
+                        Library transitiveLibrary = createLibraryBuilder(transitiveDependency, relocationTo).build();
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
                 }
@@ -169,16 +171,21 @@ public abstract class StickyNoteLoader {
         });
     }
 
-    private List<Dependency> getDependencies(Class<?> stickyNotes) {
+    private List<Dependency> getDependencies(Class<?> stickyNotes, String relocationTo) {
         return Arrays.stream(stickyNotes.getFields())
                 .filter(field -> field.getName().startsWith("DEPENDENCY_"))
                 .map(field -> {
                     try {
                         Object dependencyObject = field.get(null);
                         Class<?> dependencyFieldClass = dependencyObject.getClass();
+                        String dependencyName = (String) dependencyFieldClass.getMethod("getName").invoke(dependencyObject);
+                        if (dependencyName.contains("kotlin")) {
+                            dependencyName = dependencyName.replace((relocationTo + "{}lib").replace("{}", "."), "");
+                            if (dependencyName.startsWith(".")) dependencyName = dependencyName.substring(1);
+                        }
                         return new Dependency(
                                 (String) dependencyFieldClass.getMethod("getGroup").invoke(dependencyObject),
-                                (String) dependencyFieldClass.getMethod("getName").invoke(dependencyObject),
+                                dependencyName,
                                 (String) dependencyFieldClass.getMethod("getVersion").invoke(dependencyObject),
                                 (String) dependencyFieldClass.getMethod("getRelocation").invoke(dependencyObject),
                                 (boolean) dependencyFieldClass.getMethod("isStickyLoad").invoke(dependencyObject)
@@ -202,10 +209,10 @@ public abstract class StickyNoteLoader {
                 }).toList();
     }
 
-    private CompletableFuture<Void> loadDependencyAsync(String id, Dependency dependency, LibraryManager libraryManager) {
+    private CompletableFuture<Void> loadDependencyAsync(String id, Dependency dependency, LibraryManager libraryManager, String relocationTo) {
         return loadingLibraries.computeIfAbsent(dependency, key -> CompletableFuture.runAsync(() -> {
             try {
-                Library.Builder libraryBuilder = createLibraryBuilder(dependency);
+                Library.Builder libraryBuilder = createLibraryBuilder(dependency, relocationTo);
                 Library library = libraryBuilder.build();
                 retryWithDelay(() -> {
                     libraryManager.loadLibrary(library);
@@ -236,7 +243,7 @@ public abstract class StickyNoteLoader {
         }
     }
 
-    private Library.Builder createLibraryBuilder(Dependency dependency) {
+    private Library.Builder createLibraryBuilder(Dependency dependency, String relocationTo) {
         Library.Builder libraryBuilder = Library.builder()
                 .groupId(dependency.getGroup())
                 .artifactId(dependency.getName())
@@ -244,7 +251,13 @@ public abstract class StickyNoteLoader {
 
         if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
             for (Map.Entry<String, String> relocation : relocations.entrySet()) {
-                libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
+                String relocateFrom = relocation.getKey();
+                if (relocateFrom.contains("kotlin")) {
+                    if (relocateFrom.contains("reflect")) continue;
+                    relocateFrom = relocateFrom.replace((relocationTo + "{}lib").replace("{}", "."), "");
+                    if (relocateFrom.startsWith(".")) relocateFrom = relocateFrom.substring(1);
+                }
+                libraryBuilder.relocate(relocateFrom, relocation.getValue());
             }
         }
         return libraryBuilder;
@@ -288,7 +301,7 @@ public abstract class StickyNoteLoader {
     }
 
     private boolean shouldDownloadDependency(Dependency dependency) {
-        if (dependency.getName().contains("kotlin-stdlib")) {
+        /*if (dependency.getName().contains("kotlin-stdlib")) {
             System.out.println("Checking for kotlin");
             try {
                 Class.forName("kotlin.Unit");
@@ -297,7 +310,7 @@ public abstract class StickyNoteLoader {
             } catch (Exception ignored) {
                 System.out.println("Kotlin not found");
             }
-        }
+        }*/
         if (dependency.getName().equals("sqlite-jdbc")) {
             try {
                 Class.forName("org.sqlite.JDBC");
