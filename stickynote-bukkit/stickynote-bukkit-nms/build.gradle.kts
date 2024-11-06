@@ -26,7 +26,7 @@ dependencies {
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.1")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.3")
     implementation(accessorRuntime())
 }
 
@@ -42,7 +42,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.1")
+    versionRange("1.8.8", "1.21.3")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
