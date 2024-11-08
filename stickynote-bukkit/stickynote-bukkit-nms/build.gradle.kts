@@ -119,7 +119,8 @@ accessors {
     val Connection = "net.minecraft.network.Connection"
     val MinecraftServer = "net.minecraft.server.MinecraftServer"
     val GameType = "net.minecraft.world.level.GameType"
-    val MobSpawnType = "net.minecraft.world.entity.MobSpawnType"
+//    val MobSpawnType = "net.minecraft.world.entity.MobSpawnType"
+    val EntitySpawnReason = "net.minecraft.world.entity.EntitySpawnReason"
     val Pose = "net.minecraft.world.entity.Pose"
     val Vec3 = "net.minecraft.world.phys.Vec3"
     val Vec3i = "net.minecraft.core.Vec3i"
@@ -675,7 +676,7 @@ accessors {
         )
         methodInferred("byName", "1.20.4", String::class)
     }
-    mapClass(MobSpawnType) {
+    mapClass(EntitySpawnReason) {
         enumConstant(
             "NATURAL",
             "CHUNK_GENERATION",
@@ -689,7 +690,8 @@ accessors {
             "REINFORCEMENT",
             "TRIGGERED",
             "BUCKET",
-            "SPAWN_EGG",
+//            "SPAWN_EGG",
+            "SPAWN_ITEM_USE",
             "COMMAND",
             "DISPENSER",
             "PATROL",
@@ -719,7 +721,7 @@ accessors {
         methodInferred("getZ", "1.20.4")
     }
     mapClass(Mob) {
-        methodInferred("finalizeSpawn", "1.20.4", ServerLevelAccessor, DifficultyInstance, MobSpawnType, SpawnGroupData, CompoundTag)
+        methodInferred("finalizeSpawn", "1.21.3", ServerLevelAccessor, DifficultyInstance, EntitySpawnReason, SpawnGroupData)
     }
     mapClass(Entity) {
         constructor(EntityType, Level)
