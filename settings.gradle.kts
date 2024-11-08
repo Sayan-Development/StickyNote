@@ -4,6 +4,7 @@ pluginManagement {
 
         // Takenaka
         maven("https://repo.screamingsandals.org/public")
+        maven("https://repo.screamingsandals.org/snapshots")
     }
 }
 
