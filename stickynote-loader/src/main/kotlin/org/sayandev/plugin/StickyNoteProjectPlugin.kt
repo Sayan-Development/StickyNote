@@ -100,7 +100,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     rawVersion = stickyLoadDependency.version!!.split("+")[0]
                 }
                 stickyLoadDependencies.add(StickyLoadDependency(stickyLoadDependency.group!!, stickyLoadDependency.name!!, rawVersion, relocation))
-                project.dependencies.add("compileOnly", "${stickyLoadDependency.group}:${stickyLoadDependency.name}:${rawVersion}")
+                project.dependencies.add("compileOnlyApi", "${stickyLoadDependency.group}:${stickyLoadDependency.name}:${rawVersion}")
             }
 
             createStickyNoteLoader.stickyLoadDependencies.set(stickyLoadDependencies)
@@ -144,8 +144,8 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
-            project.dependencies.add("compileOnly", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
-            project.dependencies.add("compileOnly", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
+            project.dependencies.add("compileOnlyApi", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
+            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")

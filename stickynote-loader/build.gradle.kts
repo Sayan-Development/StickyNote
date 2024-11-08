@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
-    id("com.gradleup.shadow") version "8.3.1"
+    id("com.gradleup.shadow") version "8.3.4"
 }
 
 dependencies {
@@ -12,7 +12,7 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.1")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.4")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
 }
 
