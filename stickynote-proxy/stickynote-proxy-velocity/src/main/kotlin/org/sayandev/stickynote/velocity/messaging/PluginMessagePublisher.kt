@@ -52,7 +52,8 @@ abstract class PluginMessagePublisher<P, S>(
     fun onMessageReceived(event: PluginMessageEvent) {
         val data = event.data
         val channel = event.identifier.id
-        val result = String(data).asPayloadWrapper<S>()
+        if (channel != channelIdentifier.id) return
+        val result = String(data, Charsets.UTF_8).asPayloadWrapper<S>()
         when (result.state) {
             PayloadWrapper.State.RESPOND -> {
                 for (publisher in HANDLER_LIST.filterIsInstance<PluginMessagePublisher<P, S>>()) {
