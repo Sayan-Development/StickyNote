@@ -49,14 +49,14 @@ class ClassGenerator(
                     val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
                     val libs = versionCatalogs.named("stickyNoteLibs")
                     for (module in modules) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_")).uppercase())
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_").replace(".", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                             .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", module.type.artifact, module.version, null, false)
                             .build())
                         val bundleName = module.type.artifact.removePrefix("stickynote-")
                         val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
                         for (library in moduleBundleProvider.get()) {
-                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_"))).uppercase())
+                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                 .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
                                 .build())
@@ -64,7 +64,7 @@ class ClassGenerator(
                     }
 
                     for (externalDependency in stickyLoadDependencies) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_STICKYLOAD_".plus(externalDependency.name.replace("-", "_")).uppercase())
+                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_STICKYLOAD_".plus(externalDependency.name.replace("-", "_").replace(".", "_")).uppercase())
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                             .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version, externalDependency.relocation?.replace(".", "{}"), true)
                             .build())
