@@ -68,6 +68,10 @@ public abstract class StickyNoteLoader {
                 }
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
+                if (name.contains("packetevents")) {
+                    relocations.put("io{}github{}retrooper", relocationTo + "{}lib{}packetevents");
+                    continue;
+                }
                 if (cachedDependency.isStickyLoad()) {
                     if (cachedDependency.getRelocation() != null) {
                         String[] splitted = cachedDependency.getGroup().split("\\{}");
@@ -93,6 +97,10 @@ public abstract class StickyNoteLoader {
             for (Dependency missingDependency : dependencies) {
                 String name = missingDependency.getName();
                 String group = missingDependency.getGroup();
+                if (name.contains("packetevents")) {
+                    relocations.put("io{}github{}retrooper", relocationTo + "{}lib{}packetevents");
+                    continue;
+                }
                 if (missingDependency.isStickyLoad()) {
                     if (missingDependency.getRelocation() != null) {
                         String[] splitted = missingDependency.getGroup().split("\\{}");

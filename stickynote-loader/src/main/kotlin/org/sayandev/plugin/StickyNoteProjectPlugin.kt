@@ -47,6 +47,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
         target.plugins.apply("com.gradleup.shadow")
+        target.plugins.apply("java-library")
 
         target.repositories {
             mavenLocal()
@@ -113,10 +114,14 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
 //                relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
                 relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-                for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-")) }.contains(it) }) {
+                for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
                         if (relocateExclusion.any { alias.module.name == it }) continue
+                        if (alias.module.name.contains("packetevents")) {
+                            relocate("io.github.retrooper", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.packetevents")
+                            continue
+                        }
                         // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
                         if (alias.module.name.contains("adventure")) {
 //                            relocate("net.kyori.adventure.text.serializer", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.text.serializer")

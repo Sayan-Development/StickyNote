@@ -95,7 +95,7 @@ object SkinUtils {
             signature = signatureMethod.invoke(property) as String
         }
 
-        return Skin(PlayerProfiles.getSkinValue(gameProfile)!!, signature)
+        return Skin(PlayerProfiles.getTextureValue(gameProfile)!!, signature)
     }
 
     /**

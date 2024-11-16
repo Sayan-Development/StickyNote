@@ -21,6 +21,8 @@ repositories {
 }
 
 dependencies {
+    api(libs.packetevents.spigot)
+
     compileOnly(libs.paper)
 
     compileOnly(project(":stickynote-core"))

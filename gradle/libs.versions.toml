@@ -2,7 +2,7 @@
 
 [versions]
 # core
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 configurate = "4.1.2"
@@ -16,7 +16,7 @@ reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
 gson = "2.10.1"
-kotlin-reflect = "2.0.0"
+kotlin-reflect = "2.0.21"
 netty = "4.1.111.Final"
 exposed = "0.53.0"
 libby = "2.0.0-SNAPSHOT"
@@ -24,19 +24,20 @@ mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.9.0-RC.2"
 
 # minecraft
-adventure-platform = "4.3.3"
+adventure-platform = "4.3.4"
 
 # bukkit
 paper = "1.21-R0.1-SNAPSHOT"
 folia = "1.20.4-R0.1-SNAPSHOT"
 inventoryframework = "0.10.15"
-xseries = "11.2.0"
+xseries = "11.3.0"
 pathetic-pathfinder-bukkit = "2.4.6"
 authlib = "6.0.54"
 skinsrestorer-api = "15.3.1"
 placeholderapi = "2.11.6"
 
 # bukkit - nms
+packetevents-spigot = "2.6.0"
 takenaka = "1.2.0"
 
 # proxy - velocity
@@ -70,6 +71,7 @@ netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.ref = "exposed" }
+exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
@@ -94,6 +96,7 @@ mccoroutines-folia-api = { group = "com.github.shynixn.mccoroutine", name = "mcc
 mccoroutines-folia-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-core", version.ref = "mccoroutines" }
 
 # bukkit - nms
+packetevents-spigot = { group = "com.github.retrooper", name = "packetevents-spigot", version.ref = "packetevents-spigot" }
 takenaka = { group = "me.kcra.takenaka", name = "generator-accessor-runtime", version.ref = "takenaka" }
 
 # proxy - velocity
@@ -139,6 +142,7 @@ implementation-core = [
     "exposed-core",
     "exposed-jdbc",
     "exposed-dao",
+    "exposed-kotlin-datetime",
     "kotlinx-coroutines",
     "mysql-connector",
     "sqlite-jdbc"
@@ -156,7 +160,8 @@ implementation-bukkit = [
     "mccoroutines-folia-core",
 ]
 implementation-bukkit-nms = [
-    "takenaka"
+    "takenaka",
+    "packetevents-spigot"
 ]
 implementation-proxy = [
 ]
