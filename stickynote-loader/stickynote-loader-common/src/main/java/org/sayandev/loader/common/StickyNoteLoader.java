@@ -94,35 +94,6 @@ public abstract class StickyNoteLoader {
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
             }
 
-            for (Dependency missingDependency : dependencies) {
-                String name = missingDependency.getName();
-                String group = missingDependency.getGroup();
-                if (name.contains("packetevents")) {
-                    relocations.put("io{}github{}retrooper", relocationTo + "{}lib{}packetevents");
-                    continue;
-                }
-                if (missingDependency.isStickyLoad()) {
-                    if (missingDependency.getRelocation() != null) {
-                        String[] splitted = missingDependency.getGroup().split("\\{}");
-                        relocations.put(missingDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
-                    }
-                    continue;
-                }
-                if (name.contains("adventure")) {
-//                    relocations.put("net{}kyori{}adventure{}text{}serializer", relocationTo + "{}lib{}adventure{}text{}serializer");
-//                    relocations.put("net{}kyori{}option", relocationTo + "{}lib{}adventure{}option");
-                    continue;
-                }
-                if (name.contains("stickynote")) {
-                    relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
-                }
-//                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
-                relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
-                if (exclusions.stream().anyMatch(excluded -> missingDependency.getName().contains(excluded))) continue;
-                String[] groupParts = group.split("\\{}");
-                relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
-            }
-
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
             } else {
