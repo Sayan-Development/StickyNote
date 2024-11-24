@@ -294,6 +294,7 @@ accessors {
     }
     mapClass(ClientboundPlayerInfoUpdatePacketEntry) {
         constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, RemoteChatSessionData)
+        constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, Int::class, RemoteChatSessionData)
     }
     mapClass(ClientboundPlayerInfoRemovePacket) {
         constructor(List::class)

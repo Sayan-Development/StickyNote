@@ -95,15 +95,28 @@ object PacketUtils {
         val ping = NMSUtils.getPing(serverPlayer)
 
         entries.add(
-            ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_0!!.newInstance(
-                EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
-                profile,
-                true,
-                ping,
-                GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
-                null,
-                null
-            )
+            if (ServerVersion.isAtLeast(21, 3)) {
+                ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_1!!.newInstance(
+                    EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
+                    profile,
+                    true,
+                    ping,
+                    GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
+                    null,
+                    1,
+                    null
+                )
+            } else {
+                ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_0!!.newInstance(
+                    EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
+                    profile,
+                    true,
+                    ping,
+                    GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
+                    null,
+                    null
+                )
+            }
         )
         ClientboundPlayerInfoUpdatePacketAccessor.FIELD_ENTRIES!!.set(
             infoPacket,
