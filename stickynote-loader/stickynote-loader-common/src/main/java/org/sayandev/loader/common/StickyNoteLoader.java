@@ -58,10 +58,10 @@ public abstract class StickyNoteLoader {
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
-            List<Dependency> allDependencies = new ArrayList<>(dependencies);
+            Set<Dependency> allDependencies = new HashSet<>(dependencies);
             allDependencies.addAll(cachedDependencies);
+            allDependencies.addAll(missingDependencies);
 
-            // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
             for (Dependency cachedDependency : allDependencies) {
                 if (cachedDependency.getName().equals("sqlite-jdbc")) {
                     try {
@@ -69,6 +69,7 @@ public abstract class StickyNoteLoader {
                         continue;
                     } catch (Exception ignored) {}
                 }
+
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
                 if (name.contains("packetevents")) {
@@ -101,7 +102,7 @@ public abstract class StickyNoteLoader {
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
             }
-            loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
+            loadCachedDependencies(id, logger, libraryManager, new HashSet<>(allDependencies), relocationFrom, relocationTo);
 
             long endTime = System.currentTimeMillis();
             logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
@@ -182,11 +183,6 @@ public abstract class StickyNoteLoader {
                 e.printStackTrace();
             }
         });
-        libraryManager.loadLibrary(Library.builder()
-                        .groupId("com.google.code.gson")
-                        .artifactId("gson")
-                        .version("2.11.0")
-                .build());
     }
 
     private List<Dependency> getDependencies(Class<?> stickyNotes) {
