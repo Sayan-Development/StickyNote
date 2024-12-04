@@ -58,14 +58,18 @@ public abstract class StickyNoteLoader {
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
-            // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
-            for (Dependency cachedDependency : dependencies) {
+            Set<Dependency> allDependencies = new HashSet<>(dependencies);
+            allDependencies.addAll(cachedDependencies);
+            allDependencies.addAll(missingDependencies);
+
+            for (Dependency cachedDependency : allDependencies) {
                 if (cachedDependency.getName().equals("sqlite-jdbc")) {
                     try {
                         Class.forName("org.sqlite.JDBC");
                         continue;
                     } catch (Exception ignored) {}
                 }
+
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
                 if (name.contains("packetevents")) {
@@ -87,6 +91,7 @@ public abstract class StickyNoteLoader {
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
+//                relocations.put("com{}google{}gson", relocationTo + "{}lib{}gson");
 //                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
@@ -96,9 +101,8 @@ public abstract class StickyNoteLoader {
 
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
-            } else {
-                loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
             }
+            loadCachedDependencies(id, logger, libraryManager, new HashSet<>(allDependencies), relocationFrom, relocationTo);
 
             long endTime = System.currentTimeMillis();
             logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
