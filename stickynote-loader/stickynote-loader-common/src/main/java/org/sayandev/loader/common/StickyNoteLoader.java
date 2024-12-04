@@ -90,6 +90,7 @@ public abstract class StickyNoteLoader {
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
+                relocations.put("com{}google{}gson", relocationTo + "{}lib{}gson");
 //                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;

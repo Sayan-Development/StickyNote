@@ -142,7 +142,7 @@ implementation-core = [
     "reflections",
     "kotlin-reflect",
     "hikari",
-#    "gson",
+    "gson",
     "exposed-core",
     "exposed-jdbc",
     "exposed-dao",
