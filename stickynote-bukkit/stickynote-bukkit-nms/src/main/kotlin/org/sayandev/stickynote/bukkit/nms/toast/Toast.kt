@@ -140,7 +140,7 @@ class Toast(
         val toAddSet: MutableCollection<Any> = HashSet()
 
         //In 1.20.2 and above, "AdvancementRequirements" was added. In older versions, requirements was just a 2d string array (String[][])
-        if (ServerVersion.isAtLeast(20, 2)) {
+        if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
             AdvancementProgressAccessor.METHOD_UPDATE_1!!.invoke(
                 advancementProgress,
                 AdvancementAccessor.METHOD_REQUIREMENTS!!.invoke(advancement) //returns AdvancementRequirements
