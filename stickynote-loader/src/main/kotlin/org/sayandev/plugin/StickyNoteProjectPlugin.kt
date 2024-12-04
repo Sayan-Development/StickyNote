@@ -114,7 +114,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
 //                relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
                 relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-                relocate("com.google.gson", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.gson")
+//                relocate("com.google.gson", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.gson")
                 for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {

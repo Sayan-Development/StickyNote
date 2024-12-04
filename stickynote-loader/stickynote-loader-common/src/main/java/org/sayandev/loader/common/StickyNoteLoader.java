@@ -90,7 +90,7 @@ public abstract class StickyNoteLoader {
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
-                relocations.put("com{}google{}gson", relocationTo + "{}lib{}gson");
+//                relocations.put("com{}google{}gson", relocationTo + "{}lib{}gson");
 //                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
@@ -100,9 +100,8 @@ public abstract class StickyNoteLoader {
 
             if (!missingDependencies.isEmpty()) {
                 loadMissingDependencies(id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
-            } else {
-                loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
             }
+            loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
 
             long endTime = System.currentTimeMillis();
             logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
@@ -183,6 +182,11 @@ public abstract class StickyNoteLoader {
                 e.printStackTrace();
             }
         });
+        libraryManager.loadLibrary(Library.builder()
+                        .groupId("com.google.code.gson")
+                        .artifactId("gson")
+                        .version("2.11.0")
+                .build());
     }
 
     private List<Dependency> getDependencies(Class<?> stickyNotes) {
