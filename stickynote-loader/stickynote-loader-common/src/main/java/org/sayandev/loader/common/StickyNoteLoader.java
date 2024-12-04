@@ -58,8 +58,11 @@ public abstract class StickyNoteLoader {
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
+            List<Dependency> allDependencies = new ArrayList<>(dependencies);
+            allDependencies.addAll(cachedDependencies);
+
             // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
-            for (Dependency cachedDependency : dependencies) {
+            for (Dependency cachedDependency : allDependencies) {
                 if (cachedDependency.getName().equals("sqlite-jdbc")) {
                     try {
                         Class.forName("org.sqlite.JDBC");
