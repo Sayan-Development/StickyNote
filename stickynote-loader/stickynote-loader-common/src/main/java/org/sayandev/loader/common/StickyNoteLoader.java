@@ -172,7 +172,6 @@ public abstract class StickyNoteLoader {
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
                         Library transitiveLibrary = createLibraryBuilder(transitiveDependency).build();
-                        if (transitiveDependency.getName().contains("gson")) continue;
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
                 }
