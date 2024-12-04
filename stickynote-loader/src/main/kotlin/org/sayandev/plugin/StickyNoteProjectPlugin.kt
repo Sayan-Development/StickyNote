@@ -11,9 +11,9 @@ import org.gradle.kotlin.dsl.*
 class StickyNoteProjectPlugin : Plugin<Project> {
 
     /**
-    * Exclude dependency from relocations. should be the same in StickyNoteLoader
-    * @see org.sayandev.loader.common.StickyNoteLoader
-    * */
+     * Exclude dependency from relocations. should be the same in StickyNoteLoader
+     * @see org.sayandev.loader.common.StickyNoteLoader
+     * */
     val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "takenaka", "mappings", "gson")
 
     @KotlinPoetJavaPoetPreview
@@ -114,7 +114,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
 //                relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
                 relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-//                relocate("com.google.gson", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.gson")
                 for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                     val bundle = libs.findBundle(bundleAlias).get().get()
                     for (alias in bundle) {
