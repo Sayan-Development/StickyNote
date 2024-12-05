@@ -1,15 +1,22 @@
 package org.sayandev.stickynote.bukkit.nms.toast
 
 import com.cryptomorin.xseries.XMaterial
-import com.google.gson.*
+import com.github.shynixn.mccoroutine.bukkit.ticks
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
+import org.sayandev.stickynote.bukkit.async
+import org.sayandev.stickynote.bukkit.launch
+import org.sayandev.stickynote.bukkit.log
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.accessors.*
-import org.sayandev.stickynote.bukkit.runEAsync
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import java.util.*
@@ -22,6 +29,8 @@ class Toast(
     icon: XMaterial,
     frameType: FrameType
 ) {
+
+    @Deprecated("Trimming characters may not work as expected. Trim it yourself to your needs and use the other constructor")
     constructor(
         title: String,
         icon: XMaterial,
@@ -60,7 +69,7 @@ class Toast(
         displayJson.add("title", JsonParser.parseString(GsonComponentSerializer.gson().serialize(title)))
         displayJson.add("icon", iconJson)
         displayJson.add("description", descJson)
-        displayJson.addProperty("frame", frameType.toString().lowercase(Locale.getDefault()))
+        displayJson.addProperty("frame", frameType.toString().lowercase())
         displayJson.addProperty("show_toast", true)
         displayJson.addProperty("announce_to_chat", false)
         displayJson.addProperty("hidden", false)
@@ -183,12 +192,11 @@ class Toast(
 
     fun send(player: Player, vararg otherPlayers: Player) {
         val players = listOf(player, *otherPlayers)
-        awardCriteria()
-
-        //Order of these packets are important, that's why we are calling them sync
-        runEAsync {
-            players.sendPacketSync(addPacket)
-            runEAsync{
+        launch {
+            async {
+                awardCriteria()
+                players.sendPacketSync(addPacket)
+                delay(5.ticks)
                 revokeCriteria()
                 players.sendPacketSync(removePacket)
             }
@@ -259,7 +267,7 @@ class Toast(
                     token = token.replace(inner, replaceTokensWithIgnoreChar(inner))
                 }
 
-                sb.append(IGNORE_CHAR).append(token.replace(".".toRegex(), IGNORE_CHAR.toString())).append(IGNORE_CHAR)
+                sb.append(IGNORE_CHAR).append(token.replace(".", IGNORE_CHAR.toString())).append(IGNORE_CHAR)
             }
 
             if (richMessage.length > lastEnd) {
