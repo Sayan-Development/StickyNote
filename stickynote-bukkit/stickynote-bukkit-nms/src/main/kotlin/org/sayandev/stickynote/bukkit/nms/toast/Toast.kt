@@ -13,7 +13,6 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.async
 import org.sayandev.stickynote.bukkit.launch
-import org.sayandev.stickynote.bukkit.log
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.accessors.*
