@@ -65,7 +65,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getPlayerInfoPacket(serverPlayer: Any, action: PlayerInfoAction): Any {
-        if (ServerVersion.isAtLeast(19, 4)) {
+        if (ServerVersion.isAtLeast(19, 3)) {
             return if (action == PlayerInfoAction.REMOVE_PLAYER) {
                 ClientboundPlayerInfoRemovePacketAccessor.CONSTRUCTOR_0!!
                     .newInstance(listOf(EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer)))
@@ -79,7 +79,7 @@ object PacketUtils {
             val serverPlayerArray = Array.newInstance(ServerPlayerAccessor.TYPE, 1)
             Array.set(serverPlayerArray, 0, serverPlayer)
 
-            return ClientboundPlayerInfoUpdatePacketAccessor.CONSTRUCTOR_0!!
+            return ClientboundPlayerInfoUpdatePacketAccessor.CONSTRUCTOR_1!!
                 .newInstance(action.nmsObject, serverPlayerArray)
         }
     }

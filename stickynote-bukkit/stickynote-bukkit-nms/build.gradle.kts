@@ -287,6 +287,7 @@ accessors {
 
     mapClass(ClientboundPlayerInfoUpdatePacket) {
         constructor(ClientboundPlayerInfoUpdatePacketAction, ServerPlayer)
+        constructor("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket\$Action", "$ServerPlayer[]")
         constructor(EnumSet::class, Collection::class)
         fieldInferred("entries", "1.20.4")
         methodInferred("createPlayerInitializing", "1.20.4", Collection::class)
