@@ -2,6 +2,8 @@ package org.sayandev.stickynote.bukkit.nms.npc
 
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -164,6 +166,7 @@ abstract class NPC: Viewable() {
         setPosition(location)
         EntityAccessor.METHOD_SET_ROT!!.invoke(entity, yaw, pitch)
         getViewers().sendPacket(PacketUtils.getTeleportEntityPacket(entity))
+        look(yaw, pitch)
     }
 
     /**
@@ -198,8 +201,12 @@ abstract class NPC: Viewable() {
      * @param item The item to set
      */
     fun setEquipment(slot: EquipmentSlot, item: ItemStack?) {
-        val nmsItem: Any = if (item == null) {
-            NMSUtils.getNmsEmptyItemStack()
+        val nmsItem = if (item == null) {
+            if (ServerVersion.supports(11)) {
+                NMSUtils.getNmsEmptyItemStack()
+            } else {
+                null
+            }
         } else {
             NMSUtils.getNmsItemStack(item)
         }
@@ -249,8 +256,13 @@ abstract class NPC: Viewable() {
      */
     fun setCustomName(component: Component?) {
         this.customName = component ?: Component.empty()
-        val nmsComponent = MinecraftComponentSerializer.get().serialize(customName)
-        EntityAccessor.METHOD_SET_CUSTOM_NAME!!.invoke(entity, nmsComponent)
+        if (ServerVersion.supports(13)) {
+            val nmsComponent = MinecraftComponentSerializer.get().serialize(customName)
+            EntityAccessor.METHOD_SET_CUSTOM_NAME!!.invoke(entity, nmsComponent)
+        } else {
+            val legacyStringFromComponent = LegacyComponentSerializer.legacyAmpersand().serialize(customName)
+            EntityAccessor.METHOD_SET_CUSTOM_NAME_1!!.invoke(entity, ChatColor.translateAlternateColorCodes('&', legacyStringFromComponent))
+        }
         sendEntityData()
     }
 

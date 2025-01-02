@@ -6,11 +6,13 @@ import org.sayandev.stickynote.bukkit.nms.npc.EntityNPC
 import org.sayandev.stickynote.bukkit.nms.npc.NPCType
 import org.sayandev.stickynote.bukkit.nms.utils.Rotations
 import org.sayandev.stickynote.bukkit.nms.accessors.ArmorStandAccessor
+import org.sayandev.stickynote.bukkit.utils.ServerVersion
 
 class ArmorStandNPC(
     location: Location
 ): EntityNPC(
-    ArmorStandAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.ARMOR_STAND.nmsEntityType, NMSUtils.getServerLevel(location.world)),
+    if (ServerVersion.supports(13)) ArmorStandAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.ARMOR_STAND.nmsEntityType(), NMSUtils.getServerLevel(location.world))
+    else ArmorStandAccessor.CONSTRUCTOR_1!!.newInstance(NMSUtils.getServerLevel(location.world), location.x, location.y, location.z),
     location,
     NPCType.ARMOR_STAND
 ) {

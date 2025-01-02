@@ -117,8 +117,8 @@ fun CommandContext<BukkitSender>.audience(): Audience {
     return this.sender().audience()
 }
 
-fun MutableCommandBuilder<BukkitSender>.literalWithPermission(literal: String) {
-    literal(literal)
+fun MutableCommandBuilder<BukkitSender>.literalWithPermission(literal: String, vararg aliases: String) {
+    literal(literal, Description.empty(), *aliases)
     permission("${plugin.name.lowercase()}.commands.${this.build().components().joinToString(".") { it.name() }}")
 }
 

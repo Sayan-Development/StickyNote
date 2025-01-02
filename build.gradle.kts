@@ -4,11 +4,9 @@ plugins {
     `maven-publish`
 }
 
-val slug = "stickynote"
-
 allprojects {
     group = "org.sayandev"
-    version = "1.8.0"
+    version = "1.8.0.104"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")

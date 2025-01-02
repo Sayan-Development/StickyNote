@@ -28,7 +28,7 @@ dependencies {
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.3")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.4")
     implementation(accessorRuntime())
 }
 
@@ -44,7 +44,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.3")
+    versionRange("1.8.8", "1.21.4")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
@@ -52,6 +52,7 @@ accessors {
     val ClientboundPlayerInfoRemovePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket" // 1.19.3 and above
     val ClientboundPlayerInfoUpdatePacketAction = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket\$Action" // 1.19.3 and above
     val ClientboundAddEntityPacket = "net.minecraft.network.protocol.game.ClientboundAddEntityPacket"
+    val ClientboundAddMobPacket = "net.minecraft.network.protocol.game.ClientboundAddMobPacket" // 1.8 - 1.18.2
     val ClientboundAddPlayerPacket = "net.minecraft.network.protocol.game.ClientboundAddPlayerPacket"
     val ClientboundRotateHeadPacket = "net.minecraft.network.protocol.game.ClientboundRotateHeadPacket"
     val ClientboundRemoveEntitiesPacket = "net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket"
@@ -62,6 +63,7 @@ accessors {
     val ClientboundBlockChangedAckPacket = "net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket"
     val ClientboundSetEntityDataPacket = "net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket"
     val ClientboundSetEquipmentPacket = "net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket"
+    val PacketPlayOutEntityEquipment = "net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment" // 1.8 version of ClientboundSetEquipmentPacket
     val ClientboundTeleportEntityPacket = "net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket"
     val ClientboundSetEntityMotionPacket = "net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket"
     val ClientboundTakeItemEntityPacket = "net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket"
@@ -151,6 +153,7 @@ accessors {
     val ComponentSerializer = "net.minecraft.network.chat.Component\$Serializer"
     val Item = "net.minecraft.world.item.Item"
     val ItemStack = "net.minecraft.world.item.ItemStack"
+    val LegacyItemStack = "net.minecraft.item.ItemStack" // Searge // 1.8
     val Potion = "net.minecraft.world.item.alchemy.Potion"
     val Potions = "net.minecraft.world.item.alchemy.Potions"
     val PotionContents = "net.minecraft.world.item.alchemy.PotionContents"
@@ -284,6 +287,9 @@ accessors {
     val Villager = "net.minecraft.world.entity.npc.Villager"
     val Boat = "net.minecraft.world.entity.vehicle.Boat"
     val Creeper = "net.minecraft.world.entity.monster.Creeper"
+    // 1.8
+    val EntityPlayer = "net.minecraft.entity.player.EntityPlayerMP"
+    val World = "net.minecraft.world.World"
 
     mapClass(ClientboundPlayerInfoUpdatePacket) {
         constructor(ClientboundPlayerInfoUpdatePacketAction, ServerPlayer)
@@ -311,6 +317,9 @@ accessors {
             "UPDATE_DISPLAY_NAME"
         )
         fieldInferred("REMOVE_PLAYER", "1.19")
+    }
+    mapClass(ClientboundAddMobPacket) {
+        constructor(LivingEntity)
     }
     mapClass(ClientboundAddEntityPacket) {
         constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3)
@@ -365,6 +374,7 @@ accessors {
     mapClass(ClientboundSetEquipmentPacket) {
         constructor(Int::class, List::class)
         constructor(Int::class, EquipmentSlot, ItemStack)
+        constructor(Int::class, Int::class, LegacyItemStack)
     }
     mapClass(ClientboundTeleportEntityPacket) {
         constructor(Entity)
@@ -724,6 +734,9 @@ accessors {
         methodInferred("x", "1.20.4")
         methodInferred("y", "1.20.4")
         methodInferred("z", "1.20.4")
+        field(Double::class, "x") // below 1.14
+        field(Double::class, "y") // below 1.14
+        field(Double::class, "z") // below 1.14
     }
     mapClass(Vec3i) {
         methodInferred("getX", "1.20.4")
@@ -748,6 +761,7 @@ accessors {
         methodInferred("setGlowing", "1.16.5", Boolean::class) //1.16.5 and below
         methodInferred("isGlowing", "1.16.5")
         methodInferred("setCustomName", "1.20.4", Component)
+        methodInferred("setCustomName", "1.12.2", String::class) // 1.12.2 and below
         methodInferred("getCustomName", "1.20.4")
         methodInferred("setCustomNameVisible", "1.20.4", Boolean::class)
         methodInferred("isCustomNameVisible", "1.20.4")
@@ -1830,6 +1844,7 @@ accessors {
     }
     mapClass(ArmorStand) {
         constructor(EntityType, Level)
+        constructor(Level, Double::class, Double::class, Double::class) // 1.8
         methodInferred("setHeadPose", "1.16.5", Rotations)
         methodInferred("setBodyPose", "1.16.5", Rotations)
         methodInferred("setLeftArmPose", "1.16.5", Rotations)

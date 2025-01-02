@@ -9,6 +9,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
+import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.CollisionRule
@@ -67,19 +68,23 @@ class PlayerNPC(
      * @see ModelPart
      */
     fun setModelParts(vararg modelParts: ModelPart) {
-        SynchedEntityDataAccessor.METHOD_SET!!.invoke(
-            getEntityData(),
-            PlayerAccessor.FIELD_DATA_PLAYER_MODE_CUSTOMISATION!!,
-            ModelPart.getMasks(*modelParts)
-        )
+        if (ServerVersion.supports(9)) {
+            SynchedEntityDataAccessor.METHOD_SET!!.invoke(
+                getEntityData(),
+                PlayerAccessor.FIELD_DATA_PLAYER_MODE_CUSTOMISATION!!,
+                ModelPart.getMasks(*modelParts)
+            )
+        } else {
+            SynchedEntityDataAccessor.METHOD_WATCH!!.invoke(getEntityData(), 10, ModelPart.getMasks(*modelParts))
+        }
         sendEntityData()
     }
 
     fun setTabList(component: Component?) {
-        getViewers().sendPacket(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER))
+        getViewers().sendPacketSync(PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER))
         if (component != null) {
             listNameField[entity] = MinecraftComponentSerializer.get().serialize(component)
-            getViewers().sendPacket(
+            getViewers().sendPacketSync(
                 PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
                 PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_DISPLAY_NAME),
                 PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.UPDATE_LISTED)
@@ -88,19 +93,20 @@ class PlayerNPC(
     }
 
     override fun addViewer(viewer: Player) {
-        viewer.sendPacket(
+        viewer.sendPacketSync(
             PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.ADD_PLAYER),
             if (ServerVersion.isAtLeast(20, 2))
                 PacketUtils.getAddEntityPacket(entity)
             else
                 PacketUtils.getAddPlayerPacket(entity),
             PacketUtils.getHeadRotatePacket(entity, location.yaw),
+            PacketUtils.getEntityRotPacket(entityId, location.yaw, location.pitch),
             createPlayerTeamPacket()
         )
     }
 
     override fun removeViewer(viewer: Player) {
-        viewer.sendPacket(
+        viewer.sendPacketSync(
             PacketUtils.getPlayerInfoPacket(entity, PlayerInfoAction.REMOVE_PLAYER),
             PacketUtils.getRemoveEntitiesPacket(entityId)
         )

@@ -187,7 +187,11 @@ object PacketUtils {
 
     @JvmStatic
     fun getAddEntityPacket(entity: Any, data: Int): Any {
-        return ClientboundAddEntityPacketAccessor.CONSTRUCTOR_1!!.newInstance(entity, data)
+        return if (ServerVersion.supports(13)) {
+            ClientboundAddEntityPacketAccessor.CONSTRUCTOR_1!!.newInstance(entity, data)
+        } else {
+            ClientboundAddMobPacketAccessor.CONSTRUCTOR_0!!.newInstance(entity)
+        }
     }
 
     @JvmStatic
@@ -286,19 +290,22 @@ object PacketUtils {
     }
 
     @JvmStatic
-    fun getEntityEquipmentPacket(id: Int, equipmentSlot: EquipmentSlot, nmsItem: Any): Any {
+    fun getEntityEquipmentPacket(id: Int, equipmentSlot: EquipmentSlot, nmsItem: Any?): Any {
         return if (ServerVersion.supports(13)) {
             val pair = Class.forName("com.mojang.datafixers.util.Pair").getConstructor(
                 Any::class.java,
                 Any::class.java
-            ).newInstance(equipmentSlot.nmsSlot, nmsItem)
+            ).newInstance(equipmentSlot.nmsSlot(), nmsItem)
             val pairList: MutableList<Any> = ArrayList()
             pairList.add(pair)
 
             ClientboundSetEquipmentPacketAccessor.CONSTRUCTOR_0!!.newInstance(id, pairList)
-        } else {
+        } else if (ServerVersion.supports(9)) {
             ClientboundSetEquipmentPacketAccessor.CONSTRUCTOR_1!!
-                .newInstance(id, equipmentSlot.nmsSlot, nmsItem)
+                .newInstance(id, equipmentSlot.nmsSlot(), nmsItem)
+        } else {
+            ClientboundSetEquipmentPacketAccessor.CONSTRUCTOR_2!!
+                .newInstance(id, equipmentSlot.legacyNmsSlot(), nmsItem)
         }
     }
 
@@ -429,7 +436,9 @@ object PacketUtils {
 
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAME!!.set(packet, name)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_NAMETAG_VISIBILITY!!.set(packet, nameTagVisibility.nmsName)
-            ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.memberProperties.find { it.name == "FIELD_${color.name.uppercase()}" }!!.getter.call(ChatFormattingAccessor))
+            if (ServerVersion.supports(13)) {
+                ClientboundSetPlayerTeamPacketAccessor.FIELD_COLOR!!.set(packet, ChatFormattingAccessor::class.memberProperties.find { it.name == "FIELD_${color.name.uppercase()}" }!!.getter.call(ChatFormattingAccessor))
+            }
             ClientboundSetPlayerTeamPacketAccessor.FIELD_PLAYERS!!.set(packet, players)
             ClientboundSetPlayerTeamPacketAccessor.FIELD_METHOD!!.set(packet, method)
             var options = 0

@@ -8,17 +8,21 @@ import org.sayandev.stickynote.bukkit.extension.toVector3
 import org.sayandev.stickynote.bukkit.nms.Viewable
 import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
+import java.util.UUID
 
 class Hologram(
-    lines: List<HoloLine>,
-    location: Location
+    val lines: MutableList<HoloLine>,
+    private var location: Location
 ): Viewable() {
 
-    private val lines: MutableList<HoloLine> = lines.toMutableList()
-    private val lineLocations: MutableMap<HoloLine, Location> = mutableMapOf()
-    var location: Location = location; private set
+    private val lineLocations: MutableMap<UUID, Location> = mutableMapOf()
+
+    init {
+        reload()
+    }
 
     private fun reload(lines: List<HoloLine>, location: Location) {
+        val previousViewers = getViewers().toList()
         unload()
         val newLines = lines.toMutableList()
         this.lines.clear()
@@ -27,14 +31,15 @@ class Hologram(
         val suitableLocation = location.clone()
         for ((lineIndex, line) in newLines.withIndex()) {
             if (lineIndex > 0) {
-                suitableLocation.add(0.0, - line.distance.toDouble(), 0.0)
+                suitableLocation.subtract(0.0, line.distance.toDouble(), 0.0)
             }
-            lineLocations[line] = suitableLocation
+            lineLocations[line.uniqueId] = suitableLocation
 
             line.initializeNPC(suitableLocation)
 
             this.lines.add(line)
         }
+        previousViewers.forEach(this::addViewer)
     }
 
     /**
@@ -48,11 +53,19 @@ class Hologram(
      * Unloads the hologram
      */
     fun unload() {
+        unload(*getOnlinePlayers().toTypedArray())
+    }
+
+    fun unload(vararg players: Player) {
         for (line in lines) {
             if (line.isInitialized()) {
-                line.npc.removeViewers(getOnlinePlayers())
+                line.npc.removeViewers(*players)
             }
         }
+    }
+
+    fun location(): Location {
+        return location
     }
 
     /**
@@ -73,16 +86,17 @@ class Hologram(
     fun teleport(location: Location) {
         this.location = location
         for (line in lines) {
-            val lineLocation: Location = lineLocations[line]!!
+            val lineLocation: Location = lineLocations[line.uniqueId]!!
             line.npc.teleport(lineLocation.toVector3())
         }
+        reload()
     }
 
     /**
      * Sets the lines of the hologram. This will reload the hologram
      * @param lines List of lines
      */
-    fun setLines(lines: List<HoloLine>) {
+    fun lines(lines: List<HoloLine>) {
         reload(lines, location)
     }
 
@@ -143,7 +157,7 @@ class Hologram(
      * Returns an immutable list of lines
      * @return Immutable list of lines
      */
-    fun getLines(): List<HoloLine> {
+    fun lines(): List<HoloLine> {
         return lines.toList()
     }
 

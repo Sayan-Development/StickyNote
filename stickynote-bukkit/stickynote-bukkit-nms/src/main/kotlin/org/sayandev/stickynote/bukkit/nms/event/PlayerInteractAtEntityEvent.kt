@@ -16,11 +16,11 @@ abstract class PlayerInteractAtEntityEvent : PacketListener {
         register()
     }
 
-    protected abstract fun onInteract(player: Player?, hand: InteractionHand?, entityId: Int)
+    protected open fun onInteract(player: Player?, hand: InteractionHand?, entityId: Int) { }
 
-    protected abstract fun onInteractAt(player: Player?, hand: InteractionHand?, location: Vector3?, entityId: Int)
+    protected open fun onInteractAt(player: Player?, hand: InteractionHand?, location: Vector3?, entityId: Int) { }
 
-    protected abstract fun onAttack(player: Player?, entityId: Int)
+    protected open fun onAttack(player: Player?, entityId: Int) { }
 
     final override fun register() {
         HANDLER_LIST.add(this)
@@ -66,17 +66,29 @@ abstract class PlayerInteractAtEntityEvent : PacketListener {
                     }
                     ServerboundInteractPacket_ActionAccessor.FIELD_INTERACT!! -> {
                         actionId = 1
-                        hand = InteractionHand.fromNmsObject(ServerboundInteractPacketAccessor.FIELD_HAND!!.get(packet))
+                        if (ServerVersion.supports(9)) {
+                            hand = InteractionHand.fromNmsObject(ServerboundInteractPacketAccessor.FIELD_HAND!!.get(packet))
+                        }
                     }
                     ServerboundInteractPacket_ActionAccessor.FIELD_INTERACT_AT!! -> {
                         actionId = 2
                         val vec3: Any = ServerboundInteractPacketAccessor.FIELD_LOCATION!!.get(packet)
-                        hand = InteractionHand.fromNmsObject(ServerboundInteractPacketAccessor.FIELD_HAND!!.get(packet))
-                        location = Vector3.at(
-                            Vec3Accessor.METHOD_X!!.invoke(vec3) as Double,
-                            Vec3Accessor.METHOD_Y!!.invoke(vec3) as Double,
-                            Vec3Accessor.METHOD_Z!!.invoke(vec3) as Double
-                        )
+                        if (ServerVersion.supports(9)) {
+                            hand = InteractionHand.fromNmsObject(ServerboundInteractPacketAccessor.FIELD_HAND!!.get(packet))
+                        }
+                        location = if (ServerVersion.supports(14)) {
+                            Vector3.at(
+                                Vec3Accessor.METHOD_X!!.invoke(vec3) as Double,
+                                Vec3Accessor.METHOD_Y!!.invoke(vec3) as Double,
+                                Vec3Accessor.METHOD_Z!!.invoke(vec3) as Double
+                            )
+                        } else {
+                            Vector3.at(
+                                Vec3Accessor.FIELD_X!!.get(vec3) as Double,
+                                Vec3Accessor.FIELD_Y!!.get(vec3) as Double,
+                                Vec3Accessor.FIELD_Z!!.get(vec3) as Double
+                            )
+                        }
                     }
                 }
             }

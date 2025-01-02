@@ -15,7 +15,7 @@ class ThrowableProjectileNPC(
     location: Location,
     item: ItemStack
 ): EntityNPC(
-    if (ServerVersion.supports(14)) ThrownPotionAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.POTION.nmsEntityType, NMSUtils.getServerLevel(location.world))
+    if (ServerVersion.supports(14)) ThrownPotionAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.POTION.nmsEntityType(), NMSUtils.getServerLevel(location.world))
     else ThrownPotionAccessor.CONSTRUCTOR_1!!.newInstance(NMSUtils.getServerLevel(location.world)),
     location,
     NPCType.POTION

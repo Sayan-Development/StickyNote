@@ -3,6 +3,7 @@ package org.sayandev.stickynote.bukkit.nms.npc
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
+import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacketSync
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.bukkit.nms.accessors.EntityAccessor
@@ -20,14 +21,14 @@ abstract class EntityNPC(
     }
 
     override fun addViewer(viewer: Player) {
-        viewer.sendPacket(
+        viewer.sendPacketSync(
             PacketUtils.getAddEntityPacket(entity),
             PacketUtils.getEntityDataPacket(entity)
         )
     }
 
     override fun removeViewer(viewer: Player) {
-        viewer.sendPacket(
+        viewer.sendPacketSync(
             PacketUtils.getRemoveEntitiesPacket(entityId)
         )
     }

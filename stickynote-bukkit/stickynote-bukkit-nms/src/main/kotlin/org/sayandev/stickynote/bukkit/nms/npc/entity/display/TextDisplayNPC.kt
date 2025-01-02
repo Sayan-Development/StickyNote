@@ -12,7 +12,7 @@ class TextDisplayNPC(
     location: Location,
     display: Component
 ): DisplayNPC(
-    Display_TextDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.TEXT_DISPLAY.nmsEntityType, NMSUtils.getServerLevel(location.world)),
+    Display_TextDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.TEXT_DISPLAY.nmsEntityType(), NMSUtils.getServerLevel(location.world)),
     location,
     NPCType.TEXT_DISPLAY
 ) {

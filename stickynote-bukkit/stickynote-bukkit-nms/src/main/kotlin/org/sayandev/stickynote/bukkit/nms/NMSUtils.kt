@@ -1,7 +1,10 @@
 package org.sayandev.stickynote.bukkit.nms
 
 import com.cryptomorin.xseries.reflection.XReflection
+import com.cryptomorin.xseries.reflection.minecraft.MinecraftConnection
+import com.github.retrooper.packetevents.util.reflection.Reflection
 import io.netty.channel.Channel
+import io.netty.util.internal.ReflectionUtil
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -19,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
 import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.runEAsync
+import org.sayandev.stickynote.bukkit.runSync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
 import java.lang.reflect.Field
@@ -62,8 +66,8 @@ object NMSUtils {
         return getNmsItemStack(this)
     }
 
-    fun getNmsEmptyItemStack(): Any {
-        return ItemStackAccessor.FIELD_EMPTY!!
+    fun getNmsEmptyItemStack(): Any? {
+        return if (ServerVersion.supports(11)) ItemStackAccessor.FIELD_EMPTY!! else null
     }
 
     fun getBukkitItemStack(nmsItem: Any): ItemStack {
@@ -664,19 +668,23 @@ object NMSUtils {
      */
     @JvmStatic
     fun Player.sendPacketSync(vararg packets: Any) {
-        try {
-            //ReflectionUtils.sendPacketSync(player, packets);
-            val commonGameConnection = getServerGamePacketListener(this)
-            for (packet in packets) {
-                if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
-                    ServerCommonPacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
-                } else {
-                    ServerGamePacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
-                }
+        MinecraftConnection.sendPacket(this, *packets)
+
+        /*val commonGameConnection = getServerGamePacketListener(this)
+        runSync {
+            try {
+                //ReflectionUtils.sendPacketSync(player, packets);
+                *//*for (packet in packets) {
+                    if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 2) || ServerVersion.supports(21)) {
+                        ServerCommonPacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
+                    } else {
+                        ServerGamePacketListenerImplAccessor.METHOD_SEND!!.invoke(commonGameConnection, packet)
+                    }
+                }*//*
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        }*/
     }
 
     /**
@@ -706,8 +714,8 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
-    fun Player.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { sendPacketSync(*packets) }
+    fun Player.sendPacket(vararg packets: Any) {
+        return sendPacketSync(*packets)
     }
 
     /**
@@ -715,8 +723,8 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
-    fun Player.sendPacket(packets: Collection<Any>): Future<*> {
-        return runEAsync { sendPacketSync(*packets.toTypedArray()) }
+    fun Player.sendPacket(packets: Collection<Any>) {
+        return sendPacketSync(*packets.toTypedArray())
     }
 
     /**
@@ -724,8 +732,8 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player.
      */
     @JvmStatic
-    fun Array<out Player>.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { this.toSet().sendPacketSync(*packets) }
+    fun Array<out Player>.sendPacket(vararg packets: Any) {
+        return this.toList().sendPacketSync(*packets)
     }
 
     /**
@@ -733,7 +741,7 @@ object NMSUtils {
      * @param packets The packet(s) that are going to be sent to the player(s).
      */
     @JvmStatic
-    fun Collection<Player>.sendPacket(vararg packets: Any): Future<*> {
-        return runEAsync { this.sendPacketSync(*packets) }
+    fun Collection<Player>.sendPacket(vararg packets: Any) {
+        return this.sendPacketSync(*packets)
     }
 }

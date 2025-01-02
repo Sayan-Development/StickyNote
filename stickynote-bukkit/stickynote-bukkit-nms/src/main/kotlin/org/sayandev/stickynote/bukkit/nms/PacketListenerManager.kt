@@ -44,8 +44,8 @@ object PacketListenerManager: Listener {
         removePlayer(event.player)
     }
 
-    private fun injectPlayer(player: Player) {
-        val channelDuplexHandler: ChannelDuplexHandler = object : ChannelDuplexHandler() {
+    fun injectPlayer(player: Player) {
+        val channelDuplexHandler = object : ChannelDuplexHandler() {
             override fun channelRead(context: ChannelHandlerContext, packet: Any) {
                 var packet = packet
                 try {
@@ -127,7 +127,7 @@ object PacketListenerManager: Listener {
             val pipeline: ChannelPipeline = NMSUtils.getChannel(player).pipeline()
             pipeline.addBefore(
                 "packet_handler",
-                String.format("%s_%s", plugin.description.name, player.name),
+                plugin.description.name.lowercase(),
                 channelDuplexHandler
             )
         } catch (e: Exception) {
@@ -138,15 +138,11 @@ object PacketListenerManager: Listener {
     fun removePlayer(player: Player) {
         try {
             val channel = NMSUtils.getChannel(player)
-            channel.eventLoop().submit<Any> {
-                channel.pipeline().remove(
-                    String.format(
-                        "%s_%s",
-                        plugin.description.name,
-                        player.name
-                    )
-                )
-                null
+            val identifier = plugin.description.name.lowercase()
+            channel.eventLoop().execute {
+                if (channel.pipeline().get(identifier) != null) {
+                    channel.pipeline().remove(identifier)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

@@ -113,7 +113,9 @@ enum class NPCType {
     TEXT_DISPLAY,
     PLAYER;
 
-    val nmsEntityType: Any = EntityTypeAccessor::class.memberProperties.find { it.name == "FIELD_${name.uppercase()}" }!!.getter.call(EntityTypeAccessor)!!
+    fun nmsEntityType(): Any {
+        return EntityTypeAccessor::class.memberProperties.find { it.name == "FIELD_${name.uppercase()}" }!!.getter.call(EntityTypeAccessor)!!
+    }
 
     companion object {
         @JvmStatic

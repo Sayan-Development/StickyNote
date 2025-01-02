@@ -12,7 +12,7 @@ class ItemDisplayNPC(
     location: Location,
     display: ItemStack
 ): DisplayNPC(
-    Display_ItemDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.ITEM_DISPLAY.nmsEntityType, NMSUtils.getServerLevel(location.world)),
+    Display_ItemDisplayAccessor.CONSTRUCTOR_0!!.newInstance(NPCType.ITEM_DISPLAY.nmsEntityType(), NMSUtils.getServerLevel(location.world)),
     location,
     NPCType.ITEM_DISPLAY
 ) {
