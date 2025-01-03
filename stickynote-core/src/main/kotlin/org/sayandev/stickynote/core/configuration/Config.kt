@@ -13,7 +13,6 @@ abstract class Config(
     @Transient val directory: File,
     @Transient val name: String,
     @Transient val builder: YamlConfigurationLoader.Builder,
-    @Transient val serializers: TypeSerializerCollection = generateOptions(null).serializers()
 ) {
 
     @Transient val file = File(directory, name)
@@ -22,13 +21,12 @@ abstract class Config(
         directory,
         name,
         getConfigBuilder(File(directory, name), serializers),
-        generateOptions(serializers).serializers()
     )
     constructor(directory: File, name: String) : this(directory, name, null)
     constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name, null)
 
     @Transient var yaml = builder.build()
-    @Transient var config = yaml.load(generateOptions(serializers))
+    @Transient var config = yaml.load()
 
     fun load() {
         save()
@@ -52,28 +50,28 @@ abstract class Config(
     }
 
     open fun reload() {
-        yaml = builder.defaultOptions(generateOptions(serializers)).build()
-        config = yaml.load(generateOptions(serializers))
+        yaml = builder.build()
+        config = yaml.load(ConfigurationOptions.defaults().apply {
+            shouldCopyDefaults(true)
+        })
         config.set(config)
     }
 
     companion object {
         @JvmStatic
-        fun generateOptions(serializers: TypeSerializerCollection?): ConfigurationOptions {
-            return ConfigurationOptions.defaults().shouldCopyDefaults(true)
-            .serializers { builder ->
-                builder.registerAnnotatedObjects(objectMapperFactory())
-                if (serializers != null) {
-                    builder.registerAll(serializers)
-                }
-            }
-        }
-
-        @JvmStatic
         fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
                 .nodeStyle(NodeStyle.BLOCK)
-                .defaultOptions(generateOptions(serializers))
+                .defaultOptions { options ->
+                    options.shouldCopyDefaults(true)
+                    options.serializers { builder ->
+                        builder.registerAnnotatedObjects(objectMapperFactory())
+                        if (serializers != null) {
+                            builder.registerAll(serializers)
+                        }
+                    }
+//                    options.mapFactory(MapFactories.sortedNatural())
+                }
                 .file(file)
             return yaml
         }

@@ -26,8 +26,8 @@ public abstract class StickyNoteLoader {
 
     protected abstract void onComplete();
 
-    public void load(String id, File dataFolder, Logger logger, LibraryManager libraryManager) {
-        File libFolder = new File(dataFolder, LIB_FOLDER);
+    public void load(String id, File dataDirectory, Logger logger, LibraryManager libraryManager) {
+        File libFolder = generateLibDirectory(dataDirectory);
 
         File[] files = libFolder.listFiles();
         if (files == null || !Arrays.stream(files).map(File::getName).toList().contains(LIB_FOLDER)) {
@@ -296,5 +296,9 @@ public abstract class StickyNoteLoader {
         long completed = futures.stream().filter(CompletableFuture::isDone).count();
         int percentage = (int) ((completed * 100) / totalDependencies);
         logger.info(String.format("Progress: %d%% (%d/%d dependencies loaded)", percentage, completed, totalDependencies));
+    }
+
+    public static File generateLibDirectory(File root) {
+        return new File(new File(root, "stickynote"), LIB_FOLDER);
     }
 }
