@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.1.0"
     `version-catalog`
     `maven-publish`
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.8.2"
+    version = "1.8.2.1"
     description = "A modular Kotlin library for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -15,7 +15,7 @@ allprojects {
     plugins.apply("kotlin")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
     }
 
     tasks {
