@@ -6,6 +6,7 @@ import java.net.SocketAddress
 import java.time.Instant
 import java.util.*
 import java.util.Optional
+import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.UnaryOperator
 
@@ -132,6 +133,7 @@ accessors {
     val Rotations = "net.minecraft.core.Rotations"
     val Mob = "net.minecraft.world.entity.Mob"
     val Entity = "net.minecraft.world.entity.Entity"
+    val ServerEntity = "net.minecraft.server.level.ServerEntity"
     val LivingEntity = "net.minecraft.world.entity.LivingEntity"
     val BlockEntity = "net.minecraft.world.level.block.entity.BlockEntity"
     val SpawnerBlockEntity = "net.minecraft.world.level.block.entity.SpawnerBlockEntity"
@@ -302,6 +304,7 @@ accessors {
     mapClass(ClientboundPlayerInfoUpdatePacketEntry) {
         constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, RemoteChatSessionData)
         constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, Int::class, RemoteChatSessionData)
+        constructor(UUID::class, GameProfile, Boolean::class, Int::class, GameType, Component, Boolean::class, Int::class, RemoteChatSessionData)
     }
     mapClass(ClientboundPlayerInfoRemovePacket) {
         constructor(List::class)
@@ -325,6 +328,11 @@ accessors {
         constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3)
         constructor(Entity, Int::class)
         constructor(Entity)
+        // 1.21 - start
+        constructor(Entity, ServerEntity)
+        constructor(Entity, ServerEntity, Int::class)
+        constructor(Int::class, UUID::class, Double::class, Double::class, Double::class, Float::class, Float::class, EntityType, Int::class, Vec3, Double::class)
+        // 1.21 - end
         methodInferred("getId", "1.20.4")
     }
     mapClass(ClientboundAddPlayerPacket) {
@@ -786,6 +794,7 @@ accessors {
         methodInferred("setSharedFlag", "1.20.4", Int::class, Boolean::class)
         methodInferred("getSharedFlag", "1.20.4", Int::class)
         methodInferred("moveTo", "1.20.4", Double::class, Double::class, Double::class)
+        methodInferred("level", "1.21.4")
         fieldInferred("position", "1.20.4")
         fieldInferred("locX", "1.8.8")
         fieldInferred("locY", "1.8.8")
@@ -796,6 +805,9 @@ accessors {
         fieldInferred("DATA_NO_GRAVITY", "1.20.4")
         fieldInferred("DATA_POSE", "1.20.4")
         fieldInferred("DATA_TICKS_FROZEN", "1.20.4")
+    }
+    mapClass(ServerEntity) {
+        constructor(ServerLevel, Entity, Int::class, Boolean::class, Consumer::class)
     }
     mapClass(LivingEntity) {
         methodInferred("setArrowCount", "1.20.4", Int::class)

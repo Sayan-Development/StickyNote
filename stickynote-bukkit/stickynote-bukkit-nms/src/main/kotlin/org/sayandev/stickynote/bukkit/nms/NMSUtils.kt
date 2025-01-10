@@ -2,9 +2,7 @@ package org.sayandev.stickynote.bukkit.nms
 
 import com.cryptomorin.xseries.reflection.XReflection
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftConnection
-import com.github.retrooper.packetevents.util.reflection.Reflection
 import io.netty.channel.Channel
-import io.netty.util.internal.ReflectionUtil
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -21,8 +19,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
 import org.sayandev.stickynote.bukkit.nms.accessors.*
-import org.sayandev.stickynote.bukkit.runEAsync
-import org.sayandev.stickynote.bukkit.runSync
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3
 import java.lang.reflect.Field
@@ -30,7 +26,7 @@ import java.lang.reflect.Method
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.util.*
-import java.util.concurrent.Future
+import java.util.function.Consumer
 import java.util.function.UnaryOperator
 
 object NMSUtils {
@@ -238,6 +234,32 @@ object NMSUtils {
 
     fun getNmsEntity(entity: Entity): Any {
         return CRAFT_ENTITY_GET_HANDLE_METHOD.getOrThrow().invoke(entity)
+    }
+
+    fun getLevelFromNmsEntity(entity: Any): Any {
+        return EntityAccessor.METHOD_LEVEL!!.invoke(entity)
+    }
+
+    fun getServerEntity(entity: Entity): Any {
+        require(ServerVersion.supports(21)) { "This method is only supported in 1.21 and above" }
+        return ServerEntityAccessor.CONSTRUCTOR_0!!.newInstance(
+            getServerLevel(entity.world),
+            getNmsEntity(entity),
+            20,
+            false,
+            {}
+        )
+    }
+
+    fun getServerEntityFromNmsEntity(entity: Any): Any {
+        require(ServerVersion.supports(21)) { "This method is only supported in 1.21 and above" }
+        return ServerEntityAccessor.CONSTRUCTOR_0!!.newInstance(
+            getLevelFromNmsEntity(entity),
+            entity,
+            20,
+            false,
+            Consumer<Any> {}
+        )
     }
 
     fun getBukkitEntity(nmsEntity: Any): Entity {

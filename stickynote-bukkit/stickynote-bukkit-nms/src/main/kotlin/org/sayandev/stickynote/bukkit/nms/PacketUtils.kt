@@ -13,6 +13,7 @@ import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
+import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
 import java.lang.reflect.Array
 import java.util.*
@@ -95,7 +96,19 @@ object PacketUtils {
         val ping = NMSUtils.getPing(serverPlayer)
 
         entries.add(
-            if (ServerVersion.isAtLeast(21, 3)) {
+            if (ServerVersion.isAtLeast(21, 4)) {
+                ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_2!!.newInstance(
+                    EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
+                    profile,
+                    true,
+                    ping,
+                    GameTypeAccessor.METHOD_BY_NAME!!.invoke(null, gameMode.name.lowercase()),
+                    null,
+                    false,
+                    1,
+                    null
+                )
+            } else if (ServerVersion.isAtLeast(21, 3)) {
                 ClientboundPlayerInfoUpdatePacket_EntryAccessor.CONSTRUCTOR_1!!.newInstance(
                     EntityAccessor.METHOD_GET_UUID!!.invoke(serverPlayer),
                     profile,
@@ -187,7 +200,9 @@ object PacketUtils {
 
     @JvmStatic
     fun getAddEntityPacket(entity: Any, data: Int): Any {
-        return if (ServerVersion.supports(13)) {
+        return if (ServerVersion.supports(21)) {
+            ClientboundAddEntityPacketAccessor.CONSTRUCTOR_4!!.newInstance(entity, NMSUtils.getServerEntityFromNmsEntity(entity), data)
+        } else if (ServerVersion.supports(13)) {
             ClientboundAddEntityPacketAccessor.CONSTRUCTOR_1!!.newInstance(entity, data)
         } else {
             ClientboundAddMobPacketAccessor.CONSTRUCTOR_0!!.newInstance(entity)
