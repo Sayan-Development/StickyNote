@@ -40,6 +40,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 config.modules.add(ModuleConfiguration(StickyNoteModules.CORE, finalVersion))
             }
             this.modules.set(config.modules)
+            this.relocate.set(config.relocate)
             this.relocation.set(config.relocation)
             this.useKotlin.set(config.useKotlin)
         }
@@ -110,31 +111,31 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             val libs = versionCatalogs.named("stickyNoteLibs")
 
             target.tasks.withType<ShadowJar> {
-                relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
-//                relocate("com.alessiodp.libby", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.libby")
-//                relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
-                relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-                for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
-                    val bundle = libs.findBundle(bundleAlias).get().get()
-                    for (alias in bundle) {
-                        if (relocateExclusion.any { alias.module.name == it }) continue
-                        if (alias.module.name.contains("packetevents")) {
-                            relocate("io.github.retrooper", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.packetevents")
-                            continue
-                        }
-                        // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
-                        if (alias.module.name.contains("adventure")) {
+                if (config.relocate.get()) {
+                    relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
+                    relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
+                    for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
+                        val bundle = libs.findBundle(bundleAlias).get().get()
+                        for (alias in bundle) {
+                            if (relocateExclusion.any { alias.module.name == it }) continue
+                            if (alias.module.name.contains("packetevents")) {
+                                relocate("io.github.retrooper", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.packetevents")
+                                continue
+                            }
+                            // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
+                            if (alias.module.name.contains("adventure")) {
 //                            relocate("net.kyori.adventure.text.serializer", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.text.serializer")
 //                            relocate("net.kyori.option", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.option")
-                            continue
+                                continue
+                            }
+                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
                         }
-                        relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
                     }
-                }
-                for (stickyLoadDependency in stickyLoadDependencies) {
-                    if (stickyLoadDependency.relocation != null) {
-                        val splitted = stickyLoadDependency.relocation.split(".")
-                        relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
+                    for (stickyLoadDependency in stickyLoadDependencies) {
+                        if (stickyLoadDependency.relocation != null) {
+                            val splitted = stickyLoadDependency.relocation.split(".")
+                            relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
+                        }
                     }
                 }
                 mergeServiceFiles()

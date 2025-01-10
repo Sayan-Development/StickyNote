@@ -24,7 +24,14 @@ public abstract class StickyNoteLoader {
 
     private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
 
+    protected StickyNoteLoader() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+    }
+
     protected abstract void onComplete();
+
+
+    Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
+    Boolean relocate = (Boolean) stickyNotes.getField("RELOCATE").get(stickyNotes);
 
     public void load(String id, File dataDirectory, Logger logger, LibraryManager libraryManager) {
         File libFolder = generateLibDirectory(dataDirectory);
@@ -39,7 +46,6 @@ public abstract class StickyNoteLoader {
         long startTime = System.currentTimeMillis();
 
         try {
-            Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
             List<Dependency> dependencies = getDependencies(stickyNotes);
             List<String> repositories = getRepositories(stickyNotes);
 
@@ -54,7 +60,7 @@ public abstract class StickyNoteLoader {
 //            relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
 
-            DependencyCache dependencyCache = new DependencyCache(libFolder);
+            DependencyCache dependencyCache = new DependencyCache(id, libFolder);
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
@@ -254,9 +260,11 @@ public abstract class StickyNoteLoader {
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion());
 
-        if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
-            for (Map.Entry<String, String> relocation : relocations.entrySet()) {
-                libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
+        if (relocate) {
+            if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
+                for (Map.Entry<String, String> relocation : relocations.entrySet()) {
+                    libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
+                }
             }
         }
         return libraryBuilder;

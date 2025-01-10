@@ -17,11 +17,12 @@ public class StickyNoteBukkitLoader extends StickyNoteLoader {
 
     public JavaPlugin javaPlugin;
 
-    public StickyNoteBukkitLoader(JavaPlugin javaPlugin) {
+    public StickyNoteBukkitLoader(JavaPlugin javaPlugin) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         this(javaPlugin, false);
     }
 
-    public StickyNoteBukkitLoader(JavaPlugin javaPlugin, boolean reloadStickyNote) {
+    public StickyNoteBukkitLoader(JavaPlugin javaPlugin, boolean reloadStickyNote) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
+        super();
         this.javaPlugin = javaPlugin;
 
         File dataFolder = javaPlugin.getDataFolder();

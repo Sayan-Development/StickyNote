@@ -15,6 +15,8 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
 
     abstract val loaderVersion: Property<String>
 
+    abstract val relocate: Property<Boolean>
+
     abstract val relocation: Property<Pair<String, String>>
 
     abstract val useKotlin: Property<Boolean>
@@ -24,12 +26,17 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         loaderVersion.convention("0.0.0")
         modules.convention(listOf())
         basePackage.convention(project.group.toString())
+        relocate.convention(true)
         relocation.convention("org.sayandev.stickynote" to "${project.rootProject.group}.${project.rootProject.name.lowercase()}")
         useKotlin.convention(false)
     }
 
     fun outputDirectory(outputDirectory: Any) {
         this.outputDirectory.set(project.file(outputDirectory))
+    }
+
+    fun relocate(relocate: Boolean) {
+        this.relocate.set(relocate)
     }
 
     fun useKotlin(useKotlin: Boolean) {

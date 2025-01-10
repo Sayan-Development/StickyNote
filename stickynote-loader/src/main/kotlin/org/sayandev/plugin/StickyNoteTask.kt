@@ -26,6 +26,9 @@ abstract class StickyNoteTask : DefaultTask() {
     abstract val relocation: Property<Pair<String, String>>
 
     @get:Input
+    abstract val relocate: Property<Boolean>
+
+    @get:Input
     abstract val useKotlin: Property<Boolean>
 
     @get:Input
@@ -49,7 +52,7 @@ abstract class StickyNoteTask : DefaultTask() {
             }
         }
 
-        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocation.get(), stickyLoadDependencies.get())
+        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()
         classGenerator.generateStickyNotesClass()

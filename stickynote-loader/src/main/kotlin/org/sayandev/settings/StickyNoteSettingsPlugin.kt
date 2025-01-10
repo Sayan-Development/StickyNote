@@ -7,7 +7,6 @@ import org.gradle.kotlin.dsl.maven
 class StickyNoteSettingsPlugin : Plugin<Settings> {
 
     override fun apply(settings: Settings) {
-
         val pluginVersion = this::class.java.`package`.implementationVersion
             ?: throw IllegalStateException("Cannot determine the plugin version")
 

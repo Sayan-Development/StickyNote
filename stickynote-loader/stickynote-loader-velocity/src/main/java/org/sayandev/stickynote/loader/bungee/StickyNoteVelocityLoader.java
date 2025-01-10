@@ -23,11 +23,12 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
     private final Path dataDirectory;
     private final SuspendingPluginContainer suspendingPluginContainer;
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory) {
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         this(plugin, id, server, logger, dataDirectory, null);
     }
 
-    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) {
+    public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
+        super();
         this.plugin = plugin;
         this.id = id;
         this.server = server;

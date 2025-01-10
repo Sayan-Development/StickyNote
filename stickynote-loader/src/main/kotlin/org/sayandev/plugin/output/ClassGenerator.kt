@@ -22,6 +22,7 @@ class ClassGenerator(
     val project: Project,
     val outputDir: Directory,
     val modules: List<ModuleConfiguration>,
+    val relocate: Boolean,
     val relocation: Pair<String, String>,
     val stickyLoadDependencies: List<StickyLoadDependency>
 ) {
@@ -40,6 +41,10 @@ class ClassGenerator(
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .initializer("\$S", kotlinVersion)
                     .build())*/
+                .addField(FieldSpec.builder(Boolean::class.java, "RELOCATE")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                    .initializer("\$L", relocate)
+                    .build())
                 .addField(FieldSpec.builder(JClassName.get(basePackage, "Relocation"), "RELOCATION")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .initializer("new Relocation(\$S, \$S)", relocation.first.replace(".", "{}"), relocation.second.replace(".", "{}"))

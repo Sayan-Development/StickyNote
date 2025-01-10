@@ -6,11 +6,14 @@ import java.util.Set;
 
 public class DependencyCache {
 
-    private static final String CACHE_FILE_NAME = "dependency_cache.dat";
+    private final String project;
+    private final String cacheFileName;
     private final File cacheFile;
 
-    public DependencyCache(File dataFolder) {
-        this.cacheFile = new File(dataFolder, CACHE_FILE_NAME);
+    public DependencyCache(String project, File dataFolder) {
+        this.project = project;
+        this.cacheFileName = "dependency_cache_" + project + ".dat";
+        this.cacheFile = new File(dataFolder, cacheFileName);
     }
 
     public Set<Dependency> loadCache() {
