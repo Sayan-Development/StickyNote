@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.loader.bungee;
+package org.sayandev.stickynote.loader.velocity;
 
 import com.alessiodp.libby.LibraryManager;
 import com.alessiodp.libby.VelocityLibraryManager;
@@ -8,11 +8,7 @@ import org.sayandev.loader.common.StickyNoteLoader;
 import org.sayandev.stickynote.velocity.WrappedStickyNotePlugin;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 
 public class StickyNoteVelocityLoader extends StickyNoteLoader {
 

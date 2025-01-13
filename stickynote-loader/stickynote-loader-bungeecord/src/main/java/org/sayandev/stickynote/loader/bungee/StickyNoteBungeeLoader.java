@@ -7,9 +7,6 @@ import org.sayandev.loader.common.StickyNoteLoader;
 import org.sayandev.stickynote.bungeecord.WrappedStickyNotePlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Comparator;
 import java.util.logging.Logger;
 
 public class StickyNoteBungeeLoader extends StickyNoteLoader {
