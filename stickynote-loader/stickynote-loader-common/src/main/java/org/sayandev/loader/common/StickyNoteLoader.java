@@ -57,14 +57,12 @@ public abstract class StickyNoteLoader {
 
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libFolder.toPath());
 
-//            relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
 
             DependencyCache dependencyCache = new DependencyCache(id, libFolder);
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
             Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
 
-            // Don't care about duplication in cachedDependency and missingDependency loop duplication. it works with mcauth and i'm too afraid to change anything now. I need my sanity.
             for (Dependency cachedDependency : dependencies) {
                 if (cachedDependency.getName().equals("sqlite-jdbc")) {
                     try {
@@ -86,14 +84,11 @@ public abstract class StickyNoteLoader {
                     continue;
                 }
                 if (name.contains("adventure")) {
-//                    relocations.put("net{}kyori{}adventure{}text{}serializer", relocationTo + "{}lib{}adventure{}text{}serializer");
-//                    relocations.put("net{}kyori{}option", relocationTo + "{}lib{}adventure{}option");
                     continue;
                 }
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
-//                relocations.put("org.sqlite", relocationTo + "{}lib{}sqlite");
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");
@@ -113,8 +108,24 @@ public abstract class StickyNoteLoader {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            executorService.shutdown();
-            scheduler.shutdown();
+            shutdownExecutors();
+        }
+    }
+
+    private void shutdownExecutors() {
+        executorService.shutdown();
+        scheduler.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+            if (!scheduler.awaitTermination(60, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 

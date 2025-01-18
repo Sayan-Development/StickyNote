@@ -152,6 +152,7 @@ implementation-core = [
     "sqlite-jdbc",
 #    "h2",
     "mariadb",
+    "jedis"
 ]
 implementation-bukkit = [
     "cloud-paper",

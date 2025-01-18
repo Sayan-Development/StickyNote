@@ -16,7 +16,7 @@ abstract class Publisher<P, S>(
         return "$namespace:$name"
     }
 
-    fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
+    open fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         val deferred = CompletableDeferred<S>()
         payloads[payloadWrapper.uniqueId] = deferred
 

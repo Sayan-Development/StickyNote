@@ -4,7 +4,6 @@ import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
-import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
@@ -32,7 +31,7 @@ fun commandManager(): VelocityCommandManager<VelocitySender> {
     return manager
 }
 
-abstract class BukkitCommand(
+abstract class VelocityCommand(
     name: String,
     vararg aliases: String
 ) : Command<VelocitySender>(
