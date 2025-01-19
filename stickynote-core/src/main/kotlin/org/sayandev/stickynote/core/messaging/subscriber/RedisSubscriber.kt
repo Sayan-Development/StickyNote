@@ -7,14 +7,13 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
-import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import java.util.*
 
 abstract class RedisSubscriber<P, S>(
     val dispatcher: CoroutineDispatcher,
-    val publisherRedis: Jedis,
-    val redis: Jedis,
+    val redis: JedisPool,
     namespace: String,
     name: String,
     val payloadClass: Class<P>
@@ -41,7 +40,7 @@ abstract class RedisSubscriber<P, S>(
                                 )
                             result.invokeOnCompletion {
                                 Thread {
-                                    redis.publish(
+                                    redis.resource.publish(
                                         channel.toByteArray(),
                                         PayloadWrapper(
                                             payloadWrapper.uniqueId,
@@ -63,7 +62,7 @@ abstract class RedisSubscriber<P, S>(
                                 )
                             if (payloadWrapper.target == "PROCESSED") return@launch
                             result?.invokeOnCompletion {
-                                publisherRedis.publish(
+                                redis.resource.publish(
                                     channel.toByteArray(),
                                     PayloadWrapper(
                                         payloadWrapper.uniqueId,
@@ -73,7 +72,7 @@ abstract class RedisSubscriber<P, S>(
                                     ).asJson().toByteArray()
                                 )
                             } ?: let {
-                                publisherRedis.publish(
+                                redis.resource.publish(
                                     channel.toByteArray(),
                                     PayloadWrapper(
                                         payloadWrapper.uniqueId,
@@ -91,7 +90,7 @@ abstract class RedisSubscriber<P, S>(
             }
         }
         Thread {
-            redis.subscribe(pubSub, channel)
+            redis.resource.subscribe(pubSub, channel)
         }.start()
     }
 

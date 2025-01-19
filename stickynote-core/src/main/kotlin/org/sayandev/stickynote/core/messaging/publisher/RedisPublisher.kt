@@ -5,12 +5,13 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPooled
 import redis.clients.jedis.JedisPubSub
 import java.util.logging.Logger
 
 abstract class RedisPublisher<P, S>(
-    val publisherRedis: Jedis,
-    val subscriberRedis: Jedis,
+    val redis: JedisPool,
     namespace: String,
     name: String,
     val resultClass: Class<S>,
@@ -44,13 +45,13 @@ abstract class RedisPublisher<P, S>(
             }
         }
         Thread {
-            subscriberRedis.subscribe(pubSub, channel)
+            redis.resource.subscribe(pubSub, channel)
         }.start()
     }
 
     override fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         Thread {
-            publisherRedis.publish(channel.toByteArray(), payloadWrapper.asJson().toByteArray())
+            redis.resource.publish(channel.toByteArray(), payloadWrapper.asJson().toByteArray())
         }.start()
         return super.publish(payloadWrapper)
     }
