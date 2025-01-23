@@ -30,14 +30,10 @@ abstract class Config(
     @Transient var yaml = builder.build()
     @Transient var config = yaml.load(generateOptions(serializers))
 
-    fun load() {
-        save()
-        reload()
-    }
-
     open fun save() {
         createFile()
 
+        updateSerializers()
         config.set(this)
         yaml.save(config)
     }
@@ -51,10 +47,9 @@ abstract class Config(
         return false
     }
 
-    open fun reload() {
+    open fun updateSerializers() {
         yaml = builder.defaultOptions(generateOptions(serializers)).build()
         config = yaml.load(generateOptions(serializers))
-        config.set(this)
     }
 
     companion object {
@@ -64,6 +59,8 @@ abstract class Config(
                 .shouldCopyDefaults(true)
                 .serializers { builder ->
                     builder.registerAnnotatedObjects(objectMapperFactory())
+//                    builder.registerAll(TypeSerializerCollection.defaults())
+                    builder.register(Enum::class.java, EnumSerializer())
                     if (serializers != null) {
                         builder.registerAll(serializers)
                     }
@@ -77,27 +74,32 @@ abstract class Config(
                 .defaultOptions { defaultOptions ->
                     generateOptions(serializers)
                 }
+                .commentsEnabled(true)
                 .file(file)
             return yaml
         }
 
         @JvmStatic
         inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
+            if (!file.exists()) return null
             return getConfigBuilder(file, serializers).build().load().get(T::class.java)
         }
 
         @JvmStatic
         fun <T> fromConfigWithClass(file: File, type: Class<*>, serializers: TypeSerializerCollection?): T? {
+            if (!file.exists()) return null
             return getConfigBuilder(file, serializers).build().load().get(type) as T
         }
 
         @JvmStatic
         fun getConfigFromFile(file: File): CommentedConfigurationNode? {
+            if (!file.exists()) return null
             return getConfigBuilder(file, null).build().load()
         }
 
         @JvmStatic
         fun getConfigFromFile(file: File, serializers: TypeSerializerCollection?): CommentedConfigurationNode? {
+            if (!file.exists()) return null
             return getConfigBuilder(file, serializers).build().load()
         }
 

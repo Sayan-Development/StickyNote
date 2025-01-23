@@ -108,24 +108,8 @@ public abstract class StickyNoteLoader {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            shutdownExecutors();
-        }
-    }
-
-    private void shutdownExecutors() {
-        executorService.shutdown();
-        scheduler.shutdown();
-        try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
-            if (!scheduler.awaitTermination(60, TimeUnit.SECONDS)) {
-                scheduler.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-            scheduler.shutdownNow();
-            Thread.currentThread().interrupt();
+            executorService.shutdown();
+            scheduler.shutdown();
         }
     }
 

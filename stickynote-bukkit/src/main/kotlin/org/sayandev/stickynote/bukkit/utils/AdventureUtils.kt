@@ -2,8 +2,11 @@ package org.sayandev.stickynote.bukkit.utils
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
@@ -11,11 +14,20 @@ import org.sayandev.stickynote.bukkit.plugin
 
 object AdventureUtils {
 
+    private var options = Options.defaultOptions()
+
+    @JvmStatic
+    fun setOptions(options: Options) {
+        this.options = options
+    }
+
     @JvmStatic
     val audience = BukkitAudiences.create(plugin)
 
     @JvmStatic
     var miniMessage = MiniMessage.miniMessage()
+    @JvmStatic
+    var legacyAmpersandSerializer = LegacyComponentSerializer.legacyAmpersand()
 
     fun setTagResolver(vararg tagResolver: TagResolver) {
         miniMessage = MiniMessage.builder().tags(TagResolver.resolver(TagResolver.standard(), *tagResolver)).build()
@@ -33,7 +45,8 @@ object AdventureUtils {
 
     @JvmStatic
     fun toComponent(content: String, vararg placeholder: TagResolver): Component {
-        return miniMessage.deserialize(content, *placeholder)
+        val component = miniMessage.deserialize(content, *placeholder)
+        return if (options.removeStartingItalic) Component.empty().decoration(TextDecoration.ITALIC, false).append(component) else component
     }
 
     @JvmStatic
@@ -47,5 +60,27 @@ object AdventureUtils {
 
     fun String.component(player: Player?, vararg placeholder: TagResolver): Component {
         return toComponent(player, this, *placeholder)
+    }
+
+    fun Component.legacyString(): String {
+        return legacyAmpersandSerializer.serialize(this)
+    }
+
+    fun String.legacyColored(): String {
+        return ChatColor.translateAlternateColorCodes('&', this)
+    }
+
+    fun Component.legacyColored(): String {
+        return this.legacyString().legacyColored()
+    }
+
+    data class Options(
+        val removeStartingItalic: Boolean = true
+    ) {
+        companion object {
+            fun defaultOptions(): Options {
+                return Options()
+            }
+        }
     }
 }
