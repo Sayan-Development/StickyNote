@@ -4,6 +4,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.serialize.TypeSerializerCollection
+import org.spongepowered.configurate.util.MapFactories
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
@@ -16,6 +17,10 @@ abstract class Config(
     @Transient val serializers: TypeSerializerCollection = generateOptions(null).serializers()
 ) {
 
+    init {
+        register(this)
+    }
+
     @Transient val file = File(directory, name)
 
     constructor(directory: File, name: String, serializers: TypeSerializerCollection?) : this(
@@ -27,13 +32,13 @@ abstract class Config(
     constructor(directory: File, name: String) : this(directory, name, null)
     constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name, null)
 
-    @Transient var yaml = builder.build()
+    @Transient var yaml = builder.defaultOptions(generateOptions(serializers)).build()
     @Transient var config = yaml.load(generateOptions(serializers))
 
     open fun save() {
         createFile()
 
-        updateSerializers()
+        update()
         config.set(this)
         yaml.save(config)
     }
@@ -47,12 +52,22 @@ abstract class Config(
         return false
     }
 
-    open fun updateSerializers() {
+    open fun update() {
         yaml = builder.defaultOptions(generateOptions(serializers)).build()
         config = yaml.load(generateOptions(serializers))
     }
 
     companion object {
+        val registeredConfigurations = mutableMapOf<String, Config>()
+
+        fun register(config: Config) {
+            registeredConfigurations[config.name] = config
+        }
+
+        fun unregister(config: Config) {
+            registeredConfigurations.remove(config.name)
+        }
+
         @JvmStatic
         fun generateOptions(serializers: TypeSerializerCollection?): ConfigurationOptions {
             return ConfigurationOptions.defaults()
@@ -71,9 +86,7 @@ abstract class Config(
         fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
                 .nodeStyle(NodeStyle.BLOCK)
-                .defaultOptions { defaultOptions ->
-                    generateOptions(serializers)
-                }
+                .defaultOptions(generateOptions(serializers))
                 .commentsEnabled(true)
                 .file(file)
             return yaml
@@ -82,7 +95,12 @@ abstract class Config(
         @JvmStatic
         inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
             if (!file.exists()) return null
-            return getConfigBuilder(file, serializers).build().load().get(T::class.java)
+            val yaml = getConfigBuilder(file, serializers).build()
+            val config = yaml.load()
+            val result = config.get(T::class.java)
+            config.set(result)
+            yaml.save(config)
+            return result
         }
 
         @JvmStatic
