@@ -1,5 +1,7 @@
 > [!WARNING]  
 > **StickyNote is not as documented as it should be. Use it only if you're willing to dive into the source code yourself.**
+>
+> Example of a plugin made using StickyNote: https://github.com/Syrent/SayanVanish
 
 # What is StickyNote?
 
