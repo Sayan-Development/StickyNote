@@ -73,17 +73,17 @@ abstract class MySQLExecutor(
             if (queries.isEmpty()) continue
 
             val removedQueries: MutableSet<Query> = HashSet()
-            for (query in queries) {
-                if (query.statusCode == StatusCode.FINISHED.code) removedQueries.add(query)
+            for (query in queries.filter { it.statusCode == StatusCode.FINISHED }.toList()) {
+                removedQueries.add(query)
             }
             queries.removeAll(removedQueries)
             queue[priority]!!.removeAll(removedQueries)
 
             for (query in queries) {
-                if (query.hasDoneRequirements() && query.statusCode != StatusCode.RUNNING.code) {
-                    query.statusCode = StatusCode.RUNNING.code
+                if (query.hasDoneRequirements() && query.statusCode != StatusCode.RUNNING) {
+                    query.statusCode = StatusCode.RUNNING
 
-                    executeQuery(query).whenComplete { statusCode: Int, error: Throwable? ->
+                    executeQuery(query).whenComplete { statusCode: StatusCode, error: Throwable? ->
                         error?.printStackTrace()
 
                         query.statusCode = statusCode
@@ -142,10 +142,10 @@ abstract class MySQLExecutor(
         }
     }
 
-    private fun executeQuery(query: Query): CompletableFuture<Int> {
-        val completableFuture = CompletableFuture<Int>()
+    private fun executeQuery(query: Query): CompletableFuture<StatusCode> {
+        val completableFuture = CompletableFuture<StatusCode>()
 
-        val runnable = Runnable { completableFuture.complete(executeQuerySync(query).statusCode.code) }
+        val runnable = Runnable { completableFuture.complete(executeQuerySync(query).statusCode) }
 
         threadPool.submit(runnable)
 

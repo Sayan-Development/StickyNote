@@ -15,7 +15,7 @@ class Query private constructor(val statement: String) {
     var failedAttempts: Int = 0
         private set
 
-    var statusCode: Int = StatusCode.NOT_STARTED.code
+    var statusCode: StatusCode = StatusCode.NOT_STARTED
 
     fun addRequirement(query: Query): Query {
         requirements.add(query)
@@ -43,7 +43,7 @@ class Query private constructor(val statement: String) {
     fun hasDoneRequirements(): Boolean {
         var hasDoneRequirements = true
         for (query in requirements) {
-            if (query.statusCode != StatusCode.FINISHED.code) {
+            if (query.statusCode != StatusCode.FINISHED) {
                 hasDoneRequirements = false
                 break
             }
@@ -72,11 +72,11 @@ class Query private constructor(val statement: String) {
         return preparedStatement
     }
 
-    enum class StatusCode(val code: Int) {
-        NOT_STARTED(-1),
-        RUNNING(0),
-        FAILED(1),
-        FINISHED(2)
+    enum class StatusCode {
+        NOT_STARTED,
+        RUNNING,
+        FAILED,
+        FINISHED
     }
 
     companion object {
