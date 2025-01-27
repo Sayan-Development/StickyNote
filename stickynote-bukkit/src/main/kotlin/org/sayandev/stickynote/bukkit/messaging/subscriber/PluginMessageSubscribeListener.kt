@@ -7,6 +7,7 @@ import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asOptionalPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher.Companion.HANDLER_LIST
@@ -42,8 +43,11 @@ class PluginMessageSubscribeListener<P, S>(
             PayloadWrapper.State.RESPOND -> {
                 for (publisher in HANDLER_LIST.filterIsInstance<PluginMessagePublisher<P, S>>()) {
                     if (publisher.id() == channel) {
+                        val handle = String(data).asOptionalPayloadWrapper<P>()?.typedPayload(payloadClass)?.let { publisher.handle(it) }
                         publisher.payloads[result.uniqueId]?.apply {
-                            this.complete(result.typedPayload(resultClass))
+                            if (handle != null) {
+                                this.complete(result.typedPayload(resultClass))
+                            }
                             publisher.payloads.remove(result.uniqueId)
                         } ?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}")
                     }

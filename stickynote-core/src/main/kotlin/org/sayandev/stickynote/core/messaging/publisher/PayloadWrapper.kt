@@ -18,7 +18,7 @@ data class PayloadWrapper<P>(
     enum class State {
         PROXY,
         FORWARD,
-        RESPOND
+        RESPOND,
     }
 
     companion object {
@@ -69,6 +69,12 @@ data class PayloadWrapper<P>(
 
         fun <P> String.asPayloadWrapper(): PayloadWrapper<P> {
             return gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)
+        }
+
+        fun <P> String.asOptionalPayloadWrapper(): PayloadWrapper<P>? {
+            return try {
+                gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)
+            } catch (_: Exception) { null }
         }
 
         fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {

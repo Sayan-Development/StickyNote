@@ -61,7 +61,7 @@ abstract class PluginMessagePublisher<P, S>(
                         publisher.payloads[result.uniqueId]?.apply {
                             this.complete(result.typedPayload(resultClass))
                             publisher.payloads.remove(result.uniqueId)
-                        } /*?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}")*/
+                        } ?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}") // throws exception if the payload doesn't belong to this server
                     }
                 }
             }
