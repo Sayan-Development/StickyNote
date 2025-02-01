@@ -1,27 +1,33 @@
 package org.sayandev.stickynote.core.messaging.publisher
 
-import kotlinx.coroutines.CompletableDeferred
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPooled
-import redis.clients.jedis.JedisPubSub
-import java.util.logging.Logger
+import com.google.common.util.concurrent.ThreadFactoryBuilder
+import kotlinx.coroutines.CompletableDeferred;
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson;
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper;
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPubSub;
+import java.util.*
+import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 abstract class RedisPublisher<P, S>(
     val redis: JedisPool,
     namespace: String,
     name: String,
     val resultClass: Class<S>,
-    logger: Logger,
+    logger: Logger
 ) : Publisher<P, S>(
     logger,
     namespace,
     name
 ) {
     val channel = "$namespace:$name"
+
+    private val subJedis = redis.resource
+    private val pubJedis = redis.resource
+    private val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("redis-pub-pub-thread-${channel}-%d").build())
+    private val TIMEOUT_SECONDS = 5L
 
     init {
         val pubSub = object : JedisPubSub() {
@@ -43,16 +49,27 @@ abstract class RedisPublisher<P, S>(
                     else -> {}
                 }
             }
-        }
-        Thread {
-            redis.resource.subscribe(pubSub, channel)
-        }.start()
+        };
+        Thread({ subJedis.subscribe(pubSub, channel) }, "redis-pub-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}").start()
     }
 
     override fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
-        Thread {
-            redis.resource.publish(channel.toByteArray(), payloadWrapper.asJson().toByteArray())
-        }.start()
+        val future = executor.submit<Boolean> {
+            pubJedis.publish(channel.toByteArray(), payloadWrapper.asJson().toByteArray());
+            return@submit true;
+        }
+
+        try {
+            if (!future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.warning("failed to publish payload `${payloadWrapper}` within $TIMEOUT_SECONDS seconds.")
+            }
+        } catch (e: TimeoutException) {
+            logger.warning("failed to publish payload `${payloadWrapper}` after $TIMEOUT_SECONDS seconds. (timed-out)")
+            future.cancel(true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         return super.publish(payloadWrapper)
     }
 
