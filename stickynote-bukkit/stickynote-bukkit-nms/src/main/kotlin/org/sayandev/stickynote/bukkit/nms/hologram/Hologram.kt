@@ -6,15 +6,15 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.sayandev.stickynote.bukkit.extension.toVector3
 import org.sayandev.stickynote.bukkit.nms.Viewable
-import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
 import java.util.UUID
 
 class Hologram(
-    val lines: MutableList<HoloLine>,
+    lines: List<HoloLine>,
     private var location: Location
 ): Viewable() {
 
+    private val lines = lines.toMutableList()
     private val lineLocations: MutableMap<UUID, Location> = mutableMapOf()
 
     init {
