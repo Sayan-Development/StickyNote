@@ -201,7 +201,7 @@ object NMSUtils {
     }
 
     fun setPlayerCamera(player: Player, nmsEntity: Any) {
-        ServerPlayerAccessor.METHOD_SET_CAMERA!!.invoke(getServerPlayer(player!!), nmsEntity)
+        ServerPlayerAccessor.METHOD_SET_CAMERA!!.invoke(getServerPlayer(player), nmsEntity)
     }
 
     fun getPlayerUseItem(player: Player): ItemStack? {
@@ -285,7 +285,7 @@ object NMSUtils {
         val nmsSign: Any = getNmsSign(sign)
 
         if (ServerVersion.supports(20)) {
-            val result = SignBlockEntityAccessor.METHOD_UPDATE_TEXT!!.invoke(
+            SignBlockEntityAccessor.METHOD_UPDATE_TEXT!!.invoke(
                 nmsSign,
                 UnaryOperator { signText: Any ->
                     val updatedText = SignTextAccessor.METHOD_SET_MESSAGE!!.invoke(
@@ -295,7 +295,7 @@ object NMSUtils {
                             .serialize(component)
                     )
                     updatedText
-                } as UnaryOperator<Any>,
+                },
                 isFront
             )
         } else if (ServerVersion.supports(13)) {
@@ -481,9 +481,6 @@ object NMSUtils {
         return CRAFT_BLOCK_STATE_GET_HANDLE_METHOD.getOrThrow().invoke(null, blockState)
     }
 
-    /**
-     * @apiNote >= 1.9, For 1.8 use [me.mohamad82.ruom.utils.SoundGroupUtils.getBlockSound]
-     */
     /*TODO SoundGroupUtils
     fun getSoundGroup(material: Material?): SoundGroup? {
         try {
