@@ -274,7 +274,7 @@ object NMSUtils {
     }
 
     fun getEntityDataAccessorId(entityDataAccessor: Any): Int {
-        if (entityDataAccessor.javaClass != EntityDataAccessorAccessor.TYPE!!) return -1
+        if (entityDataAccessor.javaClass != EntityDataAccessorAccessor.TYPE) return -1
         return EntityDataAccessorAccessor.METHOD_GET_ID!!.invoke(entityDataAccessor) as Int
     }
 
@@ -430,7 +430,7 @@ object NMSUtils {
     }
 
     fun playSound(player: Player, soundEvent: Any, volume: Float, pitch: Float) {
-        require(soundEvent.javaClass == SoundEventAccessor.TYPE!!) { "Sound must be a SoundEvent object" }
+        require(soundEvent.javaClass == SoundEventAccessor.TYPE) { "Sound must be a SoundEvent object" }
         PlayerAccessor.METHOD_PLAY_SOUND!!.invoke(getServerPlayer(player), soundEvent, volume, pitch)
     }
 
@@ -558,8 +558,8 @@ object NMSUtils {
             "Boolean" -> EntityDataSerializersAccessor.FIELD_BOOLEAN!!
             else -> {
                 when (any.javaClass) {
-                    ComponentAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_COMPONENT!!
-                    PoseAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_POSE!!
+                    ComponentAccessor.TYPE -> EntityDataSerializersAccessor.FIELD_COMPONENT!!
+                    PoseAccessor.TYPE -> EntityDataSerializersAccessor.FIELD_POSE!!
                     else -> throw IllegalArgumentException("Unknown data type: ${any.javaClass.simpleName}")
                 }
             }
