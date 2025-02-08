@@ -201,7 +201,7 @@ object NMSUtils {
     }
 
     fun setPlayerCamera(player: Player, nmsEntity: Any) {
-        ServerPlayerAccessor.METHOD_SET_CAMERA!!.invoke(getServerPlayer(player!!), nmsEntity)
+        ServerPlayerAccessor.METHOD_SET_CAMERA!!.invoke(getServerPlayer(player), nmsEntity)
     }
 
     fun getPlayerUseItem(player: Player): ItemStack? {
@@ -274,7 +274,7 @@ object NMSUtils {
     }
 
     fun getEntityDataAccessorId(entityDataAccessor: Any): Int {
-        if (entityDataAccessor.javaClass != EntityDataAccessorAccessor.TYPE!!) return -1
+        if (entityDataAccessor.javaClass != EntityDataAccessorAccessor.TYPE) return -1
         return EntityDataAccessorAccessor.METHOD_GET_ID!!.invoke(entityDataAccessor) as Int
     }
 
@@ -285,7 +285,7 @@ object NMSUtils {
         val nmsSign: Any = getNmsSign(sign)
 
         if (ServerVersion.supports(20)) {
-            val result = SignBlockEntityAccessor.METHOD_UPDATE_TEXT!!.invoke(
+            SignBlockEntityAccessor.METHOD_UPDATE_TEXT!!.invoke(
                 nmsSign,
                 UnaryOperator { signText: Any ->
                     val updatedText = SignTextAccessor.METHOD_SET_MESSAGE!!.invoke(
@@ -295,7 +295,7 @@ object NMSUtils {
                             .serialize(component)
                     )
                     updatedText
-                } as UnaryOperator<Any>,
+                },
                 isFront
             )
         } else if (ServerVersion.supports(13)) {
@@ -430,7 +430,7 @@ object NMSUtils {
     }
 
     fun playSound(player: Player, soundEvent: Any, volume: Float, pitch: Float) {
-        require(soundEvent.javaClass == SoundEventAccessor.TYPE!!) { "Sound must be a SoundEvent object" }
+        require(soundEvent.javaClass == SoundEventAccessor.TYPE) { "Sound must be a SoundEvent object" }
         PlayerAccessor.METHOD_PLAY_SOUND!!.invoke(getServerPlayer(player), soundEvent, volume, pitch)
     }
 
@@ -481,9 +481,6 @@ object NMSUtils {
         return CRAFT_BLOCK_STATE_GET_HANDLE_METHOD.getOrThrow().invoke(null, blockState)
     }
 
-    /**
-     * @apiNote >= 1.9, For 1.8 use [me.mohamad82.ruom.utils.SoundGroupUtils.getBlockSound]
-     */
     /*TODO SoundGroupUtils
     fun getSoundGroup(material: Material?): SoundGroup? {
         try {
@@ -558,8 +555,8 @@ object NMSUtils {
             "Boolean" -> EntityDataSerializersAccessor.FIELD_BOOLEAN!!
             else -> {
                 when (any.javaClass) {
-                    ComponentAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_COMPONENT!!
-                    PoseAccessor.TYPE!! -> EntityDataSerializersAccessor.FIELD_POSE!!
+                    ComponentAccessor.TYPE -> EntityDataSerializersAccessor.FIELD_COMPONENT!!
+                    PoseAccessor.TYPE -> EntityDataSerializersAccessor.FIELD_POSE!!
                     else -> throw IllegalArgumentException("Unknown data type: ${any.javaClass.simpleName}")
                 }
             }
