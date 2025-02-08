@@ -10,20 +10,24 @@ object PlaceholderAPIHook {
     var injectComponent: Boolean = false
     var sendWarningIfNotInstalled: Boolean = false
 
-    fun injectComponent() {
+    fun injectComponent(): PlaceholderAPIHook {
         this.injectComponent = true
+        return this
     }
 
-    fun injectComponent(injectComponent: Boolean) {
+    fun injectComponent(injectComponent: Boolean): PlaceholderAPIHook {
         this.injectComponent = injectComponent
+        return this
     }
 
-    fun sendWarningIfNotInstalled() {
+    fun sendWarningIfNotInstalled(): PlaceholderAPIHook {
         this.sendWarningIfNotInstalled = true
+        return this
     }
 
-    fun sendWarningIfNotInstalled(sendWarningIfNotInstalled: Boolean) {
+    fun sendWarningIfNotInstalled(sendWarningIfNotInstalled: Boolean): PlaceholderAPIHook {
         this.sendWarningIfNotInstalled = sendWarningIfNotInstalled
+        return this
     }
 
     fun injectPlaceholders(player: OfflinePlayer?, content: String): String {
