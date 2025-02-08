@@ -129,7 +129,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                            relocate("net.kyori.option", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.option")
                                 continue
                             }
-                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group.split(".").last()}")
+                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")
                         }
                     }
                     for (stickyLoadDependency in stickyLoadDependencies) {

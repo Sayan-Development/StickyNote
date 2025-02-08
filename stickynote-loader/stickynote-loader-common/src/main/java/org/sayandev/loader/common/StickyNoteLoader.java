@@ -90,6 +90,7 @@ public abstract class StickyNoteLoader {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
+                relocations.put("com.github.benmanes.caffeine", relocationTo + "{}lib{}caffeine");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
