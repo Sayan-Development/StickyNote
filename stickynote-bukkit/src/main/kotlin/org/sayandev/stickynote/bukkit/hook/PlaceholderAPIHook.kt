@@ -1,7 +1,7 @@
 package org.sayandev.stickynote.bukkit.hook
 
 import me.clip.placeholderapi.PlaceholderAPI
-import org.bukkit.entity.Player
+import org.bukkit.OfflinePlayer
 import org.sayandev.stickynote.bukkit.hasPlugin
 import org.sayandev.stickynote.bukkit.plugin
 
@@ -26,7 +26,7 @@ object PlaceholderAPIHook {
         this.sendWarningIfNotInstalled = sendWarningIfNotInstalled
     }
 
-    fun injectPlaceholders(player: Player?, content: String): String {
+    fun injectPlaceholders(player: OfflinePlayer?, content: String): String {
         var finalContent = content
         if (injectComponent) {
             if (sendWarningIfNotInstalled && !hasPlugin("PlaceholderAPI")) {
