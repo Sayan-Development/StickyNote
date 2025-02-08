@@ -24,16 +24,14 @@ object StickyNote {
         threadFactory
     )
 
-    @JvmStatic
-    fun isFolia(): Boolean = try {
+    val isFolia: Boolean = try {
         Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
         true
     } catch (e: Exception) {
         false
     }
 
-    @JvmStatic
-    fun isPaper(): Boolean = try {
+    val isPaper: Boolean = try {
         Class.forName("com.destroystokyo.paper.ParticleBuilder")
         true
     } catch (e: Exception) {
@@ -92,7 +90,7 @@ object StickyNote {
 
     @JvmStatic
     fun runSync(runnable: Runnable) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.globalRegionScheduler.runDelayed(plugin, {
                 runnable.run()
             }, 1)
@@ -103,7 +101,7 @@ object StickyNote {
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.globalRegionScheduler.runDelayed(plugin, {
                 runnable.run()
             }, delay)
@@ -114,7 +112,7 @@ object StickyNote {
 
     @JvmStatic
     fun runSync(runnable: Runnable, delay: Long, period: Long) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.globalRegionScheduler.runAtFixedRate(plugin, {
                 runnable.run()
             }, delay.coerceAtLeast(1), period)
@@ -125,7 +123,7 @@ object StickyNote {
 
     @JvmStatic
     fun runAsync(runnable: Runnable) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.asyncScheduler.runNow(plugin) {
                 runnable.run()
             }
@@ -136,7 +134,7 @@ object StickyNote {
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.asyncScheduler.runDelayed(plugin, { runnable.run() }, delay * 50, TimeUnit.MILLISECONDS)
         } else {
             plugin.server.scheduler.runTaskLaterAsynchronously(plugin, runnable, delay)
@@ -145,7 +143,7 @@ object StickyNote {
 
     @JvmStatic
     fun runAsync(runnable: Runnable, delay: Long, period: Long) {
-        if (isFolia()) {
+        if (isFolia) {
             plugin.server.asyncScheduler.runAtFixedRate(plugin, { runnable.run() }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
         } else {
             plugin.server.scheduler.runTaskTimerAsynchronously(plugin, runnable, delay, period)
@@ -208,7 +206,7 @@ object StickyNote {
 }
 
 fun dispatcher(async: Boolean = false): CoroutineContext {
-    return if (StickyNote.isFolia()) {
+    return if (StickyNote.isFolia) {
         FoliaDispatcher.get(async)
     } else {
         BukkitDispatcher.get(async)
