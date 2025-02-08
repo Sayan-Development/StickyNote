@@ -32,7 +32,7 @@ abstract class Config(
     constructor(directory: File, name: String) : this(directory, name, null)
     constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name, null)
 
-    @Transient var yaml = builder.defaultOptions(generateOptions(serializers)).build()
+    @Transient var yaml = builder.nodeStyle(NodeStyle.BLOCK).defaultOptions(generateOptions(serializers)).build()
     @Transient var config = yaml.load(generateOptions(serializers))
 
     open fun save() {
@@ -85,9 +85,9 @@ abstract class Config(
         @JvmStatic
         fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
+                .commentsEnabled(true)
                 .nodeStyle(NodeStyle.BLOCK)
                 .defaultOptions(generateOptions(serializers))
-                .commentsEnabled(true)
                 .file(file)
             return yaml
         }

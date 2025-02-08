@@ -12,7 +12,7 @@ class EnumSerializer : TypeSerializer<Enum<*>> {
         type: Type,
         node: ConfigurationNode
     ): Enum<*> {
-        return EnumLookup.lookupEnum(GenericTypeReflector.erase(type).asSubclass(Enum::class.java), node.string) as? Enum<*> ?: let {
+        return EnumLookup.lookupEnum(GenericTypeReflector.erase(type).asSubclass(Enum::class.java), node.string) ?: let {
             throw SerializationException(type, "Invalid enum constant provided, expected a value of enum, got ${node.string}")
         }
     }
