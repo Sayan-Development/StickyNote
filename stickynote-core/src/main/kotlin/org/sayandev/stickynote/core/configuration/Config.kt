@@ -32,7 +32,7 @@ abstract class Config(
     constructor(directory: File, name: String) : this(directory, name, null)
     constructor(directoryPath: Path, name: String) : this(directoryPath.toFile(), name, null)
 
-    @Transient var yaml = builder.nodeStyle(NodeStyle.BLOCK).defaultOptions(generateOptions(serializers)).build()
+    @Transient var yaml = builder.defaultOptions(generateOptions(serializers)).build()
     @Transient var config = yaml.load(generateOptions(serializers))
 
     open fun save() {
@@ -73,20 +73,23 @@ abstract class Config(
             return ConfigurationOptions.defaults()
                 .shouldCopyDefaults(true)
                 .serializers { builder ->
-                    builder.registerAnnotatedObjects(objectMapperFactory())
-//                    builder.registerAll(TypeSerializerCollection.defaults())
                     builder.register(Enum::class.java, EnumSerializer())
                     if (serializers != null) {
                         builder.registerAll(serializers)
                     }
+
+                    // Make sure to register defaults after custom serializers
+                    builder.registerAll(TypeSerializerCollection.defaults())
+                    builder.registerAnnotatedObjects(objectMapperFactory())
                 }
         }
 
         @JvmStatic
         fun getConfigBuilder(file: File, serializers: TypeSerializerCollection?): YamlConfigurationLoader.Builder {
             val yaml = YamlConfigurationLoader.builder()
-                .commentsEnabled(true)
+//                .commentsEnabled(true)
                 .nodeStyle(NodeStyle.BLOCK)
+                .indent(2)
                 .defaultOptions(generateOptions(serializers))
                 .file(file)
             return yaml
