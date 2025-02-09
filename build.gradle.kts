@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.8.9.22"
+    version = "1.8.9.23"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -31,6 +31,10 @@ allprojects {
         maven {
             name = "sayandev"
             url = uri("https://repo.sayandev.org/snapshots")
+        }
+        maven {
+            name = "sayandev"
+            url = uri("https://repo.sayandev.org/releases")
         }
         maven {
             name = "extendedclip"
