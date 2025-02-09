@@ -42,7 +42,7 @@ placeholderapi = "2.11.6"
 
 # bukkit - nms
 packetevents-spigot = "2.6.0"
-takenaka = "1.2.0"
+takenaka = "1.2.2"
 
 # proxy - velocity
 velocity = "3.3.0-SNAPSHOT"
@@ -118,6 +118,9 @@ adventure-platform-bungeecord = { group = "net.kyori", name = "adventure-platfor
 libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.ref = "libby" }
 mccoroutines-bungeecord-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-api", version.ref = "mccoroutines" }
 mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-core", version.ref = "mccoroutines" }
+
+[plugins]
+takenaka = { id = "me.kcra.takenaka.accessor", version.ref = "takenaka" }
 
 [bundles]
 kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]

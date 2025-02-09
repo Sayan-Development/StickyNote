@@ -11,7 +11,7 @@ import java.util.function.Function
 import java.util.function.UnaryOperator
 
 plugins {
-    id("me.kcra.takenaka.accessor") version "1.2.2"
+    alias(libs.plugins.takenaka)
 }
 
 repositories {
