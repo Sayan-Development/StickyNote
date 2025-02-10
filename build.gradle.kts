@@ -33,6 +33,10 @@ allprojects {
             url = uri("https://repo.sayandev.org/snapshots")
         }
         maven {
+            name = "sayandev"
+            url = uri("https://repo.sayandev.org/releases")
+        }
+        maven {
             name = "extendedclip"
             url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         }

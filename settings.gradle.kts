@@ -2,6 +2,8 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
 
+        // sayandev
+        maven("https://repo.sayandev.org/releases")
         // Takenaka
         maven("https://repo.screamingsandals.org/public")
         maven("https://repo.screamingsandals.org/snapshots")
