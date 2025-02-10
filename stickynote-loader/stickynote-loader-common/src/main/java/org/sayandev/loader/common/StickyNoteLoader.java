@@ -58,6 +58,7 @@ public abstract class StickyNoteLoader {
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libFolder.toPath());
 
             relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
+            relocations.put("com{}github{}benmanes{}caffeine", relocationTo + "{}lib{}caffeine");
 
             DependencyCache dependencyCache = new DependencyCache(id, libFolder);
             Set<Dependency> cachedDependencies = dependencyCache.loadCache();
@@ -90,7 +91,6 @@ public abstract class StickyNoteLoader {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
                 relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
-                relocations.put("com.github.benmanes.caffeine", relocationTo + "{}lib{}caffeine");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
@@ -259,6 +259,7 @@ public abstract class StickyNoteLoader {
         if (relocate) {
             if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
                 for (Map.Entry<String, String> relocation : relocations.entrySet()) {
+                    if (relocation.getKey() == "com{}github{}benmanes{}caffeine" && dependency.getName().toLowerCase().contains("mccoroutine")) continue;
                     libraryBuilder.relocate(relocation.getKey(), relocation.getValue());
                 }
             }

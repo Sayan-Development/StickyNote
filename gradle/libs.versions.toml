@@ -26,6 +26,7 @@ exposed = "0.53.0"
 libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.9.0-RC.2"
+caffeine = "3.2.0"
 
 # minecraft
 adventure-platform = "4.3.4"
@@ -80,6 +81,7 @@ exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.re
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -154,7 +156,8 @@ implementation-core = [
     "sqlite-jdbc",
 #    "h2",
     "mariadb",
-    "jedis"
+    "jedis",
+    "caffeine"
 ]
 implementation-bukkit = [
     "cloud-paper",

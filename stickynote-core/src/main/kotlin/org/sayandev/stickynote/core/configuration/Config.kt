@@ -9,6 +9,7 @@ import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
 import java.nio.file.Path
+import java.util.UUID
 
 abstract class Config(
     @Transient val directory: File,
@@ -73,14 +74,16 @@ abstract class Config(
             return ConfigurationOptions.defaults()
                 .shouldCopyDefaults(true)
                 .serializers { builder ->
+                    // Order of serializers matter!
+                    builder.registerAnnotatedObjects(objectMapperFactory())
                     builder.register(Enum::class.java, EnumSerializer())
+                    builder.register(UUID::class.java, UUIDSerializer())
                     if (serializers != null) {
                         builder.registerAll(serializers)
                     }
 
                     // Make sure to register defaults after custom serializers
                     builder.registerAll(TypeSerializerCollection.defaults())
-                    builder.registerAnnotatedObjects(objectMapperFactory())
                 }
         }
 
@@ -99,7 +102,7 @@ abstract class Config(
         inline fun <reified T> fromConfig(file: File, serializers: TypeSerializerCollection?): T? {
             if (!file.exists()) return null
             val yaml = getConfigBuilder(file, serializers).build()
-            val config = yaml.load()
+            val config = yaml.load(generateOptions(serializers))
             val result = config.get(T::class.java)
             config.set(result)
             yaml.save(config)

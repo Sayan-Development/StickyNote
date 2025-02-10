@@ -61,7 +61,7 @@ class ClassGenerator(
                         val bundleName = module.type.artifact.removePrefix("stickynote-")
                         val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
                         for (library in moduleBundleProvider.get()) {
-                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
+                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(library.module.group.replace("-", "_").replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                 .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
                                 .build())
