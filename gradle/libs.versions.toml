@@ -160,7 +160,7 @@ implementation-core = [
 #    "h2",
     "mariadb",
     "jedis",
-    "caffeine"
+#    "caffeine"
 ]
 implementation-bukkit = [
     "cloud-paper",

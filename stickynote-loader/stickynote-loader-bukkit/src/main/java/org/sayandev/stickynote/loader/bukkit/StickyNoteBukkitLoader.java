@@ -62,9 +62,9 @@ public class StickyNoteBukkitLoader extends StickyNoteLoader {
     private static LibraryManager getLibraryManager(JavaPlugin plugin) {
         if (plugin.getResource("paper-plugin.yml") != null) {
             plugin.getLogger().info("paper-plugin detected, using paper library loader...");
-            return new PaperLibraryManager(plugin, generateLibDirectory(plugin.getDataFolder().getParentFile()).getAbsolutePath());
+            return new PaperLibraryManager(plugin, new File(plugin.getDataFolder().getParentFile(), "stickynote").getAbsolutePath());
         } else {
-            return new BukkitLibraryManager(plugin, generateLibDirectory(plugin.getDataFolder().getParentFile()).getAbsolutePath());
+            return new BukkitLibraryManager(plugin, new File(plugin.getDataFolder().getParentFile(), "stickynote").getAbsolutePath());
         }
     }
 }

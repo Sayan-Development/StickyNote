@@ -8,6 +8,7 @@ import org.sayandev.loader.common.StickyNoteLoader;
 import org.sayandev.stickynote.velocity.WrappedStickyNotePlugin;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public class StickyNoteVelocityLoader extends StickyNoteLoader {
@@ -32,7 +33,7 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
         this.dataDirectory = dataDirectory;
         this.suspendingPluginContainer = suspendingPluginContainer;
 
-        LibraryManager libraryManager = new VelocityLibraryManager<>(plugin, logger, generateLibDirectory(dataDirectory.getParent().toFile()).toPath(), server.getPluginManager());
+        LibraryManager libraryManager = new VelocityLibraryManager<>(plugin, logger, new File(dataDirectory.getParent().toFile(), "stickynote").toPath(), server.getPluginManager());
         this.load(id, dataDirectory.toFile().getParentFile(), java.util.logging.Logger.getLogger(id), libraryManager);
     }
 

@@ -152,9 +152,7 @@ object PacketListenerManager: Listener {
     fun shutdown() {
         unregisterListener(this)
         onlinePlayers.forEach { player: Player ->
-            removePlayer(
-                player
-            )
+            removePlayer(player)
         }
     }
 }
