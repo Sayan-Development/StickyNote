@@ -142,7 +142,7 @@ implementation-core = [
     "configurate-extra-kotlin",
     "cloud-core",
     "cloud-kotlin-extensions",
-    "cloud-kotlin-coroutines",
+#    "cloud-kotlin-coroutines",
     "adventure-api",
     "adventure-text-minimessage",
     "adventure-text-serializer-gson",

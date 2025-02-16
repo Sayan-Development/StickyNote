@@ -4,7 +4,7 @@ dependencies {
     api(libs.configurate.extra.kotlin)
     api(libs.cloud.core)
     api(libs.cloud.kotlin.extensions)
-    api(libs.cloud.kotlin.coroutines)
+//    api(libs.cloud.kotlin.coroutines)
     api(libs.adventure.api)
     api(libs.adventure.text.minimessage)
     api(libs.adventure.text.serializer.gson)

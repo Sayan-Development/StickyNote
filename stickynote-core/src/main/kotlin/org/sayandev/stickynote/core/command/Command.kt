@@ -12,7 +12,9 @@ import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.suggestion.Suggestion
 import org.sayandev.stickynote.core.command.interfaces.CommandExtension
 import org.sayandev.stickynote.core.command.interfaces.SenderExtension
+import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
 import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.CoroutineContext
 
 abstract class Command<S: SenderExtension<*, *>>(
     val rootId: String,
@@ -56,6 +58,14 @@ abstract class Command<S: SenderExtension<*, *>>(
         val partedPermission = this.build().components()
         partedPermission.removeAt(0)
         permission("${rootId}.commands.${partedPermission.map { it.name() }.distinct().joinToString(".")}")
+    }
+
+    fun <S : Any> MutableCommandBuilder<S>.suspendingHandler(dispatcher: CoroutineContext, context: suspend (CommandContext<S>) -> Unit) {
+        this.handler {
+            launch(dispatcher) {
+                context(it)
+            }
+        }
     }
 }
 

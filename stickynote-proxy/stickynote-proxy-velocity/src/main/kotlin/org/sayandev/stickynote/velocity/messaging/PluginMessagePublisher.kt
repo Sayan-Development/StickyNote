@@ -25,7 +25,7 @@ abstract class PluginMessagePublisher<P, S>(
     name
 ) {
 
-    val channelIdentifier = MinecraftChannelIdentifier.create(namespace, name)
+    val channelIdentifier: MinecraftChannelIdentifier = MinecraftChannelIdentifier.create(namespace, name)
 
     init {
         registerChannel()
@@ -36,12 +36,12 @@ abstract class PluginMessagePublisher<P, S>(
         registerListener(this)
     }
 
-    fun publish(server: RegisteredServer, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
+    suspend fun publish(server: RegisteredServer, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         server.sendPluginMessage(channelIdentifier, payloadWrapper.asJson().toByteArray())
         return publish(payloadWrapper)
     }
 
-    fun publish(player: Player, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
+    suspend fun publish(player: Player, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         player.sendPluginMessage(channelIdentifier, payloadWrapper.asJson().toByteArray())
         return publish(payloadWrapper)
     }

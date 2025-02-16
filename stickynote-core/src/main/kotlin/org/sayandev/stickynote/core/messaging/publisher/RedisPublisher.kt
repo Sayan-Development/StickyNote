@@ -1,20 +1,24 @@
 package org.sayandev.stickynote.core.messaging.publisher
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder
-import kotlinx.coroutines.CompletableDeferred;
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson;
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper;
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPubSub;
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
+import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
+import org.sayandev.stickynote.core.messaging.subscriber.RedisSubscriber
+import org.sayandev.stickynote.core.utils.CoroutineUtils.awaitWithTimeout
+import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPubSub
 import java.util.*
-import java.util.concurrent.*;
-import java.util.logging.Logger;
+import java.util.logging.Logger
 
 abstract class RedisPublisher<P, S>(
+    val dispatcher: CoroutineDispatcher,
     val redis: JedisPool,
     namespace: String,
     name: String,
+    val payloadClass: Class<P>,
     val resultClass: Class<S>,
     logger: Logger
 ) : Publisher<P, S>(
@@ -26,8 +30,6 @@ abstract class RedisPublisher<P, S>(
 
     private val subJedis = redis.resource
     private val pubJedis = redis.resource
-    private val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("redis-pub-pub-thread-${channel}-%d").build())
-    private val TIMEOUT_SECONDS = 5L
 
     init {
         val pubSub = object : JedisPubSub() {
@@ -35,7 +37,28 @@ abstract class RedisPublisher<P, S>(
                 if (channel != this@RedisPublisher.channel) return
                 val result = message.asPayloadWrapper<S>()
                 when (result.state) {
+                    PayloadWrapper.State.FORWARD -> {
+                        val wrappedPayload = message.asPayloadWrapper<P>()
+                        println("Before ${HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.joinToString(", ")}")
+                        println("UniqueId: ${wrappedPayload.uniqueId}")
+                        println("Exclude: ${wrappedPayload.excludeSource} isSource: ${isSource(wrappedPayload.uniqueId)}")
+                        if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
+                        println("After")
+                        val payloadResult = handle(wrappedPayload.typedPayload(payloadClass)) ?: return
+                        pubJedis.publish(
+                            channel.toByteArray(),
+                            PayloadWrapper(
+                                wrappedPayload.uniqueId,
+                                payloadResult,
+                                PayloadWrapper.State.RESPOND,
+                                wrappedPayload.source,
+                                wrappedPayload.target,
+                                wrappedPayload.excludeSource
+                            ).asJson().toByteArray()
+                        )
+                    }
                     PayloadWrapper.State.RESPOND -> {
+                        println("Respond")
                         for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
                             if (publisher.id() == channel) {
                                 publisher.payloads[result.uniqueId]?.apply {
@@ -46,32 +69,29 @@ abstract class RedisPublisher<P, S>(
                         }
                     }
                     PayloadWrapper.State.PROXY -> {}
-                    else -> {}
                 }
             }
-        };
+        }
         Thread({ subJedis.subscribe(pubSub, channel) }, "redis-pub-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}").start()
     }
 
-    override fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
-        val future = executor.submit<Boolean> {
-            pubJedis.publish(channel.toByteArray(), payloadWrapper.asJson().toByteArray());
-            return@submit true;
+    override suspend fun publish(payload: PayloadWrapper<P>): CompletableDeferred<S> {
+        val result = super.publish(payload)
+
+        launch(dispatcher) {
+            pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
         }
 
-        try {
-            if (!future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                logger.warning("failed to publish payload `${payloadWrapper}` within $TIMEOUT_SECONDS seconds.")
-            }
-        } catch (e: TimeoutException) {
-            logger.warning("failed to publish payload `${payloadWrapper}` after $TIMEOUT_SECONDS seconds. (timed-out)")
-            future.cancel(true)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return super.publish(payloadWrapper)
+        return result
     }
 
     abstract fun handle(payload: P): S?
+
+    fun isSource(uniqueId: UUID): Boolean {
+        return HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+    }
+
+    companion object {
+        const val TIMEOUT_SECONDS = 5L
+    }
 }

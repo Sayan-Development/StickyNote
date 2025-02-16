@@ -14,6 +14,7 @@ import org.incendo.cloud.setting.ManagerSetting
 import org.incendo.cloud.suggestion.Suggestion
 import org.incendo.cloud.velocity.VelocityCommandManager
 import org.sayandev.stickynote.core.command.Command
+import org.sayandev.stickynote.velocity.launch
 import org.sayandev.stickynote.velocity.plugin
 import java.util.concurrent.CompletableFuture
 
@@ -88,5 +89,13 @@ fun MutableCommandBuilder<VelocitySender>.required(name: String, suggestions: Co
 fun MutableCommandBuilder<VelocitySender>.optional(name: String, suggestions: Collection<String>): MutableCommandBuilder<VelocitySender> {
     return optional(name, StringParser.stringParser()) {
         createStringSuggestion(suggestions)
+    }
+}
+
+fun <S : Any> MutableCommandBuilder<S>.suspendingHandler(context: suspend (CommandContext<S>) -> Unit) {
+    this.handler {
+        launch {
+            context(it)
+        }
     }
 }

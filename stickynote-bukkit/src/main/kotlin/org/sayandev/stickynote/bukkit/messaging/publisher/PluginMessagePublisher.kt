@@ -42,7 +42,7 @@ abstract class PluginMessagePublisher<P, S>(
         }
     }
 
-    fun publish(player: Player, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
+    suspend fun publish(player: Player, payloadWrapper: PayloadWrapper<P>): CompletableDeferred<S> {
         player.sendPluginMessage(plugin, this.id(), payloadWrapper.asJson().toByteArray())
         return publish(payloadWrapper)
     }

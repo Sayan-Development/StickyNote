@@ -22,6 +22,7 @@ import org.incendo.cloud.parser.standard.StringArrayParser
 import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.setting.ManagerSetting
 import org.incendo.cloud.suggestion.Suggestion
+import org.sayandev.stickynote.bukkit.launch
 import org.sayandev.stickynote.bukkit.plugin
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
@@ -102,6 +103,14 @@ abstract class BukkitCommand(
 
     override fun errorPrefix(prefix: Component) {
         errorPrefix = prefix
+    }
+
+    fun <S : Any> MutableCommandBuilder<S>.suspendingHandler(context: suspend (CommandContext<S>) -> Unit) {
+        this.handler {
+            launch {
+                context(it)
+            }
+        }
     }
 }
 

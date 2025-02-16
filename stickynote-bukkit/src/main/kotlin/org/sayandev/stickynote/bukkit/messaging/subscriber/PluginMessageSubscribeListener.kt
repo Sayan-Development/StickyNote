@@ -4,10 +4,8 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
 import org.sayandev.stickynote.bukkit.messaging.publisher.PluginMessagePublisher
 import org.sayandev.stickynote.bukkit.plugin
-import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asOptionalPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher.Companion.HANDLER_LIST
@@ -43,13 +41,11 @@ class PluginMessageSubscribeListener<P, S>(
             PayloadWrapper.State.RESPOND -> {
                 for (publisher in HANDLER_LIST.filterIsInstance<PluginMessagePublisher<P, S>>()) {
                     if (publisher.id() == channel) {
-                        val handle = String(data).asOptionalPayloadWrapper<P>()?.typedPayload(payloadClass)?.let { publisher.handle(it) }
                         publisher.payloads[result.uniqueId]?.apply {
-                            if (handle != null) {
-                                this.complete(result.typedPayload(resultClass))
-                            }
+                            //val handle = String(data).asOptionalPayloadWrapper<P>()?.typedPayload(payloadClass)?.let { publisher.handle(it) }
+                            this.complete(result.typedPayload(resultClass))
                             publisher.payloads.remove(result.uniqueId)
-                        } ?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}")
+                        } /*?: throw IllegalStateException("No payload found for uniqueId ${result.uniqueId}")*/
                     }
                 }
             }

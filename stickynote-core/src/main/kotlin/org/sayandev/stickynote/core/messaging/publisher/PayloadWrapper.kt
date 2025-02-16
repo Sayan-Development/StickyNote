@@ -2,6 +2,7 @@ package org.sayandev.stickynote.core.messaging.publisher
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonIOException
 import com.google.gson.TypeAdapter
 import java.util.*
 
@@ -78,7 +79,11 @@ data class PayloadWrapper<P>(
         }
 
         fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {
-            return gson.fromJson(gson.toJson(this.payload), payloadClass)
+            return try {
+                gson.fromJson(gson.toJson(this.payload), payloadClass)
+            } catch (e: JsonIOException) {
+                throw IllegalStateException("Could not convert payload to $this", e)
+            }
         }
     }
 }
