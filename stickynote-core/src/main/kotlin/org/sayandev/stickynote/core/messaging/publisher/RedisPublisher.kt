@@ -2,11 +2,10 @@ package org.sayandev.stickynote.core.messaging.publisher
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
-import org.sayandev.stickynote.core.messaging.subscriber.RedisSubscriber
-import org.sayandev.stickynote.core.utils.CoroutineUtils.awaitWithTimeout
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
@@ -39,11 +38,7 @@ abstract class RedisPublisher<P, S>(
                 when (result.state) {
                     PayloadWrapper.State.FORWARD -> {
                         val wrappedPayload = message.asPayloadWrapper<P>()
-                        println("Before ${HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.joinToString(", ")}")
-                        println("UniqueId: ${wrappedPayload.uniqueId}")
-                        println("Exclude: ${wrappedPayload.excludeSource} isSource: ${isSource(wrappedPayload.uniqueId)}")
                         if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
-                        println("After")
                         val payloadResult = handle(wrappedPayload.typedPayload(payloadClass)) ?: return
                         pubJedis.publish(
                             channel.toByteArray(),
@@ -58,7 +53,6 @@ abstract class RedisPublisher<P, S>(
                         )
                     }
                     PayloadWrapper.State.RESPOND -> {
-                        println("Respond")
                         for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
                             if (publisher.id() == channel) {
                                 publisher.payloads[result.uniqueId]?.apply {
@@ -77,6 +71,14 @@ abstract class RedisPublisher<P, S>(
 
     override suspend fun publish(payload: PayloadWrapper<P>): CompletableDeferred<S> {
         val result = super.publish(payload)
+
+        launch(dispatcher) {
+            delay(TIMEOUT_SECONDS * 1000L)
+            if (result.isActive) {
+                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload"))
+            }
+            payloads.remove(payload.uniqueId)
+        }
 
         launch(dispatcher) {
             pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())

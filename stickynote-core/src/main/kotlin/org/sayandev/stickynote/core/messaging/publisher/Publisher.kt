@@ -23,6 +23,14 @@ abstract class Publisher<P, S>(
         return deferred
     }
 
+    fun register() {
+        register(this)
+    }
+
+    fun unregister() {
+        unregister(this)
+    }
+
     companion object {
         val HANDLER_LIST = mutableListOf<Publisher<*, *>>()
 
