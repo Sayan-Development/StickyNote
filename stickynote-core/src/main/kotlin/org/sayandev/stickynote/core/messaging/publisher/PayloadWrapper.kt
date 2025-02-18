@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.TypeAdapter
 import java.util.*
+import kotlin.reflect.KClass
 
 data class PayloadWrapper<P>(
     val uniqueId: UUID = UUID.randomUUID(),
@@ -78,12 +79,19 @@ data class PayloadWrapper<P>(
             } catch (_: Exception) { null }
         }
 
-        fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {
+        fun <P : Any> PayloadWrapper<*>.typedPayload(payloadType: KClass<P>): P {
             return try {
-                gson.fromJson(gson.toJson(this.payload), payloadClass)
+                gson.fromJson(gson.toJson(this.payload), payloadType.java)
             } catch (e: JsonIOException) {
                 throw IllegalStateException("Could not convert payload to $this", e)
             }
+        }
+
+        fun <P> P.toPayloadWrapper(state: State = State.FORWARD): PayloadWrapper<P> {
+            return PayloadWrapper<P>(
+                payload = this,
+                state = state
+            )
         }
     }
 }

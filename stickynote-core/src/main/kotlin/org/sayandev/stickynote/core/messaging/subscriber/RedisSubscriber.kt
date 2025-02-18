@@ -38,7 +38,7 @@ abstract class RedisSubscriber<P, S>(
 
                 when (payloadWrapper.state) {
                     PayloadWrapper.State.PROXY -> {
-                        val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") != null }.isSuccess
+                        val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") }.isSuccess
                         if (!isVelocity) return
 
                         launch(dispatcher) {

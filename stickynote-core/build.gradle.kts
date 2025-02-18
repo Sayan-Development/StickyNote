@@ -15,6 +15,7 @@ dependencies {
     api(libs.gson)
     api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines)
+    api(libs.java.websocket)
 
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.netty.all)
