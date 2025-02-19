@@ -83,13 +83,13 @@ class Toast(
         jsonAdvancement.add("criteria", criteriaJson)
         jsonAdvancement.add("requirements", requirementsArray)
 
-        val advancementResourceLocation: Any = NMSUtils.createResourceLocation("stickynote_toasts_" + UUID.randomUUID())
+        val advancementResourceLocation: Any = NMSUtils.createResourceLocation("stickynote_toasts_" + UUID.randomUUID(), "")
         var advancementBuilder: Any? = null
         var advancement: Any? = null
         if (ServerVersion.supports(13)) {
             var deserializationContext: Any? = null
             if (ServerVersion.supports(20)) {
-                if (ServerVersion.containsPatch(20, 3)) {
+                if (ServerVersion.isAtLeast(20, 3)) {
                     //Extracted this method from bukkit's UnsafeValues
                     val jsonOps = Class.forName("com.mojang.serialization.JsonOps").getField("INSTANCE")[null]
                     val decoderParse = Class.forName("com.mojang.serialization.Decoder").getMethod(
