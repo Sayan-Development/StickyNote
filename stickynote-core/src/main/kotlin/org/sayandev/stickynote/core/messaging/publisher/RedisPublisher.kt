@@ -31,7 +31,7 @@ abstract class RedisPublisher<P, S>(
     val channel = "$namespace:$name"
 
     private val subJedis = redis.resource
-    private val pubJedis = redis.resource
+//    private val pubJedis = redis.resource
 
     init {
         val pubSub = object : JedisPubSub() {
@@ -43,17 +43,22 @@ abstract class RedisPublisher<P, S>(
                         val wrappedPayload = message.asPayloadWrapper<P>()
                         if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
                         val payloadResult = handle(wrappedPayload.typedPayload(payloadClass)) ?: return
-                        pubJedis.publish(
-                            channel.toByteArray(),
-                            PayloadWrapper(
-                                wrappedPayload.uniqueId,
-                                payloadResult,
-                                PayloadWrapper.State.RESPOND,
-                                wrappedPayload.source,
-                                wrappedPayload.target,
-                                wrappedPayload.excludeSource
-                            ).asJson().toByteArray()
-                        )
+                        val localJedis = redis.resource
+                        try {
+                            localJedis.publish(
+                                channel.toByteArray(),
+                                PayloadWrapper(
+                                    wrappedPayload.uniqueId,
+                                    payloadResult,
+                                    PayloadWrapper.State.RESPOND,
+                                    wrappedPayload.source,
+                                    wrappedPayload.target,
+                                    wrappedPayload.excludeSource
+                                ).asJson().toByteArray()
+                            )
+                        } finally {
+                            localJedis.close()
+                        }
                     }
                     PayloadWrapper.State.RESPOND -> {
                         for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
@@ -83,9 +88,16 @@ abstract class RedisPublisher<P, S>(
             payloads.remove(payload.uniqueId)
         }
 
-        launch(dispatcher) {
-            pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+        val localJedis = redis.resource
+        try {
+            localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+        } finally {
+            localJedis.close()
         }
+
+        /*launch(dispatcher) {
+            pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+        }*/
 
         return result
     }
