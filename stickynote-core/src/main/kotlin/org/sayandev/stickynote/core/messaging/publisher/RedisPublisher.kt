@@ -3,9 +3,12 @@ package org.sayandev.stickynote.core.messaging.publisher
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
+import org.sayandev.stickynote.core.coroutine.dispatcher.AsyncDispatcher
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
+import org.sayandev.stickynote.core.messaging.subscriber.Subscriber
+import org.sayandev.stickynote.core.messaging.subscriber.Subscriber.Companion
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
@@ -75,7 +78,7 @@ abstract class RedisPublisher<P, S>(
         launch(dispatcher) {
             delay(TIMEOUT_SECONDS * 1000L)
             if (result.isActive) {
-                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload"))
+                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload (channel: ${id()}"))
             }
             payloads.remove(payload.uniqueId)
         }
@@ -95,5 +98,14 @@ abstract class RedisPublisher<P, S>(
 
     companion object {
         const val TIMEOUT_SECONDS = 5L
+
+        init {
+            launch(AsyncDispatcher("pub-debug-memory", 1)) {
+                while (true) {
+                    delay(30_000)
+                    println("Current payload amount (pub): ${HANDLER_LIST.sumOf { it.payloads.size } }")
+                }
+            }
+        }
     }
 }

@@ -2,12 +2,13 @@ package org.sayandev.stickynote.core.messaging.subscriber
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
-import org.sayandev.stickynote.core.utils.CoroutineUtils.awaitWithTimeout
+import org.sayandev.stickynote.core.messaging.publisher.RedisPublisher
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
@@ -28,7 +29,7 @@ abstract class RedisSubscriber<P, S>(
 
     val channel = "$namespace:$name"
     val subJedis: Jedis = redis.resource
-    val pubJedis: Jedis = redis.resource
+//    val pubJedis: Jedis = redis.resource
 
     init {
         val pubSub = object : JedisPubSub() {
@@ -45,7 +46,7 @@ abstract class RedisSubscriber<P, S>(
                             val result = (HANDLER_LIST.find {it.namespace == this@RedisSubscriber.namespace && it.name == this@RedisSubscriber.name } as Subscriber<P, S>)
                                 .onSubscribe(payloadWrapper.typedPayload(payloadClass))
                             result.await()
-                            publishWithTimeout(
+                            publish(
                                 PayloadWrapper(
                                     payloadWrapper.uniqueId,
                                     result.getCompleted(),
@@ -64,7 +65,7 @@ abstract class RedisSubscriber<P, S>(
                                     payloadWrapper.typedPayload(payloadClass)
                                 )
                             if (payloadWrapper.target == "PROCESSED") return@launch;
-                            publishWithTimeout(
+                            publish(
                                 PayloadWrapper(
                                     payloadWrapper.uniqueId,
                                     result?.getCompleted() ?: payloadWrapper.payload,
@@ -75,22 +76,32 @@ abstract class RedisSubscriber<P, S>(
                             )
                         }
                     }
-
-                    PayloadWrapper.State.RESPOND -> {}
+                    PayloadWrapper.State.RESPOND -> {
+                        /*launch(dispatcher) {
+                            (HANDLER_LIST.find { publisher -> publisher.id() == channel } as? Subscriber<P, S>)
+                                ?.onSubscribe(payloadWrapper.typedPayload(// TODO: Result class))
+                        }*/
+                    }
                 }
             }
         };
         Thread({ subJedis.subscribe(pubSub, channel) }, "redis-sub-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}").start()
     }
 
-    private suspend fun publishWithTimeout(payload: PayloadWrapper<*>) {
-        val deferred = CompletableDeferred<Unit>()
+    private suspend fun publish(payload: PayloadWrapper<*>) {
+        val publication = CompletableDeferred<Unit>()
         launch(dispatcher) {
-            pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
-            deferred.complete(Unit)
+            delay(TIMEOUT_SECONDS * 1000)
+            if (publication.isActive) {
+                publication.completeExceptionally(IllegalStateException("Failed to publish payload in subscriber after ${RedisPublisher.TIMEOUT_SECONDS} seconds. Payload: $payload (channel: ${id()})"))
+            }
         }
-        deferred.awaitWithTimeout(TIMEOUT_SECONDS * 1000L) {
-            logger.warning("failed to publish payload `${payload}` within $TIMEOUT_SECONDS seconds.")
+
+        val localJedis = redis.resource
+        try {
+            localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+        } finally {
+            localJedis.close()
         }
     }
 

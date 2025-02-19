@@ -465,6 +465,7 @@ accessors {
         methodInferred("getType", "1.16.5")
         methodInferred("getSender", "1.16.5")
         method(Byte::class, "func_179841_c")
+        field(Byte::class, "field_179842_b")
         fieldInferred("message", "1.16.5")
     }
     mapClass(ClientboundSetPlayerTeamPacket) {
