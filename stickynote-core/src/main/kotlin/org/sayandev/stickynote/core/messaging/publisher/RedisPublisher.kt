@@ -95,10 +95,6 @@ abstract class RedisPublisher<P, S>(
             localJedis.close()
         }
 
-        /*launch(dispatcher) {
-            pubJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
-        }*/
-
         return result
     }
 

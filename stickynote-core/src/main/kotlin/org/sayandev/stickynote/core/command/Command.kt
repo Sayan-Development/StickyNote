@@ -56,7 +56,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     fun MutableCommandBuilder<*>.literalWithPermission(literal: String) {
         literal(literal)
         val partedPermission = this.build().components()
-        partedPermission.removeAt(0)
+//        partedPermission.removeAt(0)
         permission("${rootId}.commands.${partedPermission.map { it.name() }.distinct().joinToString(".")}")
     }
 

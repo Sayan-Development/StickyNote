@@ -508,6 +508,7 @@ accessors {
     mapClass(ClientboundSystemChatPacket) {
         constructor(Component, Boolean::class)
         field(Component, "content")
+        method(Component, "content")
         field(Boolean::class, "overlay")
     }
     mapClass(ClientboundSetCameraPacket) {

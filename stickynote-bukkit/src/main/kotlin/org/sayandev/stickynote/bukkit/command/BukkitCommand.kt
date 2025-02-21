@@ -128,7 +128,7 @@ fun CommandContext<BukkitSender>.audience(): Audience {
 
 fun MutableCommandBuilder<BukkitSender>.literalWithPermission(literal: String, vararg aliases: String) {
     literal(literal, Description.empty(), *aliases)
-    permission("${plugin.name.lowercase()}.commands.${this.build().components().joinToString(".") { it.name() }}")
+    permission("${plugin.name.lowercase()}.commands.${this.build().rootComponent().name().lowercase()}.${this.build().components().joinToString(".") { it.name() }}")
 }
 
 internal fun CommandComponent.Builder<BukkitSender, String>.createStringSuggestion(suggestions: Collection<String>) {

@@ -1,5 +1,6 @@
 package org.sayandev.stickynote.bukkit.utils
 
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -9,6 +10,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
 
@@ -29,18 +31,26 @@ object AdventureUtils {
     @JvmStatic
     var legacyAmpersandSerializer = LegacyComponentSerializer.legacyAmpersand()
 
+    fun senderAudience(sender: CommandSender): Audience {
+        return if (StickyNote.isPaper && ServerVersion.supports(18)) {
+            sender
+        } else {
+            audience.sender(sender)
+        }
+    }
+
     fun setTagResolver(vararg tagResolver: TagResolver) {
         miniMessage = MiniMessage.builder().tags(TagResolver.resolver(TagResolver.standard(), *tagResolver)).build()
     }
 
     @JvmStatic
     fun sendComponent(sender: CommandSender, message: String, vararg placeholder: TagResolver) {
-        audience.sender(sender).sendMessage(PlaceholderAPIHook.injectPlaceholders(sender as? Player, message).component(*placeholder))
+        senderAudience(sender).sendMessage(PlaceholderAPIHook.injectPlaceholders(sender as? Player, message).component(*placeholder))
     }
 
     @JvmStatic
     fun sendComponentActionbar(player: Player, content: String, vararg placeholder: TagResolver) {
-        audience.player(player).sendActionBar(PlaceholderAPIHook.injectPlaceholders(player, content).component(*placeholder))
+        senderAudience(player).sendActionBar(PlaceholderAPIHook.injectPlaceholders(player, content).component(*placeholder))
     }
 
     @JvmStatic
