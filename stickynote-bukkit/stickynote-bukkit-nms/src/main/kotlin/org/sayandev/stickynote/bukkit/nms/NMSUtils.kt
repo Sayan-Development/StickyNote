@@ -32,14 +32,14 @@ import java.util.function.UnaryOperator
 
 object NMSUtils {
 
-    private val PAPER_SERVER_ENTITY_CONSTRUCTOR: Constructor<*>? = ServerEntityAccessor.TYPE?.getDeclaredConstructor(
+    private val PAPER_SERVER_ENTITY_CONSTRUCTOR: Constructor<*>? = runCatching { ServerEntityAccessor.TYPE?.getDeclaredConstructor(
         ServerLevelAccessor.TYPE,
         EntityAccessor.TYPE,
         Int::class.java,
         Boolean::class.java,
         Consumer::class.java,
         Set::class.java
-    )
+    ) }.getOrNull()
     private val CRAFT_ITEM_STACK: Result<Class<*>> = runCatching { XReflection.getCraftClass("inventory.CraftItemStack") }
     private val CRAFT_PLAYER: Result<Class<*>> = runCatching { XReflection.getCraftClass("entity.CraftPlayer") }
     private val CRAFT_WORLD: Result<Class<*>> = runCatching { XReflection.getCraftClass("CraftWorld") }
