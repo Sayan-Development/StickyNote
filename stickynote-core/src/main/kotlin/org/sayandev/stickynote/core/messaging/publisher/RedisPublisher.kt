@@ -10,6 +10,7 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.subscriber.Subscriber
 import org.sayandev.stickynote.core.messaging.subscriber.Subscriber.Companion
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
+import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import java.util.*
@@ -23,58 +24,104 @@ abstract class RedisPublisher<P, S>(
     val payloadClass: Class<P>,
     val resultClass: Class<S>,
     logger: Logger
-) : Publisher<P, S>(
-    logger,
-    namespace,
-    name
-) {
-    val channel = "$namespace:$name"
+) : Publisher<P, S>(logger, namespace, name), AutoCloseable {
 
-    private val subJedis = redis.resource
-//    private val pubJedis = redis.resource
+    val channel = "$namespace:$name"
+    private var subJedis: Jedis? = null
+    private var pubSub: JedisPubSub? = null
+    private var subscriptionThread: Thread? = null
+    private var isRunning = true
 
     init {
-        val pubSub = object : JedisPubSub() {
-            override fun onMessage(channel: String, message: String) {
-                if (channel != this@RedisPublisher.channel) return
-                val result = message.asPayloadWrapper<S>()
-                when (result.state) {
-                    PayloadWrapper.State.FORWARD -> {
-                        val wrappedPayload = message.asPayloadWrapper<P>()
-                        if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
-                        val payloadResult = handle(wrappedPayload.typedPayload(payloadClass)) ?: return
-                        val localJedis = redis.resource
-                        try {
-                            localJedis.publish(
-                                channel.toByteArray(),
-                                PayloadWrapper(
-                                    wrappedPayload.uniqueId,
-                                    payloadResult,
-                                    PayloadWrapper.State.RESPOND,
-                                    wrappedPayload.source,
-                                    wrappedPayload.target,
-                                    wrappedPayload.excludeSource
-                                ).asJson().toByteArray()
-                            )
-                        } finally {
-                            localJedis.close()
-                        }
+        connect()
+    }
+
+    private fun connect() {
+        try {
+            // Close previous resources if they exist
+            subJedis?.close()
+            pubSub?.unsubscribe()
+            subscriptionThread?.interrupt()
+
+            subJedis = redis.resource
+            pubSub = createPubSub()
+
+            subscriptionThread = Thread({
+                while (!Thread.interrupted() && isRunning && !redis.isClosed && subJedis?.isBroken == false) {
+                    try {
+                        subJedis?.subscribe(pubSub, channel)
+                    } catch (e: Exception) {
+                        logger.warning("Redis subscription error: ${e.message}")
+                        Thread.sleep(1000)
+                        reconnect()
                     }
-                    PayloadWrapper.State.RESPOND -> {
-                        for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
-                            if (publisher.id() == channel) {
-                                publisher.payloads[result.uniqueId]?.apply {
-                                    this.complete(result.typedPayload(resultClass))
-                                    publisher.payloads.remove(result.uniqueId)
-                                }
-                            }
-                        }
-                    }
-                    PayloadWrapper.State.PROXY -> {}
+                }
+
+                // Add reconnection if the while loop condition fails
+                if (isRunning && !redis.isClosed) {
+                    logger.warning("Redis connection lost, attempting to reconnect...")
+                    Thread.sleep(1000)
+                    reconnect()
+                }
+            }, "redis-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}")
+            subscriptionThread?.start()
+        } catch (e: Exception) {
+            logger.severe("Failed to establish Redis connection: ${e.message}")
+        }
+    }
+
+    private fun reconnect() {
+        if (!isRunning) return
+        try {
+            subJedis?.close()
+            connect()
+        } catch (e: Exception) {
+            logger.severe("Failed to reconnect: ${e.message}")
+        }
+    }
+
+    private fun createPubSub() = object : JedisPubSub() {
+        override fun onMessage(channel: String, message: String) {
+            if (channel != this@RedisPublisher.channel) return
+            val result = message.asPayloadWrapper<S>()
+
+            when (result.state) {
+                PayloadWrapper.State.FORWARD -> handleForwardMessage(message)
+                PayloadWrapper.State.RESPOND -> handleResponseMessage(result)
+                PayloadWrapper.State.PROXY -> {} // Handle proxy if needed
+            }
+        }
+    }
+
+    private fun handleForwardMessage(message: String) {
+        val wrappedPayload = message.asPayloadWrapper<P>()
+        if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
+
+        val payloadResult = handle(wrappedPayload.typedPayload(payloadClass)) ?: return
+        redis.resource.use { jedis ->
+            jedis.publish(
+                channel.toByteArray(),
+                PayloadWrapper(
+                    wrappedPayload.uniqueId,
+                    payloadResult,
+                    PayloadWrapper.State.RESPOND,
+                    wrappedPayload.source,
+                    wrappedPayload.target,
+                    wrappedPayload.excludeSource
+                ).asJson().toByteArray()
+            )
+        }
+    }
+
+    private fun handleResponseMessage(result: PayloadWrapper<S>) {
+        for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
+            if (publisher.id() == channel) {
+                publisher.payloads[result.uniqueId]?.apply {
+                    complete(result.typedPayload(resultClass))
+                    publisher.payloads.remove(result.uniqueId)
                 }
             }
         }
-        Thread({ subJedis.subscribe(pubSub, channel) }, "redis-pub-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}").start()
     }
 
     override suspend fun publish(payload: PayloadWrapper<P>): CompletableDeferred<S> {
@@ -83,16 +130,15 @@ abstract class RedisPublisher<P, S>(
         launch(dispatcher) {
             delay(TIMEOUT_SECONDS * 1000L)
             if (result.isActive) {
-                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload (channel: ${id()}"))
+                result.completeExceptionally(IllegalStateException(
+                    "Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload (channel: ${id()}"
+                ))
+                payloads.remove(payload.uniqueId)
             }
-            payloads.remove(payload.uniqueId)
         }
 
-        val localJedis = redis.resource
-        try {
-            localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
-        } finally {
-            localJedis.close()
+        redis.resource.use { jedis ->
+            jedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
         }
 
         return result
@@ -100,20 +146,17 @@ abstract class RedisPublisher<P, S>(
 
     abstract fun handle(payload: P): S?
 
-    fun isSource(uniqueId: UUID): Boolean {
-        return HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+    fun isSource(uniqueId: UUID): Boolean =
+        HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+
+    override fun close() {
+        isRunning = false
+        pubSub?.unsubscribe()
+        subJedis?.close()
+        subscriptionThread?.interrupt()
     }
 
     companion object {
         const val TIMEOUT_SECONDS = 5L
-
-        init {
-            launch(AsyncDispatcher("pub-debug-memory", 1)) {
-                while (true) {
-                    delay(30_000)
-                    println("Current payload amount (pub): ${HANDLER_LIST.sumOf { it.payloads.size } }")
-                }
-            }
-        }
     }
 }
