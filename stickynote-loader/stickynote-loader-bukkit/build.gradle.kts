@@ -1,6 +1,7 @@
 dependencies {
     compileOnly(libs.folia)
 
+    api(libs.light.minecraft.bukkit)
     api(libs.libby.bukkit)
     api(libs.libby.paper)
 

@@ -24,6 +24,7 @@ kotlin-reflect = "2.1.0"
 netty = "4.1.111.Final"
 exposed = "0.53.0"
 libby = "2.0.0-SNAPSHOT"
+light = "1.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.9.0-RC.2"
 caffeine = "3.2.0"
@@ -78,6 +79,7 @@ exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.ref = "exposed" }
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
+light = { group = "org.sayandev", name = "light-core", version.ref = "light" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
@@ -91,6 +93,7 @@ cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
+light-minecraft-bukkit = { group = "org.sayandev", name = "light-minecraft-bukkit", version.ref = "light" }
 libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
 libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
 pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = "pathetic-mapping", version.ref = "pathetic-pathfinder-bukkit" }
