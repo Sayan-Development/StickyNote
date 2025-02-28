@@ -2,6 +2,7 @@ package org.sayandev.stickynote.core.command.interfaces
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 
 interface SenderExtension<S, P> {
 
@@ -38,5 +39,5 @@ interface SenderExtension<S, P> {
      *
      * @param message The message to send.
      */
-    fun onlyPlayersComponent(message: Component)
+    fun onlyPlayersComponent(message: TextComponent)
 }

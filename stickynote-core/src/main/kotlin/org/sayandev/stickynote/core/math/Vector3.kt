@@ -1,12 +1,10 @@
 package org.sayandev.stickynote.core.math
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-@ConfigSerializable
 data class Vector3(
     var x: Double,
     var y: Double,

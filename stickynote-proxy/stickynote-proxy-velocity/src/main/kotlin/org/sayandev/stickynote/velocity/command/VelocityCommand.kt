@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
@@ -52,7 +53,7 @@ abstract class VelocityCommand(
         return errorPrefix
     }
 
-    override fun errorPrefix(prefix: Component) {
+    override fun errorPrefix(prefix: TextComponent) {
         errorPrefix = prefix
     }
 }

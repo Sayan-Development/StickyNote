@@ -13,24 +13,10 @@ import java.util.logging.Logger;
 
 public abstract class StickyNoteLightLoader {
 
-    private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
-    private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "takenaka", "mappings", "gson");
-    public static final Map<String, String> relocations = new HashMap<>();
-
     private static final String LIB_FOLDER = "lib";
-
-    private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
-
-    protected StickyNoteLightLoader() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-    }
 
     protected abstract void onComplete();
 
-
-    Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
-    Boolean relocate = (Boolean) stickyNotes.getField("RELOCATE").get(stickyNotes);
 
     public void load(String id, File dataDirectory, Logger logger, LightClassLoader classLoader) {
         File libFolder = generateLibDirectory(dataDirectory);

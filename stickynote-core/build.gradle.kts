@@ -1,7 +1,4 @@
 dependencies {
-    api(libs.snakeyaml)
-    api(libs.configurate.yaml)
-    api(libs.configurate.extra.kotlin)
     api(libs.cloud.core)
     api(libs.cloud.kotlin.extensions)
 //    api(libs.cloud.kotlin.coroutines)

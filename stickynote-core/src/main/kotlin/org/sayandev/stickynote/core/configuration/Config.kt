@@ -1,3 +1,4 @@
+/*
 package org.sayandev.stickynote.core.configuration
 
 import org.spongepowered.configurate.CommentedConfigurationNode
@@ -141,3 +142,4 @@ abstract class Config(
     }
 
 }
+*/

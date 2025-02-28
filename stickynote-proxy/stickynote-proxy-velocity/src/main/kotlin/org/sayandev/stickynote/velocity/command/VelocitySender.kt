@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor
 import org.sayandev.stickynote.core.command.interfaces.SenderExtension
 
@@ -37,7 +38,7 @@ open class VelocitySender(
         source = sender
     }
 
-    override fun onlyPlayersComponent(message: Component) {
+    override fun onlyPlayersComponent(message: TextComponent) {
         onlinePlayersMessage = message
     }
 

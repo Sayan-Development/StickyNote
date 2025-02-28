@@ -115,19 +115,12 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     relocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
                     relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
                     relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-//                    relocate("com.github.benmanes.caffeine", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.caffeine")
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()
                         for (alias in bundle) {
                             if (relocateExclusion.any { alias.module.name == it }) continue
-                            if (alias.module.name.contains("packetevents")) {
-                                relocate("io.github.retrooper", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.packetevents")
-                                continue
-                            }
                             // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
-                            if (alias.module.name.contains("adventure")) {
-//                            relocate("net.kyori.adventure.text.serializer", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.text.serializer")
-//                            relocate("net.kyori.option", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.option")
+                            if (alias.module.name.contains("adventure") || alias.module.name == "examination-api") {
                                 continue
                             }
                             relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")

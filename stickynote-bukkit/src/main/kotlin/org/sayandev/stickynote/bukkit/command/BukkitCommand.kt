@@ -3,6 +3,7 @@ package org.sayandev.stickynote.bukkit.command
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.incendo.cloud.CommandManager
@@ -101,7 +102,7 @@ abstract class BukkitCommand(
         return errorPrefix
     }
 
-    override fun errorPrefix(prefix: Component) {
+    override fun errorPrefix(prefix: TextComponent) {
         errorPrefix = prefix
     }
 

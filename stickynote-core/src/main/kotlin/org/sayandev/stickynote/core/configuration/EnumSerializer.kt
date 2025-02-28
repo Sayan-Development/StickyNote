@@ -1,3 +1,4 @@
+/*
 package org.sayandev.stickynote.core.configuration
 
 import io.leangen.geantyref.GenericTypeReflector
@@ -24,4 +25,4 @@ class EnumSerializer : TypeSerializer<Enum<*>> {
     ) {
         node.set(obj!!.name)
     }
-}
+}*/

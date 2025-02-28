@@ -5,12 +5,12 @@
 kotlin = "2.1.0"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
-#configurate = "4.3.0"
-configurate = "4.1.2"
 cloud = "2.0.0"
 cloud-platform = "2.0.0-beta.10"
 #cloud-minecraft = "2.0.2-SNAPSHOT"
-adventure = "4.17.0"
+geantyref = "2.0.1"
+adventure = "4.19.0"
+examination = "1.3.0"
 mysql-connector = "8.4.0"
 sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
@@ -57,11 +57,13 @@ kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref =
 kotlin-poet-kotlin = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlin-poet" }
 kotlin-poet-java = { group = "com.squareup", name = "kotlinpoet-javapoet", version.ref = "kotlin-poet" }
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
-configurate-yaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
-configurate-extra-kotlin = { group = "org.spongepowered", name = "configurate-extra-kotlin", version.ref = "configurate" }
+cloud-services = { group = "org.incendo", name = "cloud-services", version.ref = "cloud" } # transitive for cloud-core
 cloud-core = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
 cloud-kotlin-extensions = { group = "org.incendo", name = "cloud-kotlin-extensions", version.ref = "cloud" }
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
+examination-api = { group = "net.kyori", name = "examination-api", version.ref = "examination" } # transitive for adventure-api
+adventure-key = { group = "net.kyori", name = "adventure-key", version.ref = "adventure" } # transitive for adventure-api
+geantyref = { group = "io.leangen.geantyref", name = "geantyref", version.ref = "geantyref" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventure" }
 mysql-connector = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-connector" }
@@ -83,16 +85,21 @@ light = { group = "org.sayandev", name = "light-core", version.ref = "light" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+adventure-platform-api = { group = "net.kyori", name = "adventure-platform-api", version.ref = "adventure-platform" } # transitive for adventure platforms
+adventure-platform-facet = { group = "net.kyori", name = "adventure-platform-facet", version.ref = "adventure-platform" } # transitive for adventure platforms
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
 folia = { group = "dev.folia", name = "folia-api", version.ref = "folia" }
+cloud-brigadier = { group = "org.incendo", name = "cloud-brigadier", version.ref = "cloud-platform" } # transitive for cloud bukkit
+cloud-bukkit = { group = "org.incendo", name = "cloud-bukkit", version.ref = "cloud-platform" } # transitive for cloud paper
 cloud-paper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloud-platform" }
 cloud-kotlin-coroutines = { group = "org.incendo", name = "cloud-kotlin-coroutines", version.ref = "cloud" }
 cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloud-platform" }
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
+adventure-text-serializer-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventure" }
 light-minecraft-bukkit = { group = "org.sayandev", name = "light-minecraft-bukkit", version.ref = "light" }
 libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
 libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
@@ -126,11 +133,6 @@ mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name 
 takenaka = { id = "me.kcra.takenaka.accessor", version.ref = "takenaka" }
 
 [bundles]
-kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]
-configurate = ["configurate-yaml", "configurate-extra-kotlin"]
-cloud = ["cloud-core", "cloud-kotlin-extensions", "cloud-kotlin-coroutines"]
-cloud-bukkit = ["cloud-paper", "cloud-minecraft-extras"]
-
 # implementation modules
 implementation-loader = [
     "kotlin-poet-java",
@@ -138,13 +140,16 @@ implementation-loader = [
 ]
 implementation-core = [
     "kotlin",
-    "snakeyaml",
-    "configurate-yaml",
-    "configurate-extra-kotlin",
+    "cloud-services",
     "cloud-core",
     "cloud-kotlin-extensions",
-#    "cloud-kotlin-coroutines",
+    #    "cloud-kotlin-coroutines",
+    "geantyref",
     "adventure-api",
+    "examination-api",
+    "adventure-key",
+    "adventure-platform-api",
+    "adventure-platform-facet",
     "adventure-text-minimessage",
     "adventure-text-serializer-gson",
     "reflections",
@@ -164,10 +169,13 @@ implementation-core = [
 #    "caffeine"
 ]
 implementation-bukkit = [
+    "cloud-brigadier",
+    "cloud-bukkit",
     "cloud-paper",
     "cloud-minecraft-extras",
     "inventoryframework",
     "xseries",
+    "adventure-text-serializer-legacy",
     "adventure-platform-bukkit",
     "pathetic-pathfinder-bukkit",
     "mccoroutines-bukkit-api",

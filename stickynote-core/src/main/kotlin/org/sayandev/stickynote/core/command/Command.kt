@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.core.command
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
@@ -26,7 +27,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     open fun rootBuilder(builder: MutableCommandBuilder<S>) { }
     open fun rootHandler(context: CommandContext<S>) { }
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix = Component.empty()
 
     lateinit var command: MutableCommandBuilder<S>
 
@@ -49,7 +50,7 @@ abstract class Command<S: SenderExtension<*, *>>(
         return errorPrefix
     }
 
-    override fun errorPrefix(prefix: Component) {
+    override fun errorPrefix(prefix: TextComponent) {
         errorPrefix = prefix
     }
 

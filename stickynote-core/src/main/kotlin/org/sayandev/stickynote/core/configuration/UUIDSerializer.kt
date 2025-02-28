@@ -1,3 +1,4 @@
+/*
 package org.sayandev.stickynote.core.configuration
 
 import org.spongepowered.configurate.ConfigurationNode
@@ -13,4 +14,4 @@ class UUIDSerializer : TypeSerializer<UUID> {
     override fun serialize(type: Type, obj: UUID?, node: ConfigurationNode) {
         node.set(obj!!.toString())
     }
-}
+}*/

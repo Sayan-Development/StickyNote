@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.core.command.interfaces
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 
 /**
  * Interface for defining commands.
@@ -14,6 +15,6 @@ interface CommandExtension {
      *
      * @param prefix The error prefix to set.
      */
-    fun errorPrefix(prefix: Component)
+    fun errorPrefix(prefix: TextComponent)
 
 }

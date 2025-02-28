@@ -1,5 +1,6 @@
 package org.sayandev.loader.common
 
+import kotlinx.coroutines.runBlocking
 import org.sayandev.LightClassLoader
 import org.sayandev.light.*
 import org.sayandev.light.dependency.Version
@@ -46,43 +47,53 @@ abstract class StickyNoteLightLoaderKt {
             val relocationFrom = relocation.javaClass.getMethod("getFrom").invoke(relocation) as String
             val relocationTo = relocation.javaClass.getMethod("getTo").invoke(relocation) as String
 
+            dependencyManager.addRepository(MavenRepository("https://repo1.maven.org/maven2/"))
+            dependencyManager.addRepository(MavenRepository("https://oss.sonatype.org/content/repositories/snapshots/"))
             for (repository in repositories) {
                 dependencyManager.addRepository(MavenRepository(repository))
-                logger.info("added $repository to repositories (current size: ${dependencyManager.repositories.size})")
             }
 
             for (dependency in dependencies) {
+                if (dependency.group == "org{}xerial") {
+                    if (runCatching { Class.forName("org{}sqlite{}JDBC".replace("{}", ".")) }.isSuccess) {
+                        continue
+                    }
+                }
+                if (dependency.group == "io{}leangen{}geantyref") {
+                    if (runCatching { Class.forName("io{}leangen{}geantyref{}TypeToken".replace("{}", ".")) }.isSuccess) {
+                        continue
+                    }
+                }
+
                 val mavenDependency = MavenDependency(
-                    dependency.getGroup().replace("{}", "."),
-                    dependency.getName(),
-                    Version(dependency.getVersion()),
+                    dependency.group.replace("{}", "."),
+                    dependency.name,
+                    Version(dependency.version),
                     false
                 )
                 dependencyManager.addDependency(mavenDependency)
                 logger.info("added $mavenDependency to dependencies (current size: ${dependencyManager.dependencies.size})")
             }
 
-            for (addedDependency in dependencyManager.dependencies) {
-                if (addedDependency.artifact == "sqlite-jdbc") {
-                    try {
-                        Class.forName("org.sqlite.JDBC")
-                        continue
-                    } catch (_: Exception) { }
-                }
-                val name = addedDependency.artifact
+            relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote")
+            relocations.put("com.mysql", relocationTo + "{}lib{}mysql")
 
-                if (name.contains("packetevents")) {
-                    relocations.put("io{}github{}retrooper", relocationTo + "{}lib{}packetevents")
-                    continue
-                }
+            if (dependencies.any { it.name == "XSeries" }) {
+                relocations.put("com{}cryptomorin{}xseries".replace("{}", "."), "${relocationTo}{}lib{}xseries")
+            }
+
+            for (addedDependency in dependencyManager.dependencies) {
+                val name = addedDependency.artifact
                 if (name.contains("adventure")) {
                     continue
                 }
-                if (name.contains("stickynote")) {
-                    relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote")
+                if (name == "examination-api") {
+                    continue
                 }
-                relocations.put("com.mysql", relocationTo + "{}lib{}mysql")
-                relocations.put(addedDependency.group, "${relocationTo}{}lib{}${addedDependency.group.split("{}").last()}")
+                if (name == "gson") {
+                    continue
+                }
+                relocations.put(addedDependency.group, "${relocationTo}{}lib{}${addedDependency.group.split(".").last()}")
             }
 
             for (dependency in dependencyManager.dependencies) {
@@ -92,7 +103,7 @@ abstract class StickyNoteLightLoaderKt {
             }
 
             logger.info("initializing main dispatcher...")
-            CoroutineUtils.launch(AsyncDispatcher("light-main", 1)) {
+            runBlocking {
                 logger.info("starting downloading ${dependencyManager.dependencies.size} dependencies...")
                 dependencyManager.downloadAll().await()
                 logger.info("downloaded ${dependencyManager.dependencies.size} dependencies")
@@ -100,10 +111,10 @@ abstract class StickyNoteLightLoaderKt {
                 dependencyManager.loadAll().await()
                 logger.info("loaded ${dependencyManager.dependencies.size} dependencies")
                 logger.info("starting saving ${dependencyManager.dependencies.size} dependencies")
-                dependencyManager.saveAll()
+                dependencyManager.saveAll().await()
                 logger.info("saved ${dependencyManager.dependencies.size} dependencies")
-                onComplete()
             }
+            onComplete()
         } catch (e: Exception) {
             e.fillInStackTrace()
         }
