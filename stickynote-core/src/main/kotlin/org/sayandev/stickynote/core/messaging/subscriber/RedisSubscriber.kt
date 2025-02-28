@@ -149,7 +149,10 @@ abstract class RedisSubscriber<P, S>(
 
         val localJedis = redis.resource
         try {
-            localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+            val published = localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+            if (published <= 0) {
+                return
+            }
             publication.complete(Unit)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Error publishing message: ${e.message}")
@@ -160,7 +163,10 @@ abstract class RedisSubscriber<P, S>(
     }
 
     fun isSource(uniqueId: UUID): Boolean {
-        return Publisher.HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+        return Publisher.HANDLER_LIST
+            .asSequence()
+            .flatMap { publisher -> publisher.payloads.keys.asSequence() }
+            .contains(uniqueId)
     }
 
     fun shutdown() {

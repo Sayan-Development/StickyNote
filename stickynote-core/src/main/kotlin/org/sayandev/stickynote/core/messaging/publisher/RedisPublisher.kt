@@ -134,18 +134,22 @@ abstract class RedisPublisher<P, S>(
         val result = super.publish(payload)
 
         launch(dispatcher) {
+            val localJedis = redis.resource
+            try {
+                val published = localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
+                if (published <= 0) {
+                    payloads.remove(payload.uniqueId)
+                    return@launch
+                }
+            } finally {
+                localJedis.close()
+            }
+
             delay(TIMEOUT_SECONDS * 1000L)
             if (result.isActive) {
-                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $TIMEOUT_SECONDS seconds. Payload: $payload (channel: ${id()}"))
+                result.completeExceptionally(IllegalStateException("No response received in $TIMEOUT_SECONDS seconds"))
+                payloads.remove(payload.uniqueId)
             }
-            payloads.remove(payload.uniqueId)
-        }
-
-        val localJedis = redis.resource
-        try {
-            localJedis.publish(channel.toByteArray(), payload.asJson().toByteArray())
-        } finally {
-            localJedis.close()
         }
 
         return result
@@ -154,7 +158,8 @@ abstract class RedisPublisher<P, S>(
     abstract fun handle(payload: P): S?
 
     fun isSource(uniqueId: UUID): Boolean {
-        return HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+        return HANDLER_LIST.asSequence()
+            .flatMap { publisher -> publisher.payloads.keys.asSequence() }.contains(uniqueId)
     }
 
     fun shutdown() {
@@ -170,8 +175,11 @@ abstract class RedisPublisher<P, S>(
         init {
             launch(AsyncDispatcher("pub-debug-memory", 1)) {
                 while (true) {
+                    val amount = HANDLER_LIST.asSequence().sumOf { it.payloads.asSequence().count() }
+//                    delay(60 * 5 * 1000)
+//                    if (amount < 10) return@launch
+                    println("Current payload amount (pub): $amount")
                     delay(30_000)
-                    println("Current payload amount (pub): ${HANDLER_LIST.sumOf { it.payloads.size } }")
                 }
             }
         }

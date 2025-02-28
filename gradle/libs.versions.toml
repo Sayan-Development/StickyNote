@@ -42,7 +42,6 @@ skinsrestorer-api = "15.3.1"
 placeholderapi = "2.11.6"
 
 # bukkit - nms
-packetevents-spigot = "2.6.0"
 takenaka = "1.2.2"
 
 # proxy - velocity
@@ -104,7 +103,6 @@ mccoroutines-folia-api = { group = "com.github.shynixn.mccoroutine", name = "mcc
 mccoroutines-folia-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-core", version.ref = "mccoroutines" }
 
 # bukkit - nms
-packetevents-spigot = { group = "com.github.retrooper", name = "packetevents-spigot", version.ref = "packetevents-spigot" }
 takenaka = { group = "me.kcra.takenaka", name = "generator-accessor-runtime", version.ref = "takenaka" }
 
 # proxy - velocity
@@ -176,7 +174,6 @@ implementation-bukkit = [
 ]
 implementation-bukkit-nms = [
     "takenaka",
-    "packetevents-spigot"
 ]
 implementation-proxy = [
 ]

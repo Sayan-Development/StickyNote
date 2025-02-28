@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    api(libs.packetevents.spigot)
+//    api(libs.packetevents.spigot)
 
     compileOnly(libs.paper)
 
