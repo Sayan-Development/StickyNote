@@ -63,6 +63,10 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 setUrl("https://repo.extendedclip.com/content/repositories/placeholderapi/")
             }
             maven {
+                name = "viaversion"
+                setUrl("https://repo.viaversion.com")
+            }
+            maven {
                 name = "spongepowered"
                 setUrl("https://repo.spongepowered.org/maven/")
             }
@@ -120,7 +124,16 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                         for (alias in bundle) {
                             if (relocateExclusion.any { alias.module.name == it }) continue
                             // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
-                            if (alias.module.name.contains("adventure") || alias.module.name == "examination-api") {
+                            if (alias.module.name.contains("adventure") || alias.module.name == "examination-api" || alias.module.name == "examination-string" || alias.module.name == "auto-service-annotations" || alias.module.name == "option") {
+                                continue
+                            }
+                            if (alias.module.name == "gson") {
+                                continue
+                            }
+                            if (alias.module.name == "option") {
+                                continue
+                            }
+                            if (alias.module.name == "auto-service-annotations") {
                                 continue
                             }
                             relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")

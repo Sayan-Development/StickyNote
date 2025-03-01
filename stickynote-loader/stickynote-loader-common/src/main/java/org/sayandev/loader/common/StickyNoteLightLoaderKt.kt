@@ -76,10 +76,10 @@ abstract class StickyNoteLightLoaderKt {
             }
 
             relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote")
-            relocations.put("com.mysql", relocationTo + "{}lib{}mysql")
+            relocations.put("com{}mysql", relocationTo + "{}lib{}mysql")
 
             if (dependencies.any { it.name == "XSeries" }) {
-                relocations.put("com{}cryptomorin{}xseries".replace("{}", "."), "${relocationTo}{}lib{}xseries")
+                relocations.put("com{}cryptomorin{}xseries", "${relocationTo}{}lib{}xseries")
             }
 
             for (addedDependency in dependencyManager.dependencies) {
@@ -87,15 +87,28 @@ abstract class StickyNoteLightLoaderKt {
                 if (name.contains("adventure")) {
                     continue
                 }
-                if (name == "examination-api") {
+                if (name == "examination-api" || name == "examination-string") {
                     continue
                 }
                 if (name == "gson") {
                     continue
                 }
-                relocations.put(addedDependency.group, "${relocationTo}{}lib{}${addedDependency.group.split(".").last()}")
+                if (name == "option") {
+                    continue
+                }
+                if (name == "auto-service-annotations") {
+                    continue
+                }
+                relocations.put(addedDependency.group.replace(".", "{}"), "${relocationTo}{}lib{}${addedDependency.group.split(".").last()}")
+                logger.warning("added relocation: ${addedDependency.group} -> ${relocationTo}{}lib{}${addedDependency.group.split(".").last()}")
             }
 
+            logger.warning("==========================================================================")
+            logger.warning("relocations:")
+            for (relocation in relocations) {
+                logger.warning("relocation: ${relocation.key} -> ${relocation.value}")
+            }
+            logger.warning("==========================================================================")
             for (dependency in dependencyManager.dependencies) {
                 for ((relocationFrom, relocationTo) in relocations) {
                     dependency.addRelocation(Relocation(relocationFrom, relocationTo))

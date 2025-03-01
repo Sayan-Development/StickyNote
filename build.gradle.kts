@@ -41,6 +41,10 @@ allprojects {
             url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         }
         maven {
+            name = "viaversion"
+            url = uri("https://repo.viaversion.com")
+        }
+        maven {
             name = "spongepowered"
             url = uri("https://repo.spongepowered.org/maven/")
         }
