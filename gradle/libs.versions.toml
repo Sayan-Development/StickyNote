@@ -25,7 +25,7 @@ netty = "4.1.111.Final"
 exposed = "0.53.0"
 libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
-kotlinx-coroutines = "1.9.0-RC.2"
+kotlinx-coroutines = "1.10.1"
 caffeine = "3.2.0"
 
 # minecraft
