@@ -79,7 +79,7 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.ref = "exposed" }
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
-kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 
 # bukkit
