@@ -14,7 +14,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
      * Exclude dependency from relocations. should be the same in StickyNoteLoader
      * @see org.sayandev.loader.common.StickyNoteLoader
      * */
-    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "takenaka", "mappings", "gson")
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson")
 
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
