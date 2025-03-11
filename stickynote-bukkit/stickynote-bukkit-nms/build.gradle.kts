@@ -107,6 +107,7 @@ accessors {
     val ServerboundInteractPacketActionInteract = "net.minecraft.network.protocol.game.ServerboundInteractPacket\$InteractionAction"
     val ServerboundKeepAlivePacket = "net.minecraft.network.protocol.game.ServerboundKeepAlivePacket"
     val ServerboundClientInformationPacket = "net.minecraft.network.protocol.game.ServerboundClientInformationPacket"
+    val ServerboundUseItemOnPacket = "net.minecraft.network.protocol.game.ServerboundUseItemOnPacket"
     val ServerPlayer = "net.minecraft.server.level.ServerPlayer"
     val Player = "net.minecraft.world.entity.player.Player"
     val ServerLevel = "net.minecraft.server.level.ServerLevel"
@@ -271,6 +272,8 @@ accessors {
     val SignedMessageBodyPacked = "net.minecraft.network.chat.SignedMessageBody\$Packed"
     val LastSeenMessagesPacked = "net.minecraft.network.chat.LastSeenMessages\$Packed"
     val FilterMask = "net.minecraft.network.chat.FilterMask"
+    val BlockHitResult = "net.minecraft.world.phys.BlockHitResult"
+    val HitResultType = "net.minecraft.world.phys.HitResult\$Type"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
@@ -560,9 +563,10 @@ accessors {
         method(BlockPos, "getPos")
     }
     mapClass(ServerboundPlayerActionPacket) {
-        methodInferred("getPos", "1.20.4")
-        methodInferred("getDirection", "1.20.4")
-        methodInferred("getAction", "1.20.4")
+        method(BlockPos, "getPos")
+        method(Direction, "getDirection")
+        method(ServerboundPlayerActionPacketAction, "getAction")
+        method(Int::class, "getSequence")
     }
     mapClass(ServerboundPlayerActionPacketAction) {
         enumConstant(
@@ -602,6 +606,11 @@ accessors {
     mapClass(ServerboundInteractPacketActionInteract) {
         fieldInferred("hand", "1.20.4")
         method(ServerboundInteractPacketActionType, "getType")
+    }
+    mapClass(ServerboundUseItemOnPacket) {
+        method(InteractionHand, "getHand")
+        method(BlockHitResult, "getHitResult")
+        method(Int::class, "getSequence")
     }
     mapClass(ServerPlayer) {
         constructor(MinecraftServer, ServerLevel, GameProfile)
@@ -1845,6 +1854,19 @@ accessors {
     mapClass(FilterMask) {
         field(FilterMask, "FULLY_FILTERED")
         field(FilterMask, "PASS_THROUGH")
+    }
+    mapClass(BlockHitResult) {
+        method(BlockPos, "getBlockPos")
+        method(Direction, "getDirection")
+        method(HitResultType, "getType")
+        method(Boolean::class, "isInside")
+    }
+    mapClass(HitResultType) {
+        enumConstant(
+            "MISS",
+            "BLOCK",
+            "ENTITY"
+        )
     }
 
     mapClass(CrossbowItem) {
