@@ -17,7 +17,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7"/*, "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm"*/, "takenaka", "mappings", "gson");
     public static final Map<String, String> relocations = new HashMap<>();
 
     private static final String LIB_FOLDER = "lib";
