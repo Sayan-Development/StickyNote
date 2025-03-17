@@ -49,9 +49,7 @@ fun commandManager(): CommandManager<BukkitSender> {
             plugin,
             ExecutionCoordinator.simpleCoordinator(),
             SenderMapper.create(bukkitSenderMapper, backwardsMapper),
-        ).apply {
-            this.brigadierManager().settings().set(BrigadierSetting.FORCE_EXECUTABLE,  true)
-        }
+        )
     }
     manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
     return manager
