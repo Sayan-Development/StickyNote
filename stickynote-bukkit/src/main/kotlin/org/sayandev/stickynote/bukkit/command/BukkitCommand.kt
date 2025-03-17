@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.brigadier.BrigadierSetting
+import org.incendo.cloud.brigadier.CloudBrigadierManager
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
@@ -39,12 +41,17 @@ fun commandManager(): CommandManager<BukkitSender> {
         PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
             .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
             .buildOnEnable(plugin)
+            .apply {
+                this.brigadierManager().settings().set(BrigadierSetting.FORCE_EXECUTABLE,  true)
+            }
     } else {
         LegacyPaperCommandManager(
             plugin,
             ExecutionCoordinator.simpleCoordinator(),
             SenderMapper.create(bukkitSenderMapper, backwardsMapper),
-        )
+        ).apply {
+            this.brigadierManager().settings().set(BrigadierSetting.FORCE_EXECUTABLE,  true)
+        }
     }
     manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
     return manager

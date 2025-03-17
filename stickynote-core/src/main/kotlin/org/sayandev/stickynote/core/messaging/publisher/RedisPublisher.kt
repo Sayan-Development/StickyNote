@@ -176,8 +176,8 @@ abstract class RedisPublisher<P, S>(
             launch(AsyncDispatcher("pub-debug-memory", 1)) {
                 while (true) {
                     val amount = HANDLER_LIST.asSequence().sumOf { it.payloads.asSequence().count() }
-//                    delay(60 * 5 * 1000)
-//                    if (amount < 10) return@launch
+                    delay(60 * 5 * 1000)
+                    if (amount < 100 && amount > 0) return@launch
                     println("Current payload amount (pub): $amount")
                     delay(30_000)
                 }
