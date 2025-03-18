@@ -59,6 +59,7 @@ public abstract class StickyNoteLoader {
 
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
             relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
+//            relocations.put("org{}slf4j", relocationTo + "{}lib{}slf4j");
 
             boolean hasSQLite = false;
             try {
@@ -292,23 +293,23 @@ public abstract class StickyNoteLoader {
                             .groupId(dependency.getGroup())
                             .artifactId(dependency.getName())
                             .version(dependency.getVersion())
-                            .excludeTransitiveDependency("org.jetbrains.kotlinx", "kotlinx-coroutines-core-jvm")
-                            .excludeTransitiveDependency("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-common")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
-                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-                            .excludeTransitiveDependency("org.jetbrains", "annotations")
-                            .excludeTransitiveDependency("org.checkerframework", "checker-qual")
-                            .excludeTransitiveDependency("org.javassist", "javassist")
-                            .excludeTransitiveDependency("org.slf4j", "slf4j-api")
-                            .excludeTransitiveDependency("org.yaml", "snakeyaml")
-                            .excludeTransitiveDependency("com.google.gson", "gson")
-                            .excludeTransitiveDependency("com.google.errorprone", "error_prone_annotations")
-                            .excludeTransitiveDependency("io.leangen.geantyref", "geantyref")
-                            .excludeTransitiveDependency("org.xerial", "sqlite-jdbc")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-coroutines-core-jvm")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-coroutines-core")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib-common")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib-jdk7")
+                            .excludeTransitiveDependency("org{}jetbrains{}kotlin".replace("{}", "."), "kotlin-stdlib-jdk8")
+                            .excludeTransitiveDependency("org{}jetbrains".replace("{}", "."), "annotations")
+                            .excludeTransitiveDependency("org{}checkerframework".replace("{}", "."), "checker-qual")
+                            .excludeTransitiveDependency("org{}javassist".replace("{}", "."), "javassist")
+//                            .excludeTransitiveDependency("org{}slf4j".replace("{}", "."), "slf4j-api")
+                            .excludeTransitiveDependency("org{}yaml".replace("{}", "."), "snakeyaml")
+                            .excludeTransitiveDependency("com{}google{}gson".replace("{}", "."), "gson")
+                            .excludeTransitiveDependency("com{}google{}errorprone".replace("{}", "."), "error_prone_annotations")
+                            .excludeTransitiveDependency("io{}leangen{}geantyref".replace("{}", "."), "geantyref")
+                            .excludeTransitiveDependency("org{}xerial".replace("{}", "."), "sqlite-jdbc")
 //                            .loaderId(id + "_" + dependency.getName())
 //                            .isolatedLoad(true)
                             .build()

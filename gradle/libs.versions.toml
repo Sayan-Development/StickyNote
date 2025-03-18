@@ -146,7 +146,7 @@ implementation-core = [
     "checker-qual",
     "javassist",
     "annotations",
-    "slf4j-api",
+#    "slf4j-api",
     "error_prone_annotations",
     "geantyref",
 #    transitives - end
