@@ -46,7 +46,7 @@ public abstract class StickyNoteLoader {
         long startTime = System.currentTimeMillis();
 
         try {
-            List<Dependency> dependencies = getDependencies(stickyNotes);
+            List<Dependency> dependencies = new ArrayList<>(getDependencies(stickyNotes));
             List<String> repositories = getRepositories(stickyNotes);
 
             Object relocation = stickyNotes.getField("RELOCATION").get(stickyNotes);
@@ -57,25 +57,31 @@ public abstract class StickyNoteLoader {
 
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libFolder.toPath());
 
-            relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
+            relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
+            relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
+
+            boolean hasSQLite = false;
+            try {
+                Class.forName("org{}sqlite{}JDBC".replace("{}", "."));
+                hasSQLite = true;
+            } catch (Exception ignored) {}
+
+            if (hasSQLite) {
+                dependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
+            }
 
             DependencyCache dependencyCache = new DependencyCache(id, libFolder);
-            Set<Dependency> cachedDependencies = dependencyCache.loadCache();
-            Set<Dependency> missingDependencies = getMissingDependencies(dependencies, cachedDependencies);
+            Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
+            Set<Dependency> missingDependencies = new HashSet<>(getMissingDependencies(dependencies, cachedDependencies));
+
+            if (hasSQLite) {
+                cachedDependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
+                missingDependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
+            }
 
             for (Dependency cachedDependency : dependencies) {
-                if (cachedDependency.getName().equals("sqlite-jdbc")) {
-                    try {
-                        Class.forName("org.sqlite.JDBC");
-                        continue;
-                    } catch (Exception ignored) {}
-                }
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
-                if (name.contains("packetevents")) {
-                    relocations.put("io{}github{}retrooper", relocationTo + "{}lib{}packetevents");
-                    continue;
-                }
                 if (cachedDependency.isStickyLoad()) {
                     if (cachedDependency.getRelocation() != null) {
                         String[] splitted = cachedDependency.getGroup().split("\\{}");
@@ -89,7 +95,6 @@ public abstract class StickyNoteLoader {
                 if (name.contains("stickynote")) {
                     relocations.put(relocationFrom, relocationTo + "{}lib{}stickynote");
                 }
-                relocations.put("com.mysql", relocationTo + "{}lib{}mysql");
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
                 String[] groupParts = group.split("\\{}");
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
@@ -165,21 +170,25 @@ public abstract class StickyNoteLoader {
 
     private void loadCachedDependencies(String id, Logger logger, LibraryManager libraryManager, Set<Dependency> cachedDependencies, String relocationFrom, String relocationTo) {
         logger.info("Library cache found, loading cached libraries...");
-        cachedDependencies.forEach(dependency -> {
+        for (Dependency dependency : cachedDependencies) {
             try {
                 Library library = createLibraryBuilder(dependency).build();
+
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
                     for (Dependency transitiveDependency : dependency.getTransitiveDependencies()) {
                         Library transitiveLibrary = createLibraryBuilder(transitiveDependency).build();
+                        if (transitiveLibrary.getVersion().equals("1.4.2") && transitiveLibrary.getArtifactId().startsWith("kotlinx-coroutines")) {
+                            continue;
+                        }
                         libraryManager.loadLibrary(transitiveLibrary);
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 
     private List<Dependency> getDependencies(Class<?> stickyNotes) {
@@ -283,6 +292,23 @@ public abstract class StickyNoteLoader {
                             .groupId(dependency.getGroup())
                             .artifactId(dependency.getName())
                             .version(dependency.getVersion())
+                            .excludeTransitiveDependency("org.jetbrains.kotlinx", "kotlinx-coroutines-core-jvm")
+                            .excludeTransitiveDependency("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-common")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
+                            .excludeTransitiveDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+                            .excludeTransitiveDependency("org.jetbrains", "annotations")
+                            .excludeTransitiveDependency("org.checkerframework", "checker-qual")
+                            .excludeTransitiveDependency("org.javassist", "javassist")
+                            .excludeTransitiveDependency("org.slf4j", "slf4j-api")
+                            .excludeTransitiveDependency("org.yaml", "snakeyaml")
+                            .excludeTransitiveDependency("com.google.gson", "gson")
+                            .excludeTransitiveDependency("com.google.errorprone", "error_prone_annotations")
+                            .excludeTransitiveDependency("io.leangen.geantyref", "geantyref")
+                            .excludeTransitiveDependency("org.xerial", "sqlite-jdbc")
 //                            .loaderId(id + "_" + dependency.getName())
 //                            .isolatedLoad(true)
                             .build()
@@ -302,6 +328,6 @@ public abstract class StickyNoteLoader {
     }
 
     public static File generateLibDirectory(File root) {
-        return new File(new File(root, "stickynote"), LIB_FOLDER);
+        return new File(root, "stickynote");
     }
 }

@@ -119,6 +119,14 @@ libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.r
 mccoroutines-bungeecord-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-api", version.ref = "mccoroutines" }
 mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-core", version.ref = "mccoroutines" }
 
+# transitives
+checker-qual = { group = "org.checkerframework", name = "checker-qual", version = "3.49.1" }
+javassist = { group = "org.javassist", name = "javassist", version = "3.30.2-GA" }
+annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.1" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version = "2.0.9" }
+error_prone_annotations = { group = "com.google.errorprone", name = "error_prone_annotations", version = "2.36.0" }
+geantyref = { group = "io.leangen.geantyref", name = "geantyref", version = "2.0.1" }
+
 [plugins]
 takenaka = { id = "me.kcra.takenaka.accessor", version.ref = "takenaka" }
 
@@ -134,6 +142,14 @@ implementation-loader = [
     "kotlin-poet-kotlin"
 ]
 implementation-core = [
+#    transitives - start
+    "checker-qual",
+    "javassist",
+    "annotations",
+    "slf4j-api",
+    "error_prone_annotations",
+    "geantyref",
+#    transitives - end
     "kotlin",
     "snakeyaml",
     "configurate-yaml",
