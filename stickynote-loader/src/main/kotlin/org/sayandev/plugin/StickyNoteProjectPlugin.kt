@@ -116,6 +116,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
                     relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
                     relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
+                    relocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
+                    relocate("org.yaml", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.yaml")
+                    relocate("org.spongepowered.configurate", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.configurate")
 //                    relocate("com.github.benmanes.caffeine", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.caffeine")
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()

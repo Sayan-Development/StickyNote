@@ -36,4 +36,23 @@ public class DependencyCache {
             e.printStackTrace();
         }
     }
+
+
+    public Set<Dependency> loadCacheFromFile(File cacheFile) {
+        Set<Dependency> cache = new HashSet<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))) {
+            Object obj = ois.readObject();
+            if (obj instanceof Set<?>) {
+                Set<?> set = (Set<?>) obj;
+                for (Object o : set) {
+                    if (o instanceof Dependency) {
+                        cache.add((Dependency) o);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cache;
+    }
 }
