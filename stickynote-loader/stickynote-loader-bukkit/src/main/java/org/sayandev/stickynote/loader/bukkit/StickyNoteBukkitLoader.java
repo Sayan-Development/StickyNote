@@ -22,7 +22,7 @@ public class StickyNoteBukkitLoader extends StickyNoteLoader {
     }
 
     public StickyNoteBukkitLoader(JavaPlugin javaPlugin, boolean reloadStickyNote) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        super(javaPlugin.getName());
+        super();
         this.javaPlugin = javaPlugin;
 
         File dataFolder = javaPlugin.getDataFolder();

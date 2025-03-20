@@ -25,7 +25,7 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
     }
 
     public StickyNoteVelocityLoader(Object plugin, String id, ProxyServer server, Logger logger, Path dataDirectory, SuspendingPluginContainer suspendingPluginContainer) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        super(id);
+        super();
         this.plugin = plugin;
         this.id = id;
         this.server = server;
