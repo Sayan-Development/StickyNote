@@ -23,30 +23,12 @@ public abstract class StickyNoteLoader {
     public static final Map<String, String> relocations = new HashMap<>();
 
     // name - group
-    public static final Map<String, String> transitiveLoadExclusion = new HashMap<>();
-
     private static final String LIB_FOLDER = "lib";
 
     private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
 
     protected StickyNoteLoader(String projectName) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         this.projectName = projectName;
-
-        transitiveLoadExclusion.put("kotlinx-coroutines-core-jvm", "org{}jetbrains{}kotlinx".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlinx-coroutines-core", "org{}jetbrains{}kotlinx".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlin-reflect", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlin-stdlib", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlin-stdlib-common", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlin-stdlib-jdk7", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveLoadExclusion.put("kotlin-stdlib-jdk8", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveLoadExclusion.put("annotations", "org{}jetbrains".replace("{}", "."));
-        transitiveLoadExclusion.put("checker-qual", "org{}checkerframework".replace("{}", "."));
-        transitiveLoadExclusion.put("javassist", "org{}javassist".replace("{}", "."));
-        transitiveLoadExclusion.put("snakeyaml", "org{}yaml".replace("{}", "."));
-        transitiveLoadExclusion.put("gson", "com{}google{}gson".replace("{}", "."));
-        transitiveLoadExclusion.put("error_prone_annotations", "com{}google{}errorprone".replace("{}", "."));
-        transitiveLoadExclusion.put("geantyref", "io{}leangen{}geantyref".replace("{}", "."));
-        transitiveLoadExclusion.put("sqlite-jdbc", "org{}xerial".replace("{}", "."));
     }
 
     protected abstract void onComplete();
@@ -80,32 +62,16 @@ public abstract class StickyNoteLoader {
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libDirectory.toPath());
 
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
-//            relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
-            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
-//            relocations.put("org{}yaml", relocationTo + "{}lib{}yaml");
-//            relocations.put("org{}spongepowered{}configurate", relocationTo + "{}lib{}configurate");
-//            relocations.put("org{}slf4j", relocationTo + "{}lib{}slf4j");
-
-            boolean hasSQLite = false;
-            try {
-                Class.forName("org{}sqlite{}JDBC".replace("{}", "."));
-                hasSQLite = true;
-            } catch (Exception ignored) {}
-
-            if (hasSQLite) {
-                dependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
-            }
+            relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
             Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
             Set<Dependency> missingDependencies = new HashSet<>(getMissingDependencies(dependencies, cachedDependencies));
 
-            if (hasSQLite) {
-                cachedDependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
-                missingDependencies.removeIf(dependency -> dependency.getName().equals("sqlite-jdbc"));
-            }
-
-            for (Dependency cachedDependency : dependencies) {
+            List<Dependency> allDependencies = new ArrayList<>();
+            allDependencies.addAll(dependencies);
+            allDependencies.addAll(getTransitiveDependencies(stickyNotes));
+            for (Dependency cachedDependency : allDependencies) {
                 String name = cachedDependency.getName();
                 String group = cachedDependency.getGroup();
                 if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
@@ -135,8 +101,6 @@ public abstract class StickyNoteLoader {
 
             long endTime = System.currentTimeMillis();
             logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
-            updateDependencyCache(libDirectory, new HashSet<>(dependencies));
-
             onComplete();
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,8 +130,6 @@ public abstract class StickyNoteLoader {
     }
 
     private void loadMissingDependencies(File libDirectory, String id, Logger logger, LibraryManager libraryManager, TransitiveDependencyHelper transitiveDependencyHelper, DependencyCache dependencyCache, List<Dependency> dependencies, Set<Dependency> missingDependencies, String relocationFrom, String relocationTo) throws InterruptedException, ExecutionException {
-        updateDependencyCache(libDirectory, new HashSet<>(dependencies));
-
         List<CompletableFuture<Void>> resolveFutures = dependencies.stream()
                 .map(dependency -> resolveTransitiveDependenciesAsync(id, transitiveDependencyHelper, dependency))
                 .toList();
@@ -239,6 +201,27 @@ public abstract class StickyNoteLoader {
                 }).toList();
     }
 
+    private List<Dependency> getTransitiveDependencies(Class<?> stickyNotes) {
+        return Arrays.stream(stickyNotes.getFields())
+                .filter(field -> field.getName().startsWith("TRANSITIVE_DEPENDENCY_"))
+                .map(field -> {
+                    try {
+                        Object dependencyObject = field.get(null);
+                        Class<?> dependencyFieldClass = dependencyObject.getClass();
+                        return new Dependency(
+                                (String) dependencyFieldClass.getMethod("getGroup").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getName").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getVersion").invoke(dependencyObject),
+                                (String) dependencyFieldClass.getMethod("getRelocation").invoke(dependencyObject),
+                                (boolean) dependencyFieldClass.getMethod("isStickyLoad").invoke(dependencyObject)
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }).toList();
+    }
+
     private List<String> getRepositories(Class<?> stickyNotes) {
         return Arrays.stream(stickyNotes.getFields())
                 .filter(field -> field.getName().startsWith("REPOSITORY_"))
@@ -291,11 +274,7 @@ public abstract class StickyNoteLoader {
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion())
                 .resolveTransitiveDependencies(false);
-
-        for (Map.Entry<String, String> downloadExclusion : transitiveLoadExclusion.entrySet()) {
-            libraryBuilder.excludeTransitiveDependency(new ExcludedDependency(downloadExclusion.getValue(), downloadExclusion.getKey()));
-        }
-
+      
         if (relocate) {
             if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
                 for (Map.Entry<String, String> relocation : relocations.entrySet()) {
@@ -327,98 +306,7 @@ public abstract class StickyNoteLoader {
         }
         return transitiveDependencies;
     }
-
-    private void updateDependencyCache(File libDirectory, Set<Dependency> dependencies) {
-        for (Map.Entry<String, String> downloadExclusions : transitiveLoadExclusion.entrySet()) {
-            String group = downloadExclusions.getValue();
-            String name = downloadExclusions.getKey();
-            List<String> allVersions = getAllVersions(libDirectory, group, name);
-            Dependency stickyNotesDependency = dependencies.stream().filter(dependency -> dependency.getGroup().replace("{}", ".").equals(group) && dependency.getName().equals(name)).findFirst().orElse(null);
-            if (stickyNotesDependency != null) {
-                allVersions.remove(stickyNotesDependency.getVersion());
-            } else {
-                continue;
-            }
-            for (String version : allVersions) {
-                deleteOldVersionDirectory(libDirectory, group, name, version);
-            }
-        }
-
-        /*List<Dependency> allDependencies = new ArrayList<>();
-        List<Dependency> cachedDependencies = getAllProjectsCachedDependencies(libDirectory, true);
-        for (Dependency dependency : cachedDependencies) {
-            allDependencies.add(dependency);
-            if (dependency.getTransitiveDependencies() != null) {
-                allDependencies.addAll(dependency.getTransitiveDependencies());
-            }
-        }
-
-        for (Dependency dependency : allDependencies) {
-            String group = dependency.getGroup();
-            String name = dependency.getName();
-            List<String> allVersions = getAllVersions(libDirectory, group, name);
-            if (allVersions.isEmpty()) {
-                continue;
-            }
-            String latestVersion = getLatestVersion(allVersions);
-            allVersions.remove(latestVersion);
-            for (String version : allVersions) {
-                deleteOldVersionDirectory(libDirectory, group, name, version);
-            }
-        }
-
-        try {
-            for (File subDirectory : Files.walk(libDirectory.toPath(), FileVisitOption.FOLLOW_LINKS).map(Path::toFile).filter(File::isDirectory).collect(Collectors.toList())) {
-                if (!subDirectory.exists()) continue;
-                if (subDirectory.getAbsolutePath().contains("libby")) continue;
-                if (Arrays.stream(subDirectory.listFiles()).anyMatch(file -> file.isDirectory() || file.getName().endsWith(".jar"))) {
-                    continue;
-                }
-                System.out.println("deleting directory: " + subDirectory.getAbsolutePath());
-                deleteDirectory(subDirectory);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        /*List<Dependency> cachedDependencies = getAllProjectsCachedDependencies(libDirectory, false);
-        Map<String, Set<String>> inUseDependencyVersions = new HashMap<>();
-
-        // Map all cached dependencies by their group+name and collect all versions
-        for (Dependency dependency : cachedDependencies) {
-            String key = dependency.getGroup() + ":" + dependency.getName();
-            inUseDependencyVersions.computeIfAbsent(key, k -> new HashSet<>()).add(dependency.getVersion());
-        }
-
-        // Map all cached dependencies by their group+name and collect all versions
-        for (Dependency dependency : dependencies) {
-            String key = dependency.getGroup() + ":" + dependency.getName();
-            inUseDependencyVersions.computeIfAbsent(key, k -> new HashSet<>()).add(dependency.getVersion());
-        }
-
-        for (Map.Entry<String, Set<String>> inUseDependencyVersion : inUseDependencyVersions.entrySet()) {
-            String[] groupName = inUseDependencyVersion.getKey().split(":");
-            String group = groupName[0];
-            String name = groupName[1];
-
-            // Get all versions of the dependency
-            List<String> allVersions = getAllVersions(libDirectory, group, name);
-
-            // Check if the version is in use
-            for (String version : allVersions) {
-                if (!inUseDependencyVersion.getValue().contains(version)) {
-                    deleteOldVersionDirectory(libDirectory, group, name, version);
-                }
-            }
-        }*/
-
-        /*try {
-            deleteUnusedDependencyDirectory(libDirectory);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
-    }
-
+  
     private String getLatestVersion(List<String> versions) {
         if (versions == null || versions.isEmpty()) {
             return null;
