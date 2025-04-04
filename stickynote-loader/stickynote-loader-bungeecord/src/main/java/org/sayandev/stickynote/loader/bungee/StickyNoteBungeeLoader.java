@@ -14,7 +14,7 @@ public class StickyNoteBungeeLoader extends StickyNoteLoader {
     Plugin plugin;
 
     public StickyNoteBungeeLoader(Plugin plugin) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        super();
+        super(plugin.getDescription().getName());
         this.plugin = plugin;
 
         File dataFolder = plugin.getDataFolder();

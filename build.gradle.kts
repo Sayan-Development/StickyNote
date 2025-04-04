@@ -2,17 +2,19 @@ plugins {
     kotlin("jvm") version "2.1.0"
     `version-catalog`
     `maven-publish`
+    id("com.gradleup.shadow") version "9.0.0-beta12"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.8.9.157"
+    version = "1.8.10-fat-alpha2"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("version-catalog")
     plugins.apply("java-library")
     plugins.apply("kotlin")
+    plugins.apply("com.gradleup.shadow")
 
     dependencies {
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
@@ -21,6 +23,10 @@ allprojects {
     tasks {
         java {
             disableAutoTargetJvm()
+        }
+
+        shadowJar {
+            archiveClassifier.set(null as String?)
         }
     }
 
@@ -136,7 +142,8 @@ subprojects {
                     if (project.name.contains("catalog")) {
                         from(components["versionCatalog"])
                     } else {
-                        from(components["java"])
+                        from(components["shadow"])
+//                        from(components["java"])
                     }
 
                     setPom(this)
