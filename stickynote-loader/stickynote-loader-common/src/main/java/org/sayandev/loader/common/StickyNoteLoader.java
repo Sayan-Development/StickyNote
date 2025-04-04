@@ -62,6 +62,7 @@ public abstract class StickyNoteLoader {
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libDirectory.toPath());
 
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
+//            relocations.put("org{}sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
