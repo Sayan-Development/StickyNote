@@ -6,12 +6,8 @@ import com.alessiodp.libby.logging.LogLevel;
 import com.alessiodp.libby.transitive.ExcludedDependency;
 import com.alessiodp.libby.transitive.TransitiveDependencyHelper;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.nio.file.FileSystemException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -23,11 +19,11 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7"/*, "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm"*/, "takenaka", "mappings", "gson");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson");
     public static final Map<String, String> relocations = new HashMap<>();
 
     // name - group
-    public static final Map<String, String> transitiveDownloadExclusions = new HashMap<>();
+    public static final Map<String, String> transitiveLoadExclusion = new HashMap<>();
 
     private static final String LIB_FOLDER = "lib";
 
@@ -36,21 +32,21 @@ public abstract class StickyNoteLoader {
     protected StickyNoteLoader(String projectName) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         this.projectName = projectName;
 
-        transitiveDownloadExclusions.put("kotlinx-coroutines-core-jvm", "org{}jetbrains{}kotlinx".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlinx-coroutines-core", "org{}jetbrains{}kotlinx".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlin-reflect", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlin-stdlib", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlin-stdlib-common", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlin-stdlib-jdk7", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveDownloadExclusions.put("kotlin-stdlib-jdk8", "org{}jetbrains{}kotlin".replace("{}", "."));
-        transitiveDownloadExclusions.put("annotations", "org{}jetbrains".replace("{}", "."));
-        transitiveDownloadExclusions.put("checker-qual", "org{}checkerframework".replace("{}", "."));
-        transitiveDownloadExclusions.put("javassist", "org{}javassist".replace("{}", "."));
-        transitiveDownloadExclusions.put("snakeyaml", "org{}yaml".replace("{}", "."));
-        transitiveDownloadExclusions.put("gson", "com{}google{}gson".replace("{}", "."));
-        transitiveDownloadExclusions.put("error_prone_annotations", "com{}google{}errorprone".replace("{}", "."));
-        transitiveDownloadExclusions.put("geantyref", "io{}leangen{}geantyref".replace("{}", "."));
-        transitiveDownloadExclusions.put("sqlite-jdbc", "org{}xerial".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlinx-coroutines-core-jvm", "org{}jetbrains{}kotlinx".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlinx-coroutines-core", "org{}jetbrains{}kotlinx".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlin-reflect", "org{}jetbrains{}kotlin".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlin-stdlib", "org{}jetbrains{}kotlin".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlin-stdlib-common", "org{}jetbrains{}kotlin".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlin-stdlib-jdk7", "org{}jetbrains{}kotlin".replace("{}", "."));
+        transitiveLoadExclusion.put("kotlin-stdlib-jdk8", "org{}jetbrains{}kotlin".replace("{}", "."));
+        transitiveLoadExclusion.put("annotations", "org{}jetbrains".replace("{}", "."));
+        transitiveLoadExclusion.put("checker-qual", "org{}checkerframework".replace("{}", "."));
+        transitiveLoadExclusion.put("javassist", "org{}javassist".replace("{}", "."));
+        transitiveLoadExclusion.put("snakeyaml", "org{}yaml".replace("{}", "."));
+        transitiveLoadExclusion.put("gson", "com{}google{}gson".replace("{}", "."));
+        transitiveLoadExclusion.put("error_prone_annotations", "com{}google{}errorprone".replace("{}", "."));
+        transitiveLoadExclusion.put("geantyref", "io{}leangen{}geantyref".replace("{}", "."));
+        transitiveLoadExclusion.put("sqlite-jdbc", "org{}xerial".replace("{}", "."));
     }
 
     protected abstract void onComplete();
@@ -85,7 +81,7 @@ public abstract class StickyNoteLoader {
 
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
 //            relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
-//            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
+            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
 //            relocations.put("org{}yaml", relocationTo + "{}lib{}yaml");
 //            relocations.put("org{}spongepowered{}configurate", relocationTo + "{}lib{}configurate");
 //            relocations.put("org{}slf4j", relocationTo + "{}lib{}slf4j");
@@ -296,7 +292,7 @@ public abstract class StickyNoteLoader {
                 .version(dependency.getVersion())
                 .resolveTransitiveDependencies(false);
 
-        for (Map.Entry<String, String> downloadExclusion : transitiveDownloadExclusions.entrySet()) {
+        for (Map.Entry<String, String> downloadExclusion : transitiveLoadExclusion.entrySet()) {
             libraryBuilder.excludeTransitiveDependency(new ExcludedDependency(downloadExclusion.getValue(), downloadExclusion.getKey()));
         }
 
@@ -333,7 +329,7 @@ public abstract class StickyNoteLoader {
     }
 
     private void updateDependencyCache(File libDirectory, Set<Dependency> dependencies) {
-        for (Map.Entry<String, String> downloadExclusions : transitiveDownloadExclusions.entrySet()) {
+        for (Map.Entry<String, String> downloadExclusions : transitiveLoadExclusion.entrySet()) {
             String group = downloadExclusions.getValue();
             String name = downloadExclusions.getKey();
             List<String> allVersions = getAllVersions(libDirectory, group, name);
