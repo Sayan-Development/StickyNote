@@ -5,7 +5,7 @@ import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Logger
 
-class SQLiteDatabase(dbFile: File, logger: Logger) : SQLiteExecutor(dbFile, logger) {
+class SQLiteDatabase(dbFile: File, logger: Logger, maxConnectionPool: Int = 5) : SQLiteExecutor(dbFile, logger, maxConnectionPool) {
     override fun connect() {
         super.connect()
         startQueue()
@@ -21,10 +21,6 @@ class SQLiteDatabase(dbFile: File, logger: Logger) : SQLiteExecutor(dbFile, logg
             future.complete(null)
         }.start()
         return future
-    }
-
-    override fun shutdown() {
-        connection?.close()
     }
 
     private fun startQueue() {

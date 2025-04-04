@@ -6,12 +6,8 @@ import com.alessiodp.libby.logging.LogLevel;
 import com.alessiodp.libby.transitive.ExcludedDependency;
 import com.alessiodp.libby.transitive.TransitiveDependencyHelper;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.nio.file.FileSystemException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -23,7 +19,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7"/*, "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm"*/, "takenaka", "mappings", "gson");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson");
     public static final Map<String, String> relocations = new HashMap<>();
 
     // name - group
@@ -278,7 +274,7 @@ public abstract class StickyNoteLoader {
                 .artifactId(dependency.getName())
                 .version(dependency.getVersion())
                 .resolveTransitiveDependencies(false);
-
+      
         if (relocate) {
             if (dependency.getRelocation() != null || !dependency.isStickyLoad()) {
                 for (Map.Entry<String, String> relocation : relocations.entrySet()) {
@@ -310,7 +306,7 @@ public abstract class StickyNoteLoader {
         }
         return transitiveDependencies;
     }
-
+  
     private String getLatestVersion(List<String> versions) {
         if (versions == null || versions.isEmpty()) {
             return null;
