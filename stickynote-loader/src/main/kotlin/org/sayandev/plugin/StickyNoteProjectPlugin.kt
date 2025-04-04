@@ -5,6 +5,7 @@ import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.*
 
@@ -115,17 +116,13 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     relocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
                     relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
                     relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
-                    relocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
-//                    relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
+//                    relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
+                    relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
 //                    relocate("com.github.benmanes.caffeine", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.caffeine")
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()
                         for (alias in bundle) {
                             if (relocateExclusion.any { alias.module.name == it }) continue
-                            if (alias.module.name.contains("packetevents")) {
-                                relocate("io.github.retrooper", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.packetevents")
-                                continue
-                            }
                             // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
                             if (alias.module.name.contains("adventure")) {
 //                            relocate("net.kyori.adventure.text.serializer", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.text.serializer")
@@ -143,6 +140,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     }
                 }
                 mergeServiceFiles()
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             }
 
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
