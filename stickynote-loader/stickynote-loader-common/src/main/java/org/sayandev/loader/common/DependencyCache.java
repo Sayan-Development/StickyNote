@@ -30,6 +30,16 @@ public class DependencyCache {
     }
 
     public void saveCache(Set<Dependency> dependencies) {
+        if (!cacheFile.exists()) {
+            try {
+                cacheFile.getParentFile().mkdirs();
+                cacheFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cacheFile))) {
             oos.writeObject(dependencies);
         } catch (IOException e) {

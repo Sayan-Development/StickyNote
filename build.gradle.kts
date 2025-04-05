@@ -143,6 +143,7 @@ subprojects {
                         from(components["versionCatalog"])
                     } else {
                         from(components["shadow"])
+                        artifact(tasks["sourcesJar"])
 //                        from(components["java"])
                     }
 

@@ -22,9 +22,6 @@ public abstract class StickyNoteLoader {
     public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson");
     public static final Map<String, String> relocations = new HashMap<>();
 
-    // name - group
-    private static final String LIB_FOLDER = "lib";
-
     private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
 
     protected StickyNoteLoader(String projectName) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
@@ -37,15 +34,11 @@ public abstract class StickyNoteLoader {
     Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
     Boolean relocate = (Boolean) stickyNotes.getField("RELOCATE").get(stickyNotes);
 
-    public void load(String id, File dataDirectory, Logger logger, LibraryManager libraryManager) {
-        File libDirectory = generateLibDirectory(dataDirectory);
+    public void load(String id, File dataDirectory, Logger logger, LibraryManager libraryManager, boolean withLibDirectory) {
+        File libDirectory = generateLibDirectory(dataDirectory, withLibDirectory);
 
         File[] files = libDirectory.listFiles();
-        if (files == null || !Arrays.stream(files).map(File::getName).toList().contains(LIB_FOLDER)) {
-            logger.info("Some of the libraries are missing, Loading libraries... this might take up to a minute depending on your connection.");
-        } else {
-            logger.info("Loading libraries... this might take a few seconds.");
-        }
+        logger.info("Loading libraries... this might take up to a minute depending on your connection.");
 
         long startTime = System.currentTimeMillis();
 
@@ -64,6 +57,7 @@ public abstract class StickyNoteLoader {
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
 //            relocations.put("org{}sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
+            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
             Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
@@ -102,6 +96,20 @@ public abstract class StickyNoteLoader {
 
             long endTime = System.currentTimeMillis();
             logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
+
+            List<Dependency> allProjectsCachedDependencies = getAllProjectsCachedDependencies(libDirectory, true);
+            File[] libDirectoryFiles = libDirectory.listFiles();
+            if (libDirectoryFiles != null) {
+
+                for (Dependency projectDependency : allProjectsCachedDependencies) {
+                    List<String> versions = getAllVersions(libDirectory, projectDependency.getGroup(), projectDependency.getName());
+                    List<Dependency> toBeRemovedVersions = versions.stream().filter(version -> !version.equals(projectDependency.getVersion())).map(version -> new Dependency(projectDependency.getGroup(), projectDependency.getName(), version, projectDependency.getRelocation(), projectDependency.isStickyLoad())).toList();
+                    for (Dependency dependency : toBeRemovedVersions) {
+                        deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
+                    }
+                }
+            }
+
             onComplete();
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,6 +117,12 @@ public abstract class StickyNoteLoader {
             executorService.shutdown();
             scheduler.shutdown();
         }
+    }
+
+    private List<File> getVersionFiles(File libDirectory, String group, String name) {
+        File[] files = versionsDirectory(libDirectory, group, name).listFiles();
+        if (files == null) return Collections.emptyList();
+        return Arrays.stream(files).filter(File::isDirectory).collect(Collectors.toList());
     }
 
     private static void configureLibraryManager(LibraryManager libraryManager, List<String> repositories) {
@@ -355,7 +369,7 @@ public abstract class StickyNoteLoader {
             try {
                 allDependencies.addAll(new DependencyCache("temp", libDirectory).loadCacheFromFile(cacheFile));
             } catch (Exception e) {
-                e.printStackTrace();
+                e.fillInStackTrace();
             }
         }
         return allDependencies;
@@ -379,7 +393,8 @@ public abstract class StickyNoteLoader {
 
     private File versionsDirectory(File libFolder, String group, String name) {
         String groupPath = group.replace("{}", "/").replace(".", "/");
-        return new File(libFolder, groupPath + "/" + name);
+        File dependencyVersionsFile = new File(libFolder, groupPath + "/" + name);
+        return dependencyVersionsFile;
     }
 
     private File versionDirectory(File libFolder, String group, String name, String version) {
@@ -414,7 +429,13 @@ public abstract class StickyNoteLoader {
         logger.info(String.format("Progress: %d%% (%d/%d dependencies loaded)", percentage, completed, totalDependencies));
     }
 
-    public static File generateLibDirectory(File root) {
-        return new File(root, "stickynote");
+    public static File generateLibDirectory(File root, boolean withLibDirectory) {
+        File file;
+        if (!withLibDirectory) {
+            file = new File(root, "stickynote");
+        } else {
+            file = new File(new File(root, "stickynote"), "lib");
+        }
+        return file;
     }
 }
