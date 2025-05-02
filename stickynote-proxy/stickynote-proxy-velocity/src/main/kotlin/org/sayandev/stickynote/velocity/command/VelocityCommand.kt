@@ -42,7 +42,7 @@ abstract class VelocityCommand(
     *aliases
 ) {
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix: Component = Component.empty()
 
     init {
         initializeManagerAndRoot()

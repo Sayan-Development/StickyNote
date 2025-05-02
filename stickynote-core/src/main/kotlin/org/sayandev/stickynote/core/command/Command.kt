@@ -26,7 +26,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     open fun rootBuilder(builder: MutableCommandBuilder<S>) { }
     open fun rootHandler(context: CommandContext<S>) { }
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix: Component = Component.empty()
 
     lateinit var command: MutableCommandBuilder<S>
 

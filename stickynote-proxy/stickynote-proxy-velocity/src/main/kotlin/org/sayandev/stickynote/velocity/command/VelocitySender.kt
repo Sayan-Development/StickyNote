@@ -11,9 +11,8 @@ open class VelocitySender(
     private var source: CommandSource,
 ): SenderExtension<CommandSource, Player> {
 
-    private var onlinePlayersMessage = Component.text("Only players can use this command.")
+    private var onlinePlayersMessage: Component = Component.text("Only players can use this command.")
         .color(TextColor.color(192, 32, 16))
-        .asComponent()
 
     override fun player(): Player? {
         if (source is Player) return (source as Player)

@@ -80,8 +80,12 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 setUrl("https://oss.sonatype.org/content/repositories/snapshots")
             }
             maven {
-                name = "alessiodp"
+                name = "alessiodp-snapshots"
                 setUrl("https://repo.alessiodp.com/snapshots")
+            }
+            maven {
+                name = "alessiodp-releases"
+                setUrl("https://repo.alessiodp.com/releases/")
             }
             maven {
                 name = "jitpack"
@@ -130,6 +134,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                            relocate("net.kyori.option", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.adventure.option")
                                 continue
                             }
+                            if (alias.module.name == "sqlite-jdbc") continue
                             relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")
                         }
                     }

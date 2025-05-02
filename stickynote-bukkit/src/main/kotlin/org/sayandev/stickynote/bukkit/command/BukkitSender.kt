@@ -14,9 +14,8 @@ open class BukkitSender(
     val sourceStack: CommandSourceStack?
 ): SenderExtension<CommandSender, Player> {
 
-    private var onlinePlayersMessage = Component.text("Only players can use this command.")
+    private var onlinePlayersMessage: Component = Component.text("Only players can use this command.")
         .color(TextColor.color(192, 32, 16))
-        .asComponent()
 
     override fun player(): Player? {
         if (commandSender is Player) return (commandSender as Player).player

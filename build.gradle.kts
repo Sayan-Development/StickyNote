@@ -63,8 +63,12 @@ allprojects {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
         maven {
-            name = "alessiodp"
+            name = "alessiodp-snapshots"
             url = uri("https://repo.alessiodp.com/snapshots")
+        }
+        maven {
+            name = "alessiodp-releases"
+            url = uri("https://repo.alessiodp.com/releases/")
         }
         maven {
             name = "jitpack"

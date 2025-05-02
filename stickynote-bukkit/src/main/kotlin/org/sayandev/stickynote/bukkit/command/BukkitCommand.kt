@@ -65,7 +65,7 @@ abstract class BukkitCommand(
     *aliases
 ) {
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix: Component = Component.empty()
 
     val help: MinecraftHelp<BukkitSender>
     val exceptionHandler: MinecraftExceptionHandler<BukkitSender>
