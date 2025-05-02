@@ -29,7 +29,7 @@ dependencies {
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.4")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.5")
     implementation(accessorRuntime())
 }
 
@@ -45,7 +45,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.4")
+    versionRange("1.8.8", "1.21.5")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
@@ -253,6 +253,7 @@ accessors {
     val ServerScoreboardMethod = "net.minecraft.server.ServerScoreboard\$Method"
     val RemoteChatSessionData = "net.minecraft.network.chat.RemoteChatSession\$Data"
     val ClientInformation = "net.minecraft.server.level.ClientInformation"
+    val ClientBrandRetriever = "net.minecraft.client.ClientBrandRetriever"
     val PacketFlow = "net.minecraft.network.protocol.PacketFlow"
     val CommonListenerCookie = "net.minecraft.server.network.CommonListenerCookie"
     val GameProfile = "com.mojang.authlib.GameProfile"
@@ -278,7 +279,7 @@ accessors {
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
     val Arrow = "net.minecraft.world.entity.projectile.Arrow"
-    val ThrownPotion = "net.minecraft.world.entity.projectile.ThrownPotion"
+    val AbstractThrownPotion = "net.minecraft.world.entity.projectile.AbstractThrownPotion"
     val ThrownTrident = "net.minecraft.world.entity.projectile.ThrownTrident"
     val ThrowableItemProjectile = "net.minecraft.world.entity.projectile.ThrowableItemProjectile"
     val ItemEntity = "net.minecraft.world.entity.item.ItemEntity"
@@ -1721,6 +1722,9 @@ accessors {
     mapClass(ClientInformation) {
         methodInferred("createDefault", "1.20.4")
     }
+    mapClass(ClientBrandRetriever) {
+        method(String::class, "getClientModName")
+    }
     mapClass(PacketFlow) {
         enumConstant(
             "CLIENTBOUND",
@@ -1914,7 +1918,7 @@ accessors {
         methodInferred("getColor", "1.16.5")
         methodInferred("setFixedColor", "1.16.5", Int::class)
     }
-    mapClass(ThrownPotion) {
+    mapClass(AbstractThrownPotion) {
         constructor(EntityType, Level)
         constructor(LevelSpigot)
         fieldInferred("DATA_ITEM_STACK", "1.15.2")
