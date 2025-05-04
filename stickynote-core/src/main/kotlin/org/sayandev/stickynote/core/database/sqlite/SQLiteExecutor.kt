@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import org.sayandev.stickynote.core.database.Database
 import org.sayandev.stickynote.core.database.Priority
 import org.sayandev.stickynote.core.database.Query
+import org.sayandev.stickynote.core.database.Query.StatusCode
 import org.sayandev.stickynote.core.database.QueryResult
 import java.io.File
 import java.io.IOException
@@ -136,6 +137,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
         for (priority in Priority.entries) {
             val queries = queue[priority] ?: continue
             val query = queries.firstOrNull() ?: continue
+
+            if (query.hasDoneRequirements() && query.statusCode != StatusCode.RUNNING) {
+                query.statusCode = StatusCode.RUNNING
+            }
 
             val queryResult = executeQuerySync(query)
             if (queryResult.statusCode != Query.StatusCode.NOT_STARTED) {
