@@ -88,7 +88,10 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
     }
 
     fun executeQuerySync(query: Query): QueryResult {
-        val connection = getConnection() ?: return QueryResult(Query.StatusCode.FAILED, null)
+        val connection = getConnection() ?: let {
+            query.statusCode = Query.StatusCode.FAILED
+            return QueryResult(Query.StatusCode.FAILED, null)
+        }
 
         try {
             connection.use { conn ->
@@ -111,6 +114,7 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
                     query.complete(resultSet)
                 }
 
+                query.statusCode = Query.StatusCode.FINISHED
                 return QueryResult(Query.StatusCode.FINISHED, resultSet)
             }
         } catch (e: SQLException) {
@@ -120,9 +124,11 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
             query.increaseFailedAttempts()
             if (query.failedAttempts > failAttemptRemoval) {
                 onQueryRemoveDueToFail(query)
+                query.statusCode = Query.StatusCode.FINISHED
                 return QueryResult(Query.StatusCode.FINISHED, null)
             }
         }
+        query.statusCode = Query.StatusCode.FAILED
         return QueryResult(Query.StatusCode.FAILED, null)
     }
 
