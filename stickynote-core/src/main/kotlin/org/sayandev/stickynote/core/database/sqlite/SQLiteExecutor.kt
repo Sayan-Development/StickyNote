@@ -131,7 +131,8 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
             val queries = queue[priority] ?: continue
             val query = queries.firstOrNull() ?: continue
 
-            if (executeQuerySync(query).statusCode == Query.StatusCode.FINISHED) {
+            val queryResult = executeQuerySync(query)
+            if (queryResult.statusCode != Query.StatusCode.NOT_STARTED) {
                 queries.removeFirstOrNull()
             }
             break
