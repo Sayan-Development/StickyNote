@@ -35,11 +35,11 @@ import kotlin.jvm.optionals.getOrNull
 fun commandManager(): CommandManager<BukkitSender> {
     val bukkitSenderMapper = { commandSender: CommandSender -> BukkitSender(commandSender, null) }
     val backwardsMapper = { sayanSenderExtension: BukkitSender -> sayanSenderExtension.platformSender() }
-    val manager = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
+    val manager = if (ServerVersion.isAtLeast(20, 5)) {
         val modernMapper = { sourceStack: CommandSourceStack -> BukkitSender(sourceStack.sender, sourceStack) }
         val sourceMapper = { bukkitSender: BukkitSender -> bukkitSender.sourceStack!! }
         PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
-            .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
+            .executionCoordinator(ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor()))
             .buildOnEnable(plugin)
             .apply {
                 this.brigadierManager().settings().set(BrigadierSetting.FORCE_EXECUTABLE,  true)
@@ -47,9 +47,16 @@ fun commandManager(): CommandManager<BukkitSender> {
     } else {
         LegacyPaperCommandManager(
             plugin,
-            ExecutionCoordinator.simpleCoordinator(),
+            ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor()),
             SenderMapper.create(bukkitSenderMapper, backwardsMapper),
-        )
+        ).apply {
+            if (this.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+                this.registerBrigadier()
+            }
+            if (this.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                this.registerAsynchronousCompletions()
+            }
+        }
     }
     manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
     return manager
@@ -83,12 +90,9 @@ abstract class BukkitCommand(
     }
 
     init {
-        try {
+        /*try {
             (manager as? LegacyPaperCommandManager)?.registerAsynchronousCompletions()
-        } catch (_: IllegalStateException) { }
-        if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
-            (manager as? LegacyPaperCommandManager)?.registerBrigadier()
-        }
+        } catch (_: IllegalStateException) { }*/
 
         val audienceMapper = { sayanSenderExtension: BukkitSender -> AdventureUtils.audience.sender(sayanSenderExtension.platformSender()) }
         exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
