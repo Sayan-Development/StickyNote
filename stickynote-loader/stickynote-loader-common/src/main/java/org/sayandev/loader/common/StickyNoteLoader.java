@@ -412,14 +412,18 @@ public abstract class StickyNoteLoader {
                     deleteDirectory(file);
                 } else {
                     if (!file.delete()) {
-                        throw new IOException("Failed to delete file: " + file);
+                        // Try to delete on JVM exit as a fallback
+                        file.deleteOnExit();
+                        // Log a warning instead of throwing
+                        System.err.println("Warning: Failed to delete file (in use?): " + file.getAbsolutePath());
                     }
                 }
             }
         }
 
         if (!directory.delete()) {
-            throw new IOException("Failed to delete directory: " + directory);
+            directory.deleteOnExit();
+            System.err.println("Warning: Failed to delete directory (in use?): " + directory.getAbsolutePath());
         }
     }
 

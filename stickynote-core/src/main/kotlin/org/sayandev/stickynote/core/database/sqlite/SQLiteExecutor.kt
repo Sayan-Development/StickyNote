@@ -95,30 +95,30 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
         }
 
         try {
-            connection.use { conn ->
-                val preparedStatement = query.createPreparedStatement(conn)
-                var resultSet: ResultSet? = null
+            val preparedStatement = query.createPreparedStatement(connection)
+            var resultSet: ResultSet? = null
 
-                if (query.statement.startsWith("INSERT") ||
-                    query.statement.startsWith("UPDATE") ||
-                    query.statement.startsWith("DELETE") ||
-                    query.statement.startsWith("CREATE") ||
-                    query.statement.startsWith("ALTER")
-                ) {
-                    preparedStatement.executeUpdate()
-                    preparedStatement.close()
-                } else {
-                    resultSet = preparedStatement.executeQuery()
-                }
-
-                if (resultSet != null) {
-                    query.complete(resultSet)
-                }
-
-                query.statusCode = Query.StatusCode.FINISHED
-                return QueryResult(Query.StatusCode.FINISHED, resultSet)
+            if (query.statement.startsWith("INSERT") ||
+                query.statement.startsWith("UPDATE") ||
+                query.statement.startsWith("DELETE") ||
+                query.statement.startsWith("CREATE") ||
+                query.statement.startsWith("ALTER")
+            ) {
+                preparedStatement.executeUpdate()
+                preparedStatement.close()
+                connection.close()
+            } else {
+                resultSet = preparedStatement.executeQuery()
             }
+
+            if (resultSet != null) {
+                query.complete(resultSet)
+            }
+
+            query.statusCode = Query.StatusCode.FINISHED
+            return QueryResult(Query.StatusCode.FINISHED, resultSet)
         } catch (e: SQLException) {
+            connection.close()
             onQueryFail(query)
             e.printStackTrace()
 

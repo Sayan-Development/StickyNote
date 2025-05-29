@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 
 class StickyNoteProjectPlugin : Plugin<Project> {
@@ -108,6 +109,19 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 }
                 stickyLoadDependencies.add(StickyLoadDependency(stickyLoadDependency.group!!, stickyLoadDependency.name, rawVersion, relocation))
                 project.dependencies.add("compileOnlyApi", "${stickyLoadDependency.group}:${stickyLoadDependency.name}:${rawVersion}")
+                project.dependencies.add("testImplementation", "${stickyLoadDependency.group}:${stickyLoadDependency.name}:${rawVersion}")
+            }
+//            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-test")
+            project.dependencies.add("testImplementation", project.dependencies.platform("org.junit:junit-bom:5.12.2"))
+            project.dependencies.add("testImplementation", "org.junit.jupiter:junit-jupiter")
+            project.dependencies.add("testRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            project.dependencies.add("testImplementation", "ch.qos.logback:logback-classic:1.5.18")
+
+            project.tasks.withType<Test> {
+                useJUnitPlatform()
+                testLogging {
+                    events("passed", "skipped", "failed")
+                }
             }
 
             createStickyNoteLoader.stickyLoadDependencies.set(stickyLoadDependencies)
@@ -159,7 +173,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             }
 
             project.dependencies.add("compileOnlyApi", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
+            project.dependencies.add("testImplementation", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
             project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
+            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")

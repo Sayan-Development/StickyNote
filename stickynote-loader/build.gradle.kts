@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.1.20"
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
@@ -13,7 +13,8 @@ dependencies {
     api(libs.kotlin.poet.java)
 
     implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
+    testImplementation(kotlin("test"))
 }
 
 tasks {

@@ -50,6 +50,9 @@ public class DependencyCache {
 
     public Set<Dependency> loadCacheFromFile(File cacheFile) {
         Set<Dependency> cache = new HashSet<>();
+        if (!cacheFile.exists() || cacheFile.length() == 0) {
+            return cache;
+        }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))) {
             Object obj = ois.readObject();
             if (obj instanceof Set<?>) {
@@ -62,6 +65,7 @@ public class DependencyCache {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            // Optionally: cacheFile.delete();
         }
         return cache;
     }
