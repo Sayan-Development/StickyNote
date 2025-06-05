@@ -17,16 +17,32 @@ public class DependencyCache {
     }
 
     public Set<Dependency> loadCache() {
-        if (!cacheFile.exists()) {
+        if (!cacheFile.exists() || cacheFile.length() == 0) {
             return new HashSet<>();
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))) {
-            return (Set<Dependency>) ois.readObject();
+            Object obj = ois.readObject();
+            if (obj instanceof Set<?>) {
+                return handleDeserializedSet((Set<?>) obj);
+            }
+            return new HashSet<>();
         } catch (IOException | ClassNotFoundException e) {
+            // If we encounter corruption, delete the cache file to prevent future errors
+            cacheFile.delete();
             e.printStackTrace();
             return new HashSet<>();
         }
+    }
+
+    private Set<Dependency> handleDeserializedSet(Set<?> set) {
+        Set<Dependency> result = new HashSet<>();
+        for (Object o : set) {
+            if (o instanceof Dependency) {
+                result.add((Dependency) o);
+            }
+        }
+        return result;
     }
 
     public void saveCache(Set<Dependency> dependencies) {
@@ -49,24 +65,21 @@ public class DependencyCache {
 
 
     public Set<Dependency> loadCacheFromFile(File cacheFile) {
-        Set<Dependency> cache = new HashSet<>();
         if (!cacheFile.exists() || cacheFile.length() == 0) {
-            return cache;
+            return new HashSet<>();
         }
+
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))) {
             Object obj = ois.readObject();
             if (obj instanceof Set<?>) {
-                Set<?> set = (Set<?>) obj;
-                for (Object o : set) {
-                    if (o instanceof Dependency) {
-                        cache.add((Dependency) o);
-                    }
-                }
+                return handleDeserializedSet((Set<?>) obj);
             }
+            return new HashSet<>();
         } catch (Exception e) {
+            // Delete corrupted cache files
+            cacheFile.delete();
             e.printStackTrace();
-            // Optionally: cacheFile.delete();
+            return new HashSet<>();
         }
-        return cache;
     }
 }

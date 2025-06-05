@@ -13,7 +13,7 @@ dependencies {
     api(libs.kotlin.poet.java)
 
     implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
     testImplementation(kotlin("test"))
 }
 

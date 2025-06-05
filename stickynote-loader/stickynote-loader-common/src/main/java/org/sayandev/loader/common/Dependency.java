@@ -2,10 +2,7 @@ package org.sayandev.loader.common;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.List;
 
 public class Dependency implements Serializable {
@@ -81,15 +78,23 @@ public class Dependency implements Serializable {
         oos.writeUTF(group);
         oos.writeUTF(name);
         oos.writeUTF(version);
+        oos.writeObject(relocation);
+        oos.writeBoolean(stickyLoad);
         oos.writeBoolean(transitiveResolved);
         oos.writeObject(transitiveDependencies);
     }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        this.group = ois.readUTF();
-        this.name = ois.readUTF();
-        this.version = ois.readUTF();
-        this.transitiveResolved = ois.readBoolean();
-        this.transitiveDependencies = (List<Dependency>) ois.readObject();
+        try {
+            this.group = ois.readUTF();
+            this.name = ois.readUTF();
+            this.version = ois.readUTF();
+            this.relocation = (String) ois.readObject();
+            this.stickyLoad = ois.readBoolean();
+            this.transitiveResolved = ois.readBoolean();
+            this.transitiveDependencies = (List<Dependency>) ois.readObject();
+        } catch (OptionalDataException e) {
+            // Probably an old cache file with missing fields
+        }
     }
 }

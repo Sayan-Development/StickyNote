@@ -19,7 +19,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson");
+    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson", "exposed", "adventure");
     public static final Map<String, String> relocations = new HashMap<>();
 
     private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
@@ -55,9 +55,13 @@ public abstract class StickyNoteLoader {
             TransitiveDependencyHelper transitiveDependencyHelper = new TransitiveDependencyHelper(libraryManager, libDirectory.toPath());
 
             relocations.put("com{}mysql", relocationTo + "{}lib{}mysql");
+            /*String kot = "kot";
+            String lin = "lon";
+            relocations.put(kot + lin.replace("o", "i"), relocationTo + "{}lib{}kotlin");*/
+
 //            relocations.put("org{}sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
-            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
+//            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
             Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
