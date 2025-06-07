@@ -16,7 +16,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
      * Exclude dependency from relocations. should be the same in StickyNoteLoader
      * @see org.sayandev.loader.common.StickyNoteLoader
      * */
-    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson", "exposed", "adventure")
+    val relocateExclusion = setOf("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson", "adventure")
 
     @KotlinPoetJavaPoetPreview
     override fun apply(target: Project) {
@@ -137,7 +137,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 //                    relocate("kotlin", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlin")
 //                    relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
                     relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
-//                    relocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
+                    relocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
 //                    relocate("com.github.benmanes.caffeine", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.caffeine")
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()
@@ -159,6 +159,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                             relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                         }
                     }
+                    relocators.get()
                 }
                 mergeServiceFiles()
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE

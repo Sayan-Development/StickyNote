@@ -61,7 +61,7 @@ public abstract class StickyNoteLoader {
 
 //            relocations.put("org{}sqlite", relocationTo + "{}lib{}sqlite");
             relocations.put("kotlinx{}coroutines", relocationTo + "{}lib{}kotlinx{}coroutines");
-//            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
+            relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
             Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
