@@ -1907,6 +1907,7 @@ accessors {
         methodInferred("isNoBasePlate", "1.16.5")
         methodInferred("isShowArms", "1.16.5")
         methodInferred("isSmall", "1.16.5")
+        method(Void.TYPE, "setGravity", Boolean::class)
         // TODO
 //        methodInferred("spigot:setGravity:1.8.8", "1.16.5", Boolean::class)
 //        methodInferred("spigot:hasGravity:1.8.8", "1.16.5")

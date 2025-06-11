@@ -14,7 +14,8 @@ class Hologram(
     private var location: Location
 ): Viewable() {
 
-    private val lines = lines.toMutableList()
+    private val originalLines = lines
+    private val lines = originalLines.toMutableList()
     private val lineLocations: MutableMap<UUID, Location> = mutableMapOf()
 
     init {
@@ -159,6 +160,10 @@ class Hologram(
      */
     fun lines(): List<HoloLine> {
         return lines.toList()
+    }
+
+    fun originalLines(): List<HoloLine> {
+        return originalLines
     }
 
     /**
