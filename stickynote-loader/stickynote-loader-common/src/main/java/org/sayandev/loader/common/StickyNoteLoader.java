@@ -38,7 +38,7 @@ public abstract class StickyNoteLoader {
         File libDirectory = generateLibDirectory(dataDirectory, withLibDirectory);
 
         File[] files = libDirectory.listFiles();
-        logger.info("Loading libraries... this might take up to a minute depending on your connection.");
+        logger.info("Loading libraries... this might take a few minutes depending on your connection.");
 
         long startTime = System.currentTimeMillis();
 
