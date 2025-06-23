@@ -67,9 +67,9 @@ public abstract class StickyNoteLoader {
             Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
             Set<Dependency> missingDependencies = new HashSet<>(getMissingDependencies(dependencies, cachedDependencies));
 
+            /*Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
             Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
-            Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
-            Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
+            Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));*/
 
             List<Dependency> allDependencies = new ArrayList<>();
             allDependencies.addAll(dependencies);
