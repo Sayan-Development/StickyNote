@@ -3,11 +3,12 @@ plugins {
     `version-catalog`
     `maven-publish`
     id("com.gradleup.shadow") version "9.0.0-beta12"
+    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.10.0"
+    version = "1.9.2.23"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -15,9 +16,10 @@ allprojects {
     plugins.apply("java-library")
     plugins.apply("kotlin")
     plugins.apply("com.gradleup.shadow")
+    plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
     }
 
     tasks {

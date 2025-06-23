@@ -2,6 +2,7 @@ package org.sayandev.plugin
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
+import com.xpdustry.ksr.kotlinRelocate
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -50,6 +51,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
         target.plugins.apply("com.gradleup.shadow")
+        target.plugins.apply("com.xpdustry.kotlin-shadow-relocator")
         target.plugins.apply("java-library")
 
         target.repositories {
@@ -131,13 +133,13 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
             target.tasks.withType<ShadowJar> {
                 if (config.relocate.get()) {
-                    relocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
-                    relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
-                    relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
+                    kotlinRelocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
+                    kotlinRelocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
+                    kotlinRelocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
 //                    relocate("kotlin", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlin")
 //                    relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
-                    relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
-                    relocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
+                    kotlinRelocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
+                    kotlinRelocate("org.jetbrains.exposed", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.exposed")
 //                    relocate("com.github.benmanes.caffeine", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.caffeine")
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()
@@ -150,7 +152,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                                 continue
                             }
                             if (alias.module.name == "sqlite-jdbc") continue
-                            relocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")
+                            kotlinRelocate(alias.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${alias.group?.split(".")?.last()}")
                         }
                     }
                     for (stickyLoadDependency in stickyLoadDependencies) {
@@ -159,7 +161,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                             relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                         }
                     }
-                    relocators.get()
                 }
                 mergeServiceFiles()
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE

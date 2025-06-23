@@ -19,7 +19,7 @@ public abstract class StickyNoteLoader {
     private static final ConcurrentHashMap<Dependency, CompletableFuture<Void>> loadingLibraries = new ConcurrentHashMap<>();
     private static final ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    public static final List<String> exclusions = Arrays.asList("kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm", "takenaka", "mappings", "gson", "exposed", "adventure");
+    public static final List<String> exclusions = Arrays.asList(/*"kotlin-stdlib", "kotlin-reflect", "kotlin", "kotlin-stdlib-jdk8", "kotlin-stdlib-jdk7", "kotlinx", "kotlinx-coroutines", "kotlinx-coroutines-core-jvm",*/ "takenaka", "mappings", "gson", /*"exposed",*/ "adventure");
     public static final Map<String, String> relocations = new HashMap<>();
 
     private final List<String> transitiveExcluded = Arrays.asList("xseries", "stickynote");
@@ -109,7 +109,8 @@ public abstract class StickyNoteLoader {
                     List<String> versions = getAllVersions(libDirectory, projectDependency.getGroup(), projectDependency.getName());
                     List<Dependency> toBeRemovedVersions = versions.stream().filter(version -> !version.equals(projectDependency.getVersion())).map(version -> new Dependency(projectDependency.getGroup(), projectDependency.getName(), version, projectDependency.getRelocation(), projectDependency.isStickyLoad())).toList();
                     for (Dependency dependency : toBeRemovedVersions) {
-                        deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
+                        // TODO: Test this
+//                        deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
                     }
                 }
             }

@@ -6,7 +6,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -30,6 +33,8 @@ object AdventureUtils {
     var miniMessage = MiniMessage.miniMessage()
     @JvmStatic
     var legacyAmpersandSerializer = LegacyComponentSerializer.legacyAmpersand()
+    @JvmStatic
+    var bungeeComponentSerializer = BungeeComponentSerializer.get()
 
     fun senderAudience(sender: CommandSender): Audience {
         return if (StickyNote.isPaper && ServerVersion.supports(18)) {
@@ -82,6 +87,10 @@ object AdventureUtils {
 
     fun Component.legacyColored(): String {
         return this.legacyString().legacyColored()
+    }
+
+    fun Component.bungeeComponent(): Array<BaseComponent> {
+        return bungeeComponentSerializer.serialize(this)
     }
 
     data class Options(
