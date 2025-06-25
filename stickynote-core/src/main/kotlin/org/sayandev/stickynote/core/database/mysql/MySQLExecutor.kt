@@ -107,18 +107,22 @@ abstract class MySQLExecutor(
         getConnection().use { connection ->
             try {
                 val preparedStatement = query.createPreparedStatement(connection)
+
+                val isUpdate = query.statement.startsWith("INSERT") ||
+                        query.statement.startsWith("UPDATE") ||
+                        query.statement.startsWith("DELETE") ||
+                        query.statement.startsWith("CREATE") ||
+                        query.statement.startsWith("ALTER")
                 var resultSet: ResultSet? = null
 
-                if (query.statement.startsWith("INSERT") ||
-                    query.statement.startsWith("UPDATE") ||
-                    query.statement.startsWith("DELETE") ||
-                    query.statement.startsWith("CREATE") ||
-                    query.statement.startsWith("ALTER")
-                ) {
+                if (isUpdate) {
+                    preparedStatement.closeOnCompletion()
                     preparedStatement.executeUpdate()
                     preparedStatement.close()
                 }
-                else resultSet = preparedStatement.executeQuery()
+                else {
+                    resultSet = preparedStatement.executeQuery()
+                }
 
                 if (resultSet != null) {
                     query.complete(resultSet)
