@@ -125,10 +125,11 @@ abstract class MySQLExecutor(
                 }
 
                 if (resultSet != null) {
-                    query.complete(resultSet)
+                    query.complete(QueryResult(StatusCode.FINISHED, connection, resultSet))
                 }
 
-                return QueryResult(StatusCode.FINISHED, resultSet)
+                query.statusCode = StatusCode.FINISHED
+                return QueryResult(StatusCode.FINISHED, connection, resultSet)
             } catch (e: SQLException) {
                 onQueryFail(query)
                 e.printStackTrace()
@@ -137,11 +138,13 @@ abstract class MySQLExecutor(
                 if (query.failedAttempts > failAttemptRemoval) {
                     onQueryRemoveDueToFail(query)
 
-                    return QueryResult(StatusCode.FINISHED, null)
+                    query.statusCode = StatusCode.FINISHED
+                    return QueryResult(StatusCode.FINISHED, connection, null)
                 }
 
 
-                return QueryResult(StatusCode.FAILED, null)
+                query.statusCode = StatusCode.FAILED
+                return QueryResult(StatusCode.FAILED, connection, null)
             }
         }
     }

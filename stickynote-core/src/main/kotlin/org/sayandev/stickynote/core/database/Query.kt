@@ -10,8 +10,8 @@ import java.util.logging.Logger
 class Query private constructor(val statement: String) {
     private val statementValues: MutableMap<Int, Any> = HashMap()
     private val requirements: MutableSet<Query> = HashSet()
-    val completableFuture: CompletableFuture<ResultSet> = CompletableFuture()
-    private var consumer: Consumer<ResultSet>? = null
+    val completableFuture: CompletableFuture<QueryResult> = CompletableFuture()
+    private var consumer: Consumer<QueryResult>? = null
     var failedAttempts: Int = 0
         private set
 
@@ -29,14 +29,14 @@ class Query private constructor(val statement: String) {
     /**
      * @apiNote internal
      */
-    fun complete(result: ResultSet) {
+    fun complete(result: QueryResult) {
         completableFuture.complete(result)
         if (consumer != null) {
             consumer!!.accept(result)
         }
     }
 
-    fun onComplete(consumer: Consumer<ResultSet>?) {
+    fun onComplete(consumer: Consumer<QueryResult>?) {
         this.consumer = consumer
     }
 

@@ -88,49 +88,50 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
         return executeQuerySync(query)
     }
 
-    fun executeQuerySync(query: Query): QueryResult {
-        val connection = getConnection() ?: let {
-            query.statusCode = Query.StatusCode.FAILED
-            return QueryResult(Query.StatusCode.FAILED, null)
+    private fun executeQuerySync(query: Query): QueryResult {
+        getConnection().use { connection ->
+            try {
+                val preparedStatement = query.createPreparedStatement(connection)
+
+                val isUpdate = query.statement.startsWith("INSERT") ||
+                        query.statement.startsWith("UPDATE") ||
+                        query.statement.startsWith("DELETE") ||
+                        query.statement.startsWith("CREATE") ||
+                        query.statement.startsWith("ALTER")
+                var resultSet: ResultSet? = null
+
+                if (isUpdate) {
+                    preparedStatement.closeOnCompletion()
+                    preparedStatement.executeUpdate()
+                    preparedStatement.close()
+                }
+                else {
+                    resultSet = preparedStatement.executeQuery()
+                }
+
+                if (resultSet != null) {
+                    query.complete(QueryResult(StatusCode.FINISHED, connection, resultSet))
+                }
+
+                query.statusCode = StatusCode.FINISHED
+                return QueryResult(StatusCode.FINISHED, connection, resultSet)
+            } catch (e: SQLException) {
+                onQueryFail(query)
+                e.printStackTrace()
+
+                query.increaseFailedAttempts()
+                if (query.failedAttempts > failAttemptRemoval) {
+                    onQueryRemoveDueToFail(query)
+
+                    query.statusCode = StatusCode.FINISHED
+                    return QueryResult(StatusCode.FINISHED, connection, null)
+                }
+
+
+                query.statusCode = StatusCode.FAILED
+                return QueryResult(StatusCode.FAILED, connection, null)
+            }
         }
-
-        try {
-            val preparedStatement = query.createPreparedStatement(connection)
-            var resultSet: ResultSet? = null
-
-            if (query.statement.startsWith("INSERT") ||
-                query.statement.startsWith("UPDATE") ||
-                query.statement.startsWith("DELETE") ||
-                query.statement.startsWith("CREATE") ||
-                query.statement.startsWith("ALTER")
-            ) {
-                preparedStatement.executeUpdate()
-                preparedStatement.close()
-                connection.close()
-            } else {
-                resultSet = preparedStatement.executeQuery()
-            }
-
-            if (resultSet != null) {
-                query.complete(resultSet)
-            }
-
-            query.statusCode = Query.StatusCode.FINISHED
-            return QueryResult(Query.StatusCode.FINISHED, resultSet)
-        } catch (e: SQLException) {
-            connection.close()
-            onQueryFail(query)
-            e.printStackTrace()
-
-            query.increaseFailedAttempts()
-            if (query.failedAttempts > failAttemptRemoval) {
-                onQueryRemoveDueToFail(query)
-                query.statusCode = Query.StatusCode.FINISHED
-                return QueryResult(Query.StatusCode.FINISHED, null)
-            }
-        }
-        query.statusCode = Query.StatusCode.FAILED
-        return QueryResult(Query.StatusCode.FAILED, null)
     }
 
     protected fun tick() {
@@ -143,7 +144,7 @@ abstract class SQLiteExecutor protected constructor(protected val dbFile: File, 
             }
 
             val queryResult = executeQuerySync(query)
-            if (queryResult.statusCode != Query.StatusCode.NOT_STARTED) {
+            if (queryResult.statusCode != StatusCode.NOT_STARTED) {
                 queries.removeFirstOrNull()
             }
             break

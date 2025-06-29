@@ -4,8 +4,7 @@ import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
 
-class QueryResult(val statusCode: Query.StatusCode, private val resultSet: ResultSet?) : AutoCloseable {
-    private val connection: Connection? = resultSet?.statement?.connection
+class QueryResult(val statusCode: Query.StatusCode, val connection: Connection?, private val resultSet: ResultSet?) : AutoCloseable {
 
     fun getResult(): ResultSet? = resultSet
 

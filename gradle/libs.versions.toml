@@ -22,7 +22,7 @@ guava = "31.1-jre"
 gson = "2.11.0"
 kotlin-reflect = "2.1.20"
 netty = "4.1.111.Final"
-exposed = "1.0.0-beta-2"
+exposed = "0.61.0"
 libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"
@@ -76,7 +76,6 @@ kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", vers
 netty-all = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc",version.ref = "exposed" }
-exposed-r2dbc = { group = "org.jetbrains.exposed", name = "exposed-r2dbc",version.ref = "exposed" }
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.ref = "exposed" }
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
@@ -167,7 +166,6 @@ implementation-core = [
     "gson",
     "exposed-core",
     "exposed-jdbc",
-    "exposed-r2dbc",
     "exposed-dao",
     "exposed-kotlin-datetime",
     "kotlinx-coroutines",

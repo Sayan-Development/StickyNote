@@ -18,7 +18,7 @@ dependencies {
     api(libs.mariadb)
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
-    api(libs.exposed.r2dbc)
+//    api(libs.exposed.r2dbc)
     api(libs.exposed.dao)
     api(libs.exposed.kotlin.datetime)
 
