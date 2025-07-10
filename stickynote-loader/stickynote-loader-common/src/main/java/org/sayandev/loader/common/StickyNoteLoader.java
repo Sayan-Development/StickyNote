@@ -113,8 +113,7 @@ public abstract class StickyNoteLoader {
                     List<String> versions = getAllVersions(libDirectory, projectDependency.getGroup(), projectDependency.getName());
                     List<Dependency> toBeRemovedVersions = versions.stream().filter(version -> !version.equals(projectDependency.getVersion())).map(version -> new Dependency(projectDependency.getGroup(), projectDependency.getName(), version, projectDependency.getRelocation(), projectDependency.isStickyLoad())).toList();
                     for (Dependency dependency : toBeRemovedVersions) {
-                        // TODO: Test this
-//                        deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
+                        deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
                     }
                 }
             }
@@ -411,25 +410,38 @@ public abstract class StickyNoteLoader {
         return new File(libFolder, groupPath + "/" + name + "/" + version);
     }
 
+    private boolean isFileInUse(File file) {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+            return false;
+        } catch (IOException e) {
+            return true;
+        }
+    }
+
     private void deleteDirectory(File directory) throws IOException {
         if (!directory.exists()) return;
 
+        // Check if directory or its files are in use or recently used (last modified < 5 minutes ago)
+        long now = System.currentTimeMillis();
+        long fiveMinutesMillis = 15 * 60 * 1000;
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
+                    // Recursively check subdirectories
                     deleteDirectory(file);
                 } else {
-                    if (!file.delete()) {
-                        // Try to delete on JVM exit as a fallback
-                        file.deleteOnExit();
-                        // Log a warning instead of throwing
-                        System.err.println("Warning: Failed to delete file (in use?): " + file.getAbsolutePath());
+                    // If file is in use or recently used, skip deletion
+                    if (isFileInUse(file) || file.lastModified() > now - fiveMinutesMillis) {
+                        continue;
                     }
+                    file.delete();
                 }
             }
         }
-
+        if (isFileInUse(directory) || directory.lastModified() > now - fiveMinutesMillis) {
+            return;
+        }
         if (!directory.delete()) {
             directory.deleteOnExit();
             System.err.println("Warning: Failed to delete directory (in use?): " + directory.getAbsolutePath());

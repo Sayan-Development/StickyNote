@@ -186,7 +186,7 @@ object PacketUtils {
 
     @JvmStatic
     fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
-        val effectConstructor = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21))
+        val effectConstructor = if (ServerVersion.isAtLeast(21, 5))
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_1!!
         else
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!
