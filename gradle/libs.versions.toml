@@ -2,7 +2,7 @@
 
 [versions]
 # core
-kotlin = "2.1.20"
+kotlin = "2.2.0"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 #configurate = "4.3.0"
@@ -20,9 +20,9 @@ reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
 gson = "2.11.0"
-kotlin-reflect = "2.1.20"
+kotlin-reflect = "2.2.0"
 netty = "4.1.111.Final"
-exposed = "0.61.0"
+exposed = "1.0.0-beta-4"
 libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"

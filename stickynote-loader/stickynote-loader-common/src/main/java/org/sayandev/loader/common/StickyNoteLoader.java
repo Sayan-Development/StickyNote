@@ -43,7 +43,7 @@ public abstract class StickyNoteLoader {
         long startTime = System.currentTimeMillis();
 
         try {
-            List<Dependency> dependencies = new ArrayList<>(getDependencies(stickyNotes));
+            List<Dependency> generatedDependencies = new ArrayList<>(getDependencies(stickyNotes));
             List<String> repositories = getRepositories(stickyNotes);
 
             Object relocation = stickyNotes.getField("RELOCATION").get(stickyNotes);
@@ -64,24 +64,37 @@ public abstract class StickyNoteLoader {
             relocations.put("org{}jetbrains{}exposed", relocationTo + "{}lib{}exposed");
 
             DependencyCache dependencyCache = new DependencyCache(id, libDirectory);
-            Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
-            Set<Dependency> missingDependencies = new HashSet<>(getMissingDependencies(dependencies, cachedDependencies));
 
-            /*Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
-            Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));
-            Logger.getAnonymousLogger().severe("missing dependencies " + relocationFrom + ":" + String.join(", ", missingDependencies.stream().map(dependency -> dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion()).collect(Collectors.toList())));*/
+            Set<Dependency> cachedDependencies = new HashSet<>(dependencyCache.loadCache());
+            Set<Dependency> missingDependencies = new HashSet<>(getMissingDependencies(generatedDependencies, cachedDependencies));
+
+            if (!missingDependencies.isEmpty()) {
+                logger.info(String.format("There are %d missing dependencies:", missingDependencies.size()));
+                for (Dependency dependency : generatedDependencies) {
+                    String symbol;
+                    if (missingDependencies.contains(dependency)) {
+                        symbol = "[New]   +";
+                    } else if (cachedDependencies.contains(dependency)) {
+                        symbol = "[Cache] #";
+                    } else {
+                        symbol = "[Old]   -";
+                    }
+                    logger.info(String.format("%s %s (%s) version %s", symbol, dependency.getName(), dependency.getGroup().replace("{}", "."), dependency.getVersion()));
+                }
+                logger.info("Missing dependencies will be downloaded and cached.");
+            }
 
             List<Dependency> allDependencies = new ArrayList<>();
-            allDependencies.addAll(dependencies);
+            allDependencies.addAll(generatedDependencies);
             allDependencies.addAll(getTransitiveDependencies(stickyNotes));
-            for (Dependency cachedDependency : allDependencies) {
-                String name = cachedDependency.getName();
-                String group = cachedDependency.getGroup();
-                if (exclusions.stream().anyMatch(excluded -> cachedDependency.getName().contains(excluded))) continue;
-                if (cachedDependency.isStickyLoad()) {
-                    if (cachedDependency.getRelocation() != null) {
-                        String[] splitted = cachedDependency.getGroup().split("\\{}");
-                        relocations.put(cachedDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
+            for (Dependency generatedDependency : allDependencies) {
+                String name = generatedDependency.getName();
+                String group = generatedDependency.getGroup();
+                if (exclusions.stream().anyMatch(excluded -> generatedDependency.getName().contains(excluded))) continue;
+                if (generatedDependency.isStickyLoad()) {
+                    if (generatedDependency.getRelocation() != null) {
+                        String[] splitted = generatedDependency.getGroup().split("\\{}");
+                        relocations.put(generatedDependency.getRelocation(), relocationTo + "{}lib{}" + splitted[splitted.length - 1]);
                     }
                     continue;
                 }
@@ -97,21 +110,23 @@ public abstract class StickyNoteLoader {
 
             boolean hasMissingDependency = !missingDependencies.isEmpty();
             if (hasMissingDependency) {
-                loadMissingDependencies(libDirectory, id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, dependencies, missingDependencies, relocationFrom, relocationTo);
+                loadMissingDependencies(libDirectory, id, logger, libraryManager, transitiveDependencyHelper, dependencyCache, generatedDependencies, missingDependencies, relocationFrom, relocationTo);
             } else {
                 loadCachedDependencies(id, logger, libraryManager, cachedDependencies, relocationFrom, relocationTo);
             }
 
             long endTime = System.currentTimeMillis();
-            logger.info("Loaded " + dependencies.size() + " library in " + (endTime - startTime) + " ms.");
+            logger.info("Loaded " + generatedDependencies.size() + " library in " + (endTime - startTime) + " ms.");
 
-            List<Dependency> allProjectsCachedDependencies = getAllProjectsCachedDependencies(libDirectory, true);
+            List<Dependency> allProjectsCachedDependencies = getAllProjectsCachedDependencies(logger, libDirectory);
             File[] libDirectoryFiles = libDirectory.listFiles();
             if (libDirectoryFiles != null) {
-
                 for (Dependency projectDependency : allProjectsCachedDependencies) {
                     List<String> versions = getAllVersions(libDirectory, projectDependency.getGroup(), projectDependency.getName());
-                    List<Dependency> toBeRemovedVersions = versions.stream().filter(version -> !version.equals(projectDependency.getVersion())).map(version -> new Dependency(projectDependency.getGroup(), projectDependency.getName(), version, projectDependency.getRelocation(), projectDependency.isStickyLoad())).toList();
+                    List<Dependency> toBeRemovedVersions = versions.stream()
+                            .map(version -> new Dependency(projectDependency.getGroup(), projectDependency.getName(), version, projectDependency.getRelocation(), projectDependency.isStickyLoad()))
+                            .filter(dependencyOfVersion -> !allProjectsCachedDependencies.contains(dependencyOfVersion))
+                            .toList();
                     for (Dependency dependency : toBeRemovedVersions) {
                         deleteOldVersionDirectory(libDirectory, dependency.getGroup(), dependency.getName(), dependency.getVersion());
                     }
@@ -144,8 +159,8 @@ public abstract class StickyNoteLoader {
         repositories.forEach(libraryManager::addRepository);
     }
 
-    private Set<Dependency> getMissingDependencies(List<Dependency> dependencies, Set<Dependency> cachedDependencies) {
-        Set<Dependency> missingDependencies = new HashSet<>(dependencies);
+    private Set<Dependency> getMissingDependencies(List<Dependency> generatedDependencies, Set<Dependency> cachedDependencies) {
+        Set<Dependency> missingDependencies = new HashSet<>(generatedDependencies);
         missingDependencies.removeIf(missingDependency -> cachedDependencies.stream()
                 .toList()
                 .contains(missingDependency));
@@ -188,7 +203,6 @@ public abstract class StickyNoteLoader {
         for (Dependency dependency : cachedDependencies) {
             try {
                 Library library = createLibraryBuilder(dependency).build();
-
                 libraryManager.loadLibrary(library);
 
                 if (dependency.getTransitiveDependencies() != null) {
@@ -369,13 +383,14 @@ public abstract class StickyNoteLoader {
         return Arrays.stream(files).map(File::getName).collect(Collectors.toList());
     }
 
-    private List<Dependency> getAllProjectsCachedDependencies(File libDirectory, boolean includeSelf) {
+    private List<Dependency> getAllProjectsCachedDependencies(Logger logger, File libDirectory) {
         List<Dependency> allDependencies = new ArrayList<>();
-        File[] cacheFiles = libDirectory.listFiles((dir, name) -> name.endsWith(".dat") && (includeSelf || !name.contains(projectName)));
+        File[] cacheFiles = libDirectory.listFiles((dir, name) -> name.endsWith(".dat"));
         if (cacheFiles == null) return allDependencies;
         for (File cacheFile : cacheFiles) {
             try {
-                allDependencies.addAll(new DependencyCache("temp", libDirectory).loadCacheFromFile(cacheFile));
+                Set<Dependency> cachedDependencies = new DependencyCache("temp", libDirectory).loadCacheFromFile(logger, cacheFile);
+                allDependencies.addAll(cachedDependencies);
             } catch (Exception e) {
                 e.fillInStackTrace();
             }
@@ -418,6 +433,8 @@ public abstract class StickyNoteLoader {
         }
     }
 
+    final boolean checkTimeBeforeDelete = true;
+
     private void deleteDirectory(File directory) throws IOException {
         if (!directory.exists()) return;
 
@@ -432,7 +449,7 @@ public abstract class StickyNoteLoader {
                     deleteDirectory(file);
                 } else {
                     // If file is in use or recently used, skip deletion
-                    if (isFileInUse(file) || file.lastModified() > now - fiveMinutesMillis) {
+                    if (isFileInUse(file) || (file.lastModified() > now - fiveMinutesMillis && checkTimeBeforeDelete)) {
                         continue;
                     }
                     file.delete();

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.List;
+import java.util.Objects;
 
 public class Dependency implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -72,6 +73,11 @@ public class Dependency implements Serializable {
             return group.equals(other.group) && name.equals(other.name) && version.equals(other.version);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(group, name, version);
     }
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
