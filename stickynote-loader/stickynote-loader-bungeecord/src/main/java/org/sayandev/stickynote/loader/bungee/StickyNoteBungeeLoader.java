@@ -14,14 +14,14 @@ public class StickyNoteBungeeLoader extends StickyNoteLoader {
     Plugin plugin;
 
     public StickyNoteBungeeLoader(Plugin plugin) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        super();
+        super(plugin.getDescription().getName());
         this.plugin = plugin;
 
         File dataFolder = plugin.getDataFolder();
         Logger logger = plugin.getLogger();
 
         LibraryManager libraryManager = new BungeeLibraryManager(plugin, new File(dataFolder.getParentFile(), "stickynote").getAbsolutePath());
-        this.load(plugin.getDescription().getName(), dataFolder.getParentFile(), logger, libraryManager);
+        this.load(plugin.getDescription().getName(), dataFolder.getParentFile(), logger, libraryManager, false);
     }
 
     @Override

@@ -107,24 +107,29 @@ abstract class MySQLExecutor(
         getConnection().use { connection ->
             try {
                 val preparedStatement = query.createPreparedStatement(connection)
+
+                val isUpdate = query.statement.startsWith("INSERT") ||
+                        query.statement.startsWith("UPDATE") ||
+                        query.statement.startsWith("DELETE") ||
+                        query.statement.startsWith("CREATE") ||
+                        query.statement.startsWith("ALTER")
                 var resultSet: ResultSet? = null
 
-                if (query.statement.startsWith("INSERT") ||
-                    query.statement.startsWith("UPDATE") ||
-                    query.statement.startsWith("DELETE") ||
-                    query.statement.startsWith("CREATE") ||
-                    query.statement.startsWith("ALTER")
-                ) {
+                if (isUpdate) {
+                    preparedStatement.closeOnCompletion()
                     preparedStatement.executeUpdate()
                     preparedStatement.close()
                 }
-                else resultSet = preparedStatement.executeQuery()
-
-                if (resultSet != null) {
-                    query.complete(resultSet)
+                else {
+                    resultSet = preparedStatement.executeQuery()
                 }
 
-                return QueryResult(StatusCode.FINISHED, resultSet)
+                if (resultSet != null) {
+                    query.complete(QueryResult(StatusCode.FINISHED, connection, resultSet))
+                }
+
+                query.statusCode = StatusCode.FINISHED
+                return QueryResult(StatusCode.FINISHED, connection, resultSet)
             } catch (e: SQLException) {
                 onQueryFail(query)
                 e.printStackTrace()
@@ -133,11 +138,13 @@ abstract class MySQLExecutor(
                 if (query.failedAttempts > failAttemptRemoval) {
                     onQueryRemoveDueToFail(query)
 
-                    return QueryResult(StatusCode.FINISHED, null)
+                    query.statusCode = StatusCode.FINISHED
+                    return QueryResult(StatusCode.FINISHED, connection, null)
                 }
 
 
-                return QueryResult(StatusCode.FAILED, null)
+                query.statusCode = StatusCode.FAILED
+                return QueryResult(StatusCode.FAILED, connection, null)
             }
         }
     }

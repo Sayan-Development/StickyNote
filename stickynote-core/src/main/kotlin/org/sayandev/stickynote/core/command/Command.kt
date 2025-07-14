@@ -26,7 +26,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     open fun rootBuilder(builder: MutableCommandBuilder<S>) { }
     open fun rootHandler(context: CommandContext<S>) { }
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix: Component = Component.empty()
 
     lateinit var command: MutableCommandBuilder<S>
 
@@ -56,7 +56,7 @@ abstract class Command<S: SenderExtension<*, *>>(
     fun MutableCommandBuilder<*>.literalWithPermission(literal: String) {
         literal(literal)
         val partedPermission = this.build().components()
-        partedPermission.removeAt(0)
+//        partedPermission.removeAt(0)
         permission("${rootId}.commands.${partedPermission.map { it.name() }.distinct().joinToString(".")}")
     }
 

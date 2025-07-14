@@ -39,6 +39,7 @@ abstract class StickyNoteTask : DefaultTask() {
     fun run() {
         for (module in modules.get()) {
             project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}:${module.version}")
+            project.dependencies.add("testImplementation", "org.sayandev:${module.type.artifact}:${module.version}")
         }
 
         val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
@@ -50,6 +51,11 @@ abstract class StickyNoteTask : DefaultTask() {
                 if (project.configurations.getByName("implementation").dependencies.any { it.name == library.name }) continue
                 project.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
             }
+        }
+
+        for (libraryAlias in versionCatalogs.named("stickyNoteLibs").libraryAliases) {
+            val library = libs.findLibrary(libraryAlias).get().get()
+            project.dependencies.add("testImplementation", "${library.group}:${library.name}:${library.version}")
         }
 
         val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get())

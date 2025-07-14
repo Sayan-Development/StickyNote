@@ -1,9 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
-    id("com.gradleup.shadow") version "8.3.4"
+    id("com.gradleup.shadow") version "9.0.0-beta12"
+    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
 }
 
 dependencies {
@@ -12,8 +13,10 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.4")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
+    implementation("com.xpdustry.kotlin-shadow-relocator:com.xpdustry.kotlin-shadow-relocator.gradle.plugin:3.0.0-beta.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+    testImplementation(kotlin("test"))
 }
 
 tasks {
@@ -29,6 +32,7 @@ tasks {
 
 allprojects {
     plugins.apply("com.gradleup.shadow")
+    plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     tasks {
         shadowJar {

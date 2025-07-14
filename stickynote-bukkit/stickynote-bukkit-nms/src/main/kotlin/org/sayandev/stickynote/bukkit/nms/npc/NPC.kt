@@ -201,6 +201,10 @@ abstract class NPC: Viewable() {
      * @param item The item to set
      */
     fun setEquipment(slot: EquipmentSlot, item: ItemStack?) {
+        setEquipment(slot, item, getViewers())
+    }
+
+    fun setEquipment(slot: EquipmentSlot, item: ItemStack?, viewers: Set<Player>) {
         val nmsItem = if (item == null) {
             if (ServerVersion.supports(11)) {
                 NMSUtils.getNmsEmptyItemStack()
@@ -211,7 +215,7 @@ abstract class NPC: Viewable() {
             NMSUtils.getNmsItemStack(item)
         }
         equipments[slot] = nmsItem
-        getViewers().sendPacket(PacketUtils.getEntityEquipmentPacket(entityId, slot, nmsItem))
+        viewers.sendPacket(PacketUtils.getEntityEquipmentPacket(entityId, slot, nmsItem))
     }
 
     /**
@@ -287,7 +291,7 @@ abstract class NPC: Viewable() {
      * Sets the no gravity state of the NPC
      * @param noGravity Whether to set the no gravity state
      */
-    fun setNoGravity(noGravity: Boolean) {
+    open fun setNoGravity(noGravity: Boolean) {
         EntityAccessor.METHOD_SET_NO_GRAVITY!!.invoke(entity, noGravity)
         sendEntityData()
     }

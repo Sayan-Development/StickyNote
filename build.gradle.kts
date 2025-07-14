@@ -1,26 +1,34 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     `version-catalog`
     `maven-publish`
+    id("com.gradleup.shadow") version "9.0.0-beta12"
+    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.8.9.81"
+    version = "1.10.5"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("version-catalog")
     plugins.apply("java-library")
     plugins.apply("kotlin")
+    plugins.apply("com.gradleup.shadow")
+    plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
     }
 
     tasks {
         java {
             disableAutoTargetJvm()
+        }
+
+        shadowJar {
+            archiveClassifier.set(null as String?)
         }
     }
 
@@ -57,8 +65,12 @@ allprojects {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
         }
         maven {
-            name = "alessiodp"
+            name = "alessiodp-snapshots"
             url = uri("https://repo.alessiodp.com/snapshots")
+        }
+        maven {
+            name = "alessiodp-releases"
+            url = uri("https://repo.alessiodp.com/releases/")
         }
         maven {
             name = "jitpack"
@@ -136,7 +148,9 @@ subprojects {
                     if (project.name.contains("catalog")) {
                         from(components["versionCatalog"])
                     } else {
-                        from(components["java"])
+                        from(components["shadow"])
+                        artifact(tasks["sourcesJar"])
+//                        from(components["java"])
                     }
 
                     setPom(this)

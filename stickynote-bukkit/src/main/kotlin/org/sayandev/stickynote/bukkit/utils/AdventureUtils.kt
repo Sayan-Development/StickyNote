@@ -1,14 +1,19 @@
 package org.sayandev.stickynote.bukkit.utils
 
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
 
@@ -28,6 +33,16 @@ object AdventureUtils {
     var miniMessage = MiniMessage.miniMessage()
     @JvmStatic
     var legacyAmpersandSerializer = LegacyComponentSerializer.legacyAmpersand()
+    @JvmStatic
+    var bungeeComponentSerializer = BungeeComponentSerializer.get()
+
+    fun senderAudience(sender: CommandSender): Audience {
+        return if (StickyNote.isPaper && ServerVersion.supports(18)) {
+            sender
+        } else {
+            audience.sender(sender)
+        }
+    }
 
     fun setTagResolver(vararg tagResolver: TagResolver) {
         miniMessage = MiniMessage.builder().tags(TagResolver.resolver(TagResolver.standard(), *tagResolver)).build()
@@ -35,12 +50,12 @@ object AdventureUtils {
 
     @JvmStatic
     fun sendComponent(sender: CommandSender, message: String, vararg placeholder: TagResolver) {
-        audience.sender(sender).sendMessage(PlaceholderAPIHook.injectPlaceholders(sender as? Player, message).component(*placeholder))
+        senderAudience(sender).sendMessage(PlaceholderAPIHook.injectPlaceholders(sender as? Player, message).component(*placeholder))
     }
 
     @JvmStatic
     fun sendComponentActionbar(player: Player, content: String, vararg placeholder: TagResolver) {
-        audience.player(player).sendActionBar(PlaceholderAPIHook.injectPlaceholders(player, content).component(*placeholder))
+        senderAudience(player).sendActionBar(PlaceholderAPIHook.injectPlaceholders(player, content).component(*placeholder))
     }
 
     @JvmStatic
@@ -72,6 +87,10 @@ object AdventureUtils {
 
     fun Component.legacyColored(): String {
         return this.legacyString().legacyColored()
+    }
+
+    fun Component.bungeeComponent(): Array<BaseComponent> {
+        return bungeeComponentSerializer.serialize(this)
     }
 
     data class Options(

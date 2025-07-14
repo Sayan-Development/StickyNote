@@ -22,14 +22,14 @@ repositories {
 }
 
 dependencies {
-    api(libs.packetevents.spigot)
+//    api(libs.packetevents.spigot)
 
     compileOnly(libs.paper)
 
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.4")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.7")
     implementation(accessorRuntime())
 }
 
@@ -45,7 +45,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.4")
+    versionRange("1.8.8", "1.21.7")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
@@ -107,6 +107,7 @@ accessors {
     val ServerboundInteractPacketActionInteract = "net.minecraft.network.protocol.game.ServerboundInteractPacket\$InteractionAction"
     val ServerboundKeepAlivePacket = "net.minecraft.network.protocol.game.ServerboundKeepAlivePacket"
     val ServerboundClientInformationPacket = "net.minecraft.network.protocol.game.ServerboundClientInformationPacket"
+    val ServerboundUseItemOnPacket = "net.minecraft.network.protocol.game.ServerboundUseItemOnPacket"
     val ServerPlayer = "net.minecraft.server.level.ServerPlayer"
     val Player = "net.minecraft.world.entity.player.Player"
     val ServerLevel = "net.minecraft.server.level.ServerLevel"
@@ -252,6 +253,7 @@ accessors {
     val ServerScoreboardMethod = "net.minecraft.server.ServerScoreboard\$Method"
     val RemoteChatSessionData = "net.minecraft.network.chat.RemoteChatSession\$Data"
     val ClientInformation = "net.minecraft.server.level.ClientInformation"
+    val ClientBrandRetriever = "net.minecraft.client.ClientBrandRetriever"
     val PacketFlow = "net.minecraft.network.protocol.PacketFlow"
     val CommonListenerCookie = "net.minecraft.server.network.CommonListenerCookie"
     val GameProfile = "com.mojang.authlib.GameProfile"
@@ -271,11 +273,13 @@ accessors {
     val SignedMessageBodyPacked = "net.minecraft.network.chat.SignedMessageBody\$Packed"
     val LastSeenMessagesPacked = "net.minecraft.network.chat.LastSeenMessages\$Packed"
     val FilterMask = "net.minecraft.network.chat.FilterMask"
+    val BlockHitResult = "net.minecraft.world.phys.BlockHitResult"
+    val HitResultType = "net.minecraft.world.phys.HitResult\$Type"
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
     val Arrow = "net.minecraft.world.entity.projectile.Arrow"
-    val ThrownPotion = "net.minecraft.world.entity.projectile.ThrownPotion"
+    val AbstractThrownPotion = "net.minecraft.world.entity.projectile.AbstractThrownPotion"
     val ThrownTrident = "net.minecraft.world.entity.projectile.ThrownTrident"
     val ThrowableItemProjectile = "net.minecraft.world.entity.projectile.ThrowableItemProjectile"
     val ItemEntity = "net.minecraft.world.entity.item.ItemEntity"
@@ -465,6 +469,7 @@ accessors {
         methodInferred("getType", "1.16.5")
         methodInferred("getSender", "1.16.5")
         method(Byte::class, "func_179841_c")
+        field(Byte::class, "field_179842_b")
         fieldInferred("message", "1.16.5")
     }
     mapClass(ClientboundSetPlayerTeamPacket) {
@@ -507,6 +512,7 @@ accessors {
     mapClass(ClientboundSystemChatPacket) {
         constructor(Component, Boolean::class)
         field(Component, "content")
+        method(Component, "content")
         field(Boolean::class, "overlay")
     }
     mapClass(ClientboundSetCameraPacket) {
@@ -558,9 +564,10 @@ accessors {
         method(BlockPos, "getPos")
     }
     mapClass(ServerboundPlayerActionPacket) {
-        methodInferred("getPos", "1.20.4")
-        methodInferred("getDirection", "1.20.4")
-        methodInferred("getAction", "1.20.4")
+        method(BlockPos, "getPos")
+        method(Direction, "getDirection")
+        method(ServerboundPlayerActionPacketAction, "getAction")
+        method(Int::class, "getSequence")
     }
     mapClass(ServerboundPlayerActionPacketAction) {
         enumConstant(
@@ -600,6 +607,11 @@ accessors {
     mapClass(ServerboundInteractPacketActionInteract) {
         fieldInferred("hand", "1.20.4")
         method(ServerboundInteractPacketActionType, "getType")
+    }
+    mapClass(ServerboundUseItemOnPacket) {
+        method(InteractionHand, "getHand")
+        method(BlockHitResult, "getHitResult")
+        method(Int::class, "getSequence")
     }
     mapClass(ServerPlayer) {
         constructor(MinecraftServer, ServerLevel, GameProfile)
@@ -1710,6 +1722,9 @@ accessors {
     mapClass(ClientInformation) {
         methodInferred("createDefault", "1.20.4")
     }
+    mapClass(ClientBrandRetriever) {
+        method(String::class, "getClientModName")
+    }
     mapClass(PacketFlow) {
         enumConstant(
             "CLIENTBOUND",
@@ -1844,6 +1859,19 @@ accessors {
         field(FilterMask, "FULLY_FILTERED")
         field(FilterMask, "PASS_THROUGH")
     }
+    mapClass(BlockHitResult) {
+        method(BlockPos, "getBlockPos")
+        method(Direction, "getDirection")
+        method(HitResultType, "getType")
+        method(Boolean::class, "isInside")
+    }
+    mapClass(HitResultType) {
+        enumConstant(
+            "MISS",
+            "BLOCK",
+            "ENTITY"
+        )
+    }
 
     mapClass(CrossbowItem) {
         methodInferred("isCharged", "1.16.5", ItemStack)
@@ -1879,6 +1907,7 @@ accessors {
         methodInferred("isNoBasePlate", "1.16.5")
         methodInferred("isShowArms", "1.16.5")
         methodInferred("isSmall", "1.16.5")
+        method(Void.TYPE, "setGravity", Boolean::class)
         // TODO
 //        methodInferred("spigot:setGravity:1.8.8", "1.16.5", Boolean::class)
 //        methodInferred("spigot:hasGravity:1.8.8", "1.16.5")
@@ -1890,7 +1919,7 @@ accessors {
         methodInferred("getColor", "1.16.5")
         methodInferred("setFixedColor", "1.16.5", Int::class)
     }
-    mapClass(ThrownPotion) {
+    mapClass(AbstractThrownPotion) {
         constructor(EntityType, Level)
         constructor(LevelSpigot)
         fieldInferred("DATA_ITEM_STACK", "1.15.2")

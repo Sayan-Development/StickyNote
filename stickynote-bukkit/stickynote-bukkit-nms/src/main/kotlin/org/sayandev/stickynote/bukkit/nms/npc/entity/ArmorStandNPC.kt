@@ -117,4 +117,9 @@ class ArmorStandNPC(
         sendEntityData()
     }
 
+    override fun setNoGravity(noGravity: Boolean) {
+        ArmorStandAccessor.METHOD_SET_GRAVITY!!.invoke(entity, !noGravity)
+        sendEntityData()
+    }
+
 }

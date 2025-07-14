@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.brigadier.BrigadierSetting
+import org.incendo.cloud.brigadier.CloudBrigadierManager
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
@@ -33,18 +35,28 @@ import kotlin.jvm.optionals.getOrNull
 fun commandManager(): CommandManager<BukkitSender> {
     val bukkitSenderMapper = { commandSender: CommandSender -> BukkitSender(commandSender, null) }
     val backwardsMapper = { sayanSenderExtension: BukkitSender -> sayanSenderExtension.platformSender() }
-    val manager = if ((ServerVersion.supports(20) && ServerVersion.patchNumber() >= 5) || ServerVersion.supports(21)) {
+    val manager = if (ServerVersion.isAtLeast(20, 5)) {
         val modernMapper = { sourceStack: CommandSourceStack -> BukkitSender(sourceStack.sender, sourceStack) }
         val sourceMapper = { bukkitSender: BukkitSender -> bukkitSender.sourceStack!! }
         PaperCommandManager.builder(SenderMapper.create(modernMapper, sourceMapper))
-            .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
+            .executionCoordinator(ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor()))
             .buildOnEnable(plugin)
+            .apply {
+                this.brigadierManager().settings().set(BrigadierSetting.FORCE_EXECUTABLE,  true)
+            }
     } else {
         LegacyPaperCommandManager(
             plugin,
-            ExecutionCoordinator.simpleCoordinator(),
+            ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor()),
             SenderMapper.create(bukkitSenderMapper, backwardsMapper),
-        )
+        ).apply {
+            if (this.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+                this.registerBrigadier()
+            }
+            if (this.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                this.registerAsynchronousCompletions()
+            }
+        }
     }
     manager.settings().set(ManagerSetting.OVERRIDE_EXISTING_COMMANDS, true)
     return manager
@@ -60,7 +72,7 @@ abstract class BukkitCommand(
     *aliases
 ) {
 
-    private var errorPrefix = Component.empty().asComponent()
+    private var errorPrefix: Component = Component.empty()
 
     val help: MinecraftHelp<BukkitSender>
     val exceptionHandler: MinecraftExceptionHandler<BukkitSender>
@@ -78,12 +90,9 @@ abstract class BukkitCommand(
     }
 
     init {
-        try {
+        /*try {
             (manager as? LegacyPaperCommandManager)?.registerAsynchronousCompletions()
-        } catch (_: IllegalStateException) { }
-        if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
-            (manager as? LegacyPaperCommandManager)?.registerBrigadier()
-        }
+        } catch (_: IllegalStateException) { }*/
 
         val audienceMapper = { sayanSenderExtension: BukkitSender -> AdventureUtils.audience.sender(sayanSenderExtension.platformSender()) }
         exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
@@ -128,7 +137,7 @@ fun CommandContext<BukkitSender>.audience(): Audience {
 
 fun MutableCommandBuilder<BukkitSender>.literalWithPermission(literal: String, vararg aliases: String) {
     literal(literal, Description.empty(), *aliases)
-    permission("${plugin.name.lowercase()}.commands.${this.build().components().joinToString(".") { it.name() }}")
+    permission("${plugin.name.lowercase()}.commands.${this.build().rootComponent().name().lowercase()}.${this.build().components().joinToString(".") { it.name() }}")
 }
 
 internal fun CommandComponent.Builder<BukkitSender, String>.createStringSuggestion(suggestions: Collection<String>) {
