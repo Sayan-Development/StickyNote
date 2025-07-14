@@ -1,4 +1,4 @@
-package org.sayandev.stickynote.core.messaging.publisher
+package org.sayandev.stickynote.core.messaging
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -10,18 +10,12 @@ import kotlin.reflect.KClass
 data class PayloadWrapper<P>(
     val uniqueId: UUID = UUID.randomUUID(),
     val payload: P,
-    val state: State = State.FORWARD,
+    val behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD,
     var source: String? = null,
     val target: String? = null,
     val excludeSource: Boolean = false,
 ) {
-    constructor(payload: P, state: State = State.FORWARD): this(UUID.randomUUID(), payload, state)
-
-    enum class State {
-        PROXY,
-        FORWARD,
-        RESPOND,
-    }
+    constructor(payload: P, behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD): this(UUID.randomUUID(), payload, behaviour)
 
     companion object {
         private var gson = Gson()
@@ -87,10 +81,10 @@ data class PayloadWrapper<P>(
             }
         }
 
-        fun <P> P.toPayloadWrapper(state: State = State.FORWARD): PayloadWrapper<P> {
-            return PayloadWrapper<P>(
+        fun <P> P.toPayloadWrapper(behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD): PayloadWrapper<P> {
+            return PayloadWrapper(
                 payload = this,
-                state = state
+                behaviour = behaviour
             )
         }
     }

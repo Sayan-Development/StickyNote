@@ -1,39 +1,34 @@
-package org.sayandev.stickynote.core.messaging.subscriber
+package org.sayandev.stickynote.core.messaging.websocket
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
-import org.sayandev.stickynote.core.messaging.publisher.Publisher
+import org.sayandev.stickynote.core.messaging.MessageMeta
+import org.sayandev.stickynote.core.messaging.PayloadBehaviour
+import org.sayandev.stickynote.core.messaging.PayloadWrapper
+import org.sayandev.stickynote.core.messaging.PayloadWrapper.Companion.asJson
+import org.sayandev.stickynote.core.messaging.PayloadWrapper.Companion.asPayloadWrapper
+import org.sayandev.stickynote.core.messaging.PayloadWrapper.Companion.typedPayload
+import org.sayandev.stickynote.core.messaging.Publisher
+import org.sayandev.stickynote.core.messaging.Subscriber
+import org.sayandev.stickynote.core.utils.CoroutineUtils
 import org.sayandev.stickynote.core.utils.CoroutineUtils.awaitWithTimeout
-import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
-import java.net.URI
-import java.util.*
+import java.util.UUID
 import java.util.logging.Logger
-import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
-abstract class WebSocketSubscriber<P, S>(
-    val dispatcher: CoroutineContext,
-    serverUri: URI,
-    namespace: String,
-    name: String,
-    val payloadClass: Class<P>,
+abstract class WebSocketSubscriber<P : Any, R : Any>(
+    messageMeta: MessageMeta<P, R>,
+    val connectionMeta: WebSocketConnectionMeta,
     val logger: Logger
-) : Subscriber<P, S>(namespace, name) {
+) : Subscriber<P, R>(messageMeta) {
 
-    val channel = "$namespace:$name"
     private val client: WebSocketClient
 
     init {
-        client = object : WebSocketClient(serverUri) {
+        client = object : WebSocketClient(connectionMeta.uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
-                logger.info("WebSocket connection opened")
             }
 
             override fun onMessage(message: String) {
@@ -54,53 +49,50 @@ abstract class WebSocketSubscriber<P, S>(
     private fun handleMessage(message: String) {
         val payloadWrapper = message.asPayloadWrapper<P>()
 
-        when (payloadWrapper.state) {
-            PayloadWrapper.State.PROXY -> {
-                val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") }.isSuccess
+        when (payloadWrapper.behaviour) {
+            PayloadBehaviour.FORWARD_PROXY -> {
                 if (!isVelocity) return
 
-                launch(dispatcher) {
-                    val result = (HANDLER_LIST.find { it.namespace == this@WebSocketSubscriber.namespace && it.name == this@WebSocketSubscriber.name } as Subscriber<P, S>)
-                        .onSubscribe(payloadWrapper.typedPayload(payloadClass))
+                CoroutineUtils.launch(connectionMeta.dispatcher) {
+                    val result = (HANDLER_LIST.find { it.messageMeta.id() == messageMeta.id() } as Subscriber<P, R>)
+                        .onSubscribe(payloadWrapper.typedPayload(messageMeta.payloadType))
                     result.await()
                     publishWithTimeout(
                         PayloadWrapper(
                             payloadWrapper.uniqueId,
                             result.getCompleted(),
-                            PayloadWrapper.State.RESPOND,
+                            PayloadBehaviour.RESPONSE,
                             payloadWrapper.source
                         )
                     )
                 }
             }
-
-            PayloadWrapper.State.FORWARD -> {
+            PayloadBehaviour.FORWARD -> {
                 if (payloadWrapper.excludeSource && isSource(payloadWrapper.uniqueId)) return
-                launch(dispatcher) {
+                CoroutineUtils.launch(connectionMeta.dispatcher) {
                     val result =
-                        (HANDLER_LIST.find { it.namespace == this@WebSocketSubscriber.namespace && it.name == this@WebSocketSubscriber.name } as? Subscriber<P, S>)?.onSubscribe(
-                            payloadWrapper.typedPayload(payloadClass)
+                        (HANDLER_LIST.find { it.messageMeta.id() == messageMeta.id() } as? Subscriber<P, R>)?.onSubscribe(
+                            payloadWrapper.typedPayload(messageMeta.payloadType)
                         )
                     if (payloadWrapper.target == "PROCESSED") return@launch
                     publishWithTimeout(
                         PayloadWrapper(
                             payloadWrapper.uniqueId,
                             result?.getCompleted() ?: payloadWrapper.payload,
-                            if (result != null) PayloadWrapper.State.RESPOND else payloadWrapper.state,
+                            if (result != null) PayloadBehaviour.RESPONSE else payloadWrapper.behaviour,
                             payloadWrapper.source,
                             "PROCESSED"
                         )
                     )
                 }
             }
-
-            PayloadWrapper.State.RESPOND -> {}
+            else -> { }
         }
     }
 
     private suspend fun publishWithTimeout(payload: PayloadWrapper<*>) {
         val deferred = CompletableDeferred<Unit>()
-        launch(dispatcher) {
+        CoroutineUtils.launch(connectionMeta.dispatcher) {
             client.send(payload.asJson())
             deferred.complete(Unit)
         }
@@ -110,7 +102,7 @@ abstract class WebSocketSubscriber<P, S>(
     }
 
     fun isSource(uniqueId: UUID): Boolean {
-        return Publisher.HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+        return Publisher.Companion.HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
     }
 
     companion object {
