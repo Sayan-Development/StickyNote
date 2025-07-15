@@ -2,7 +2,7 @@
 
 [versions]
 # core
-kotlin = "2.2.0"
+kotlin = "2.1.0"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 #configurate = "4.3.0"
@@ -16,11 +16,12 @@ sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
 mariadb = "3.3.3"
 jedis = "5.0.0"
+java-websocket = "1.6.0"
 reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
 gson = "2.11.0"
-kotlin-reflect = "2.2.0"
+kotlin-reflect = "2.1.0"
 netty = "4.1.111.Final"
 exposed = "1.0.0-beta-4"
 libby = "2.0.0-SNAPSHOT"
@@ -68,6 +69,7 @@ sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlit
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
 reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
@@ -174,6 +176,7 @@ implementation-core = [
 #    "h2",
     "mariadb",
     "jedis",
+    "java-websocket",
 #    "caffeine"
 ]
 implementation-bukkit = [

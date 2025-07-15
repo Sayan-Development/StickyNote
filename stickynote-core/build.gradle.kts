@@ -15,6 +15,7 @@ dependencies {
     api(libs.gson)
     api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines)
+    api(libs.java.websocket)
     api(libs.mariadb)
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
