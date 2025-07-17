@@ -1,9 +1,9 @@
 package org.sayandev.stickynote.bukkit.nms.scoreboard
 
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
-import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
+import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket
 import org.sayandev.stickynote.bukkit.nms.PacketUtils
 import org.sayandev.stickynote.bukkit.nms.Viewable

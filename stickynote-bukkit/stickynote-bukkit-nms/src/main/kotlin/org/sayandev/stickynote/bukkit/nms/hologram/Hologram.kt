@@ -1,9 +1,9 @@
 package org.sayandev.stickynote.bukkit.nms.hologram
 
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit.getOnlinePlayers
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.stickynote.bukkit.extension.toVector3
 import org.sayandev.stickynote.bukkit.nms.Viewable
 import org.sayandev.stickynote.core.math.Vector3

@@ -1,8 +1,5 @@
 package org.sayandev.stickynote.core.command.interfaces
 
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
-
 interface SenderExtension<S, P> {
 
     /**
@@ -11,13 +8,6 @@ interface SenderExtension<S, P> {
      * @return The player if the sender is a player, otherwise null.
      */
     fun player(): P?
-
-    /**
-     * Retrieves the audience associated with the sender.
-     *
-     * @return The audience associated with the sender.
-     */
-    fun audience(): Audience
 
     /**
      * Sets the command sender for this sender instance.
@@ -38,5 +28,5 @@ interface SenderExtension<S, P> {
      *
      * @param message The message to send.
      */
-    fun onlyPlayersComponent(message: Component)
+    fun onlyPlayersComponent(message: String)
 }

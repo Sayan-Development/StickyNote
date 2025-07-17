@@ -1,8 +1,8 @@
 package org.sayandev.stickynote.bukkit.nms.npc.entity.display
 
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
+import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.accessors.Display_TextDisplayAccessor
 import org.sayandev.stickynote.bukkit.nms.accessors.SynchedEntityDataAccessor

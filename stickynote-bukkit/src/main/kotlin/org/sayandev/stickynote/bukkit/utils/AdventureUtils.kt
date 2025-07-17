@@ -1,19 +1,17 @@
 package org.sayandev.stickynote.bukkit.utils
 
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.platform.bukkit.BukkitAudiences
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.sayandev.stickynote.bukkit.StickyNote
+import org.sayandev.sayanventure.adventure.audience.Audience
+import org.sayandev.sayanventure.adventure.platform.bukkit.BukkitAudiences
+import org.sayandev.sayanventure.adventure.text.Component
+import org.sayandev.sayanventure.adventure.text.format.TextDecoration
+import org.sayandev.sayanventure.adventure.text.minimessage.MiniMessage
+import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
+import org.sayandev.sayanventure.adventure.text.serializer.bungeecord.BungeeComponentSerializer
+import org.sayandev.sayanventure.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
 
@@ -28,7 +26,6 @@ object AdventureUtils {
 
     @JvmStatic
     val audience = BukkitAudiences.create(plugin)
-
     @JvmStatic
     var miniMessage = MiniMessage.miniMessage()
     @JvmStatic
@@ -37,11 +34,7 @@ object AdventureUtils {
     var bungeeComponentSerializer = BungeeComponentSerializer.get()
 
     fun senderAudience(sender: CommandSender): Audience {
-        return if (StickyNote.isPaper && ServerVersion.supports(18)) {
-            sender
-        } else {
-            audience.sender(sender)
-        }
+        return audience.sender(sender)
     }
 
     fun setTagResolver(vararg tagResolver: TagResolver) {
@@ -65,16 +58,35 @@ object AdventureUtils {
     }
 
     @JvmStatic
+    fun toAdventureComponent(content: String, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
+        val component = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(content, *placeholder)
+        return if (options.removeStartingItalic) net.kyori.adventure.text.Component.empty().decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false).append(component) else component
+    }
+
+    @JvmStatic
     fun toComponent(player: Player?, content: String, vararg placeholder: TagResolver): Component {
         return miniMessage.deserialize(PlaceholderAPIHook.injectPlaceholders(player, content), *placeholder)
+    }
+
+    @JvmStatic
+    fun toAdventureComponent(player: Player?, content: String, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
+        return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(PlaceholderAPIHook.injectPlaceholders(player, content), *placeholder)
     }
 
     fun String.component(vararg placeholder: TagResolver): Component {
         return toComponent(this, *placeholder)
     }
 
+    fun String.adventureComponent(vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
+        return toAdventureComponent(this, *placeholder)
+    }
+
     fun String.component(player: Player?, vararg placeholder: TagResolver): Component {
         return toComponent(player, this, *placeholder)
+    }
+
+    fun String.adventureComponent(player: Player?, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
+        return toAdventureComponent(player, this, *placeholder)
     }
 
     fun Component.legacyString(): String {
