@@ -3,10 +3,6 @@ package org.sayandev.stickynote.bukkit.nms
 import com.cryptomorin.xseries.reflection.XReflection
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftConnection
 import io.netty.channel.Channel
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
@@ -18,6 +14,10 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
+import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
+import org.sayandev.sayanventure.adventure.text.Component
+import org.sayandev.sayanventure.adventure.text.format.TextDecoration
+import org.sayandev.sayanventure.adventure.text.serializer.gson.GsonComponentSerializer
 import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3

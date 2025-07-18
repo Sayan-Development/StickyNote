@@ -1,36 +1,27 @@
 package org.sayandev.stickynote.bukkit.command
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.brigadier.BrigadierSetting
-import org.incendo.cloud.brigadier.CloudBrigadierManager
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities
 import org.incendo.cloud.component.CommandComponent
 import org.incendo.cloud.context.CommandContext
 import org.incendo.cloud.description.Description
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.kotlin.MutableCommandBuilder
-import org.incendo.cloud.kotlin.extension.buildAndRegister
-import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
-import org.incendo.cloud.minecraft.extras.MinecraftHelp
 import org.incendo.cloud.paper.LegacyPaperCommandManager
 import org.incendo.cloud.paper.PaperCommandManager
-import org.incendo.cloud.parser.standard.StringArrayParser
 import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.setting.ManagerSetting
 import org.incendo.cloud.suggestion.Suggestion
 import org.sayandev.stickynote.bukkit.launch
 import org.sayandev.stickynote.bukkit.plugin
-import org.sayandev.stickynote.bukkit.utils.AdventureUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.command.Command
 import java.util.concurrent.CompletableFuture
-import kotlin.jvm.optionals.getOrNull
 
 fun commandManager(): CommandManager<BukkitSender> {
     val bukkitSenderMapper = { commandSender: CommandSender -> BukkitSender(commandSender, null) }
@@ -72,46 +63,8 @@ abstract class BukkitCommand(
     *aliases
 ) {
 
-    private var errorPrefix: Component = Component.empty()
-
-    val help: MinecraftHelp<BukkitSender>
-    val exceptionHandler: MinecraftExceptionHandler<BukkitSender>
-
-    fun registerHelpLiteral() {
-        manager.buildAndRegister(name, Description.empty(), aliases.toList().toTypedArray()) {
-            literalWithPermission("help")
-            optional("query", StringArrayParser.stringArrayParser())
-            handler { context ->
-                help.queryCommands(context.optional<Array<String>>("query").getOrNull()?.joinToString(" ")?.let { args ->
-                    "$name $args"
-                } ?: "", context.sender())
-            }
-        }
-    }
-
     init {
-        /*try {
-            (manager as? LegacyPaperCommandManager)?.registerAsynchronousCompletions()
-        } catch (_: IllegalStateException) { }*/
-
-        val audienceMapper = { sayanSenderExtension: BukkitSender -> AdventureUtils.audience.sender(sayanSenderExtension.platformSender()) }
-        exceptionHandler = MinecraftExceptionHandler.create(audienceMapper)
-
-        help = MinecraftHelp.create(
-            name,
-            manager,
-            audienceMapper
-        )
-
         initializeManagerAndRoot()
-    }
-
-    override fun errorPrefix(): Component {
-        return errorPrefix
-    }
-
-    override fun errorPrefix(prefix: Component) {
-        errorPrefix = prefix
     }
 
     fun <S : Any> MutableCommandBuilder<S>.suspendingHandler(context: suspend (CommandContext<S>) -> Unit) {
@@ -129,10 +82,6 @@ fun CommandContext<BukkitSender>.player(): Player? {
 
 fun CommandContext<BukkitSender>.platformSender(): CommandSender {
     return this.sender().platformSender()
-}
-
-fun CommandContext<BukkitSender>.audience(): Audience {
-    return this.sender().audience()
 }
 
 fun MutableCommandBuilder<BukkitSender>.literalWithPermission(literal: String, vararg aliases: String) {

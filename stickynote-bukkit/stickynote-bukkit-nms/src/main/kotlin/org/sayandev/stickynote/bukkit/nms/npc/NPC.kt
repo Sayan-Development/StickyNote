@@ -1,13 +1,13 @@
 package org.sayandev.stickynote.bukkit.nms.npc
 
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
+import org.sayandev.sayanventure.adventure.text.Component
+import org.sayandev.sayanventure.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.sayandev.stickynote.bukkit.extension.toLocation
 import org.sayandev.stickynote.bukkit.nms.NMSUtils
 import org.sayandev.stickynote.bukkit.nms.NMSUtils.sendPacket

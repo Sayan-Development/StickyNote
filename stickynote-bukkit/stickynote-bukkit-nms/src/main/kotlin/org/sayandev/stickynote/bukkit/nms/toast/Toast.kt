@@ -7,10 +7,10 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.delay
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
+import org.sayandev.sayanventure.adventure.text.Component
+import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
+import org.sayandev.sayanventure.adventure.text.serializer.gson.GsonComponentSerializer
 import org.sayandev.stickynote.bukkit.async
 import org.sayandev.stickynote.bukkit.launch
 import org.sayandev.stickynote.bukkit.nms.NMSUtils

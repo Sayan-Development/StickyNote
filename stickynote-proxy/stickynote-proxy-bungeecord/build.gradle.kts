@@ -4,7 +4,7 @@ dependencies {
     api(libs.mccoroutines.bungeecord.core)
 
     compileOnlyApi(libs.libby.bungee)
-    compileOnlyApi(libs.adventure.platform.bungeecord)
+    compileOnlyApi(libs.sayanventure.platform.bungeecord)
 
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-proxy"))

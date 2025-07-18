@@ -107,6 +107,9 @@ public abstract class StickyNoteLoader {
                 String[] groupParts = group.split("\\{}");
                 relocations.put(group, relocationTo + "{}lib{}" + groupParts[groupParts.length - 1]);
             }
+            relocations.remove("org{}sayandev");
+            relocations.put("org{}sayandev{}loader", relocationTo + "{}lib{}stickynote");
+            relocations.put("org{}sayandev{}stickynote", relocationTo + "{}lib{}stickynote");
 
             boolean hasMissingDependency = !missingDependencies.isEmpty();
             if (hasMissingDependency) {

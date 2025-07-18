@@ -2,7 +2,6 @@ package org.sayandev.stickynote.velocity.command
 
 import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.component.CommandComponent
@@ -41,19 +40,8 @@ abstract class VelocityCommand(
     name,
     *aliases
 ) {
-
-    private var errorPrefix: Component = Component.empty()
-
     init {
         initializeManagerAndRoot()
-    }
-
-    override fun errorPrefix(): Component {
-        return errorPrefix
-    }
-
-    override fun errorPrefix(prefix: Component) {
-        errorPrefix = prefix
     }
 }
 
@@ -63,10 +51,6 @@ fun CommandContext<VelocitySender>.player(): Player? {
 
 fun CommandContext<VelocitySender>.platformSender(): CommandSource {
     return this.sender().platformSender()
-}
-
-fun CommandContext<VelocitySender>.audience(): Audience {
-    return this.sender().audience()
 }
 
 fun MutableCommandBuilder<VelocitySender>.literalWithPermission(literal: String) {

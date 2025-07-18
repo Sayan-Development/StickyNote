@@ -1,7 +1,5 @@
 package org.sayandev.stickynote.bukkit.nms
 
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
-import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -9,6 +7,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
+import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils

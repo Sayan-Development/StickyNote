@@ -144,6 +144,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                     for (bundleAlias in libs.bundleAliases.filter { config.modules.get().map { "implementation.".plus(it.type.artifact.removePrefix("stickynote-").replace("-", ".")) }.contains(it) }) {
                         val bundle = libs.findBundle(bundleAlias).get().get()
                         for (alias in bundle) {
+                            if (alias.module.group == "org.sayandev") continue
                             if (relocateExclusion.any { alias.module.name == it }) continue
                             // We DON'T relocate adventure to keep compatibility with local paper/velocity adventure api calls
                             if (alias.module.name.contains("adventure")) {
