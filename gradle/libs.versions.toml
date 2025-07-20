@@ -29,6 +29,7 @@ libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"
 caffeine = "3.2.0"
+kaml = "0.85.0"
 
 # minecraft
 adventure-platform = "4.3.4"
@@ -85,6 +86,7 @@ exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kot
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+kaml = { group = "com.charleskorn.kaml", name = "kaml", version.ref = "kaml" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -155,7 +157,8 @@ implementation-core = [
     "error_prone_annotations",
     "geantyref",
 #    transitives - end
-    "kotlin",
+#    "kotlin",
+    "kaml",
     "snakeyaml",
     "configurate-yaml",
     "configurate-extra-kotlin",

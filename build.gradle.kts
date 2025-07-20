@@ -2,13 +2,13 @@ plugins {
     kotlin("jvm") version "2.1.0"
     `version-catalog`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.0.0-beta12"
-    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
+    id("com.gradleup.shadow") version "9.0.0-rc1"
+    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-rc.1"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.10.5.pubsub1"
+    version = "1.10.5.kotlinx-serialization.8"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -19,7 +19,7 @@ allprojects {
     plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+//        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
     }
 
     tasks {

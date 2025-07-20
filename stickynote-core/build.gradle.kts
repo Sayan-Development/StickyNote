@@ -23,6 +23,7 @@ dependencies {
 //    api(libs.exposed.r2dbc)
     api(libs.exposed.dao)
     api(libs.exposed.kotlin.datetime)
+    api(libs.kaml)
 
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.netty.all)

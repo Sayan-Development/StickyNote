@@ -93,7 +93,7 @@ open class  WebSocketPublisher<P : Any, R : Any>(
         launch(this@WebSocketPublisher.connectionMeta.dispatcher) {
             delay(connectionMeta.timeoutMillis)
             if (result.isActive) {
-                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in $${connectionMeta.timeoutMillis}ms. Payload: $payload (id: ${messageMeta.id()})"))
+                result.completeExceptionally(IllegalStateException("Sent payload has not been responded in ${connectionMeta.timeoutMillis}ms. Payload: $payload (id: ${messageMeta.id()})"))
             }
             payloads.remove(payload.uniqueId)
         }
