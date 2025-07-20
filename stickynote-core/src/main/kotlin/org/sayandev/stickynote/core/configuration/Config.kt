@@ -1,15 +1,18 @@
 package org.sayandev.stickynote.core.configuration
 
+import com.charleskorn.kaml.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.modules.*
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.serialize.TypeSerializerCollection
-import org.spongepowered.configurate.util.MapFactories
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
 import java.nio.file.Path
-import java.util.UUID
+import java.util.*
 
 abstract class Config(
     @Transient val directory: File,
@@ -137,6 +140,55 @@ abstract class Config(
         inline fun <reified T> fromConfig(file: File): T? {
             if (!file.exists()) return null
             return fromConfig(file, null)
+        }
+
+
+        val yaml = Yaml(
+            EmptySerializersModule(),
+            YamlConfiguration(
+                strictMode = false,
+                yamlNamingStrategy = YamlNamingStrategy.KebabCase,
+                encodeDefaults = true,
+                decodeEnumCaseInsensitive = true,
+                polymorphismStyle = PolymorphismStyle.Property
+            )
+        )
+
+        inline fun <reified T : Any> registerSerializer(serializer: KSerializer<T>) {
+            yaml.serializersModule.plus(SerializersModule {
+                this.contextual(serializer)
+            })
+        }
+
+        fun registerSerializersModule(serializer: SerializersModule) {
+            yaml.serializersModule.plus(serializer)
+        }
+
+        inline fun <reified T : Any> unregisterSerializer() {
+            yaml.serializersModule.overwriteWith(EmptySerializersModule())
+        }
+
+        inline fun <reified T> save(file: File, instance: T, yaml: Yaml = this.yaml) {
+            if (!file.exists()) {
+                file.parentFile.mkdirs()
+                file.createNewFile()
+            }
+            file.writeText(yaml.encodeToString(instance))
+        }
+
+        @JvmStatic
+        inline fun <reified T> fromFile(file: File): T? {
+            return fromFile(file, EmptySerializersModule())
+        }
+
+        @JvmStatic
+        inline fun <reified T> fromFile(file: File, serializers: SerializersModule): T? {
+            if (!file.exists()) return null
+            return try {
+                Yaml(serializers, yaml.configuration).decodeFromStream(file.inputStream())
+            } catch (e: EmptyYamlDocumentException) {
+                null
+            }
         }
     }
 

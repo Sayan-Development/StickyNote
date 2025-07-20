@@ -50,6 +50,16 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
+        /*target.buildscript {
+            repositories { mavenCentral() }
+
+            dependencies {
+                val kotlinVersion = "2.2.0"
+                classpath(kotlin("gradle-plugin", version = kotlinVersion))
+                classpath(kotlin("serialization", version = kotlinVersion))
+            }
+        }*/
+
         target.plugins.apply("com.gradleup.shadow")
         target.plugins.apply("com.xpdustry.kotlin-shadow-relocator")
         target.plugins.apply("java-library")
@@ -178,8 +188,8 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
             project.dependencies.add("compileOnlyApi", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
             project.dependencies.add("testImplementation", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
-            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
-            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
+//            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
+//            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")

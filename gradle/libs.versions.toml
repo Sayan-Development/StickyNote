@@ -17,6 +17,7 @@ sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
 mariadb = "3.3.3"
 jedis = "5.0.0"
+java-websocket = "1.6.0"
 reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
@@ -28,6 +29,7 @@ libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"
 caffeine = "3.2.0"
+kaml = "0.85.0"
 
 # minecraft
 adventure-platform = "4.3.4"
@@ -70,6 +72,7 @@ sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlit
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
 reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
@@ -83,6 +86,7 @@ exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kot
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+kaml = { group = "com.charleskorn.kaml", name = "kaml", version.ref = "kaml" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -153,7 +157,8 @@ implementation-core = [
     "error_prone_annotations",
     "geantyref",
 #    transitives - end
-    "kotlin",
+#    "kotlin",
+    "kaml",
     "snakeyaml",
     "configurate-yaml",
     "configurate-extra-kotlin",
@@ -175,6 +180,7 @@ implementation-core = [
 #    "h2",
     "mariadb",
     "jedis",
+    "java-websocket",
 #    "caffeine"
 ]
 implementation-bukkit = [

@@ -3,8 +3,8 @@ plugins {
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "1.2.1"
-    id("com.gradleup.shadow") version "9.0.0-beta12"
-    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
+    id("com.gradleup.shadow") version "9.0.0-rc1"
+    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-rc.1"
 }
 
 dependencies {
@@ -13,9 +13,9 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
-    implementation("com.xpdustry.kotlin-shadow-relocator:com.xpdustry.kotlin-shadow-relocator.gradle.plugin:3.0.0-beta.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-rc1")
+    implementation("com.xpdustry.kotlin-shadow-relocator:com.xpdustry.kotlin-shadow-relocator.gradle.plugin:3.0.0-rc.1")
+//    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
     testImplementation(kotlin("test"))
 }
 
@@ -51,7 +51,7 @@ allprojects {
             if (project.name.contains("loader")) {
                 create<MavenPublication>("maven") {
                     groupId = rootProject.group as String
-                    shadow.component(this)
+                    from(components["shadow"])
 //                    artifact(tasks["sourcesJar"])
 //                    artifact(tasks["shadowJar"])
                 }

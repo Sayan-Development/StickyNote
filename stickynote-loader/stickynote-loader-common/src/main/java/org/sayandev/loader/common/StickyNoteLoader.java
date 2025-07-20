@@ -44,6 +44,7 @@ public abstract class StickyNoteLoader {
 
         try {
             List<Dependency> generatedDependencies = new ArrayList<>(getDependencies(stickyNotes));
+//            generatedDependencies.add(new Dependency("org{}jetbrains{}kotlin", "kotlin-stdlib", "2.1.0", null, false));
             List<String> repositories = getRepositories(stickyNotes);
 
             Object relocation = stickyNotes.getField("RELOCATION").get(stickyNotes);
