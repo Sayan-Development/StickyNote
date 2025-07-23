@@ -293,6 +293,7 @@ accessors {
     val Villager = "net.minecraft.world.entity.npc.Villager"
     val Boat = "net.minecraft.world.entity.vehicle.Boat"
     val Creeper = "net.minecraft.world.entity.monster.Creeper"
+    val Zombie = "net.minecraft.world.entity.monster.Zombie"
     // 1.8
     val EntityPlayer = "net.minecraft.entity.player.EntityPlayerMP"
     val World = "net.minecraft.world.World"
@@ -2013,6 +2014,10 @@ accessors {
         fieldInferred("DATA_SWELL_DIR", "1.16.5")
         fieldInferred("DATA_IS_POWERED", "1.16.5")
         fieldInferred("DATA_IS_IGNITED", "1.16.5")
+    }
+    mapClass(Zombie) {
+        constructor(EntityType, Level)
+        constructor(Level)
     }
 
 }
