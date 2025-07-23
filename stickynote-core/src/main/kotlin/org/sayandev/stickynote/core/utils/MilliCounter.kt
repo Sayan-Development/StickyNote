@@ -8,17 +8,22 @@ class MilliCounter {
 
     private var time: Long = 0
     private var elapsed = 0.0
+    var stopped: Boolean = false
 
     fun start() {
+        stopped = false
         time = System.nanoTime()
     }
 
     fun stop() {
-        elapsed = (System.nanoTime() - time) * 10.0.pow(-6.0)
+        elapsed = (System.nanoTime() - time) / 1_000_000.0
+        stopped = true
     }
 
     fun get(): Float {
-        return decimalFormat.format(elapsed).toFloat()
+        return if (!stopped) {
+            ((System.nanoTime() - time) / 1_000_000.0).toFloat()
+        } else decimalFormat.format(elapsed).toFloat()
     }
 
     fun getExact(): Double {
