@@ -235,11 +235,11 @@ object PacketUtils {
     }
 
     @JvmStatic
-    fun getEntityPosPacket(id: Int, x: Double, y: Double, z: Double): Any {
+    fun getEntityPosPacket(id: Int, x: Double, y: Double, z: Double, onGround: Boolean): Any {
         return if (ServerVersion.supports(13)) {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_0!!.newInstance(
                 id,
-                (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(), true
+                (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(), onGround
             )
         } else if (ServerVersion.supports(9)) {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_1!!.newInstance(
@@ -249,7 +249,7 @@ object PacketUtils {
         } else {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_2!!.newInstance(
                 id,
-                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(), true
+                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(), onGround
             )
         }
     }
