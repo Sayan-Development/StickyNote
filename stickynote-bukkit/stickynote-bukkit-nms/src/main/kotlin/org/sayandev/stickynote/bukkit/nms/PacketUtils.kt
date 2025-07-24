@@ -13,7 +13,6 @@ import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
-import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
 import java.lang.reflect.Array
 import java.util.*
@@ -271,10 +270,16 @@ object PacketUtils {
                 (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(),
                 MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
             )
-        } else {
+        } else if (ServerVersion.supports(9)) {
             ClientboundMoveEntityPacket_PosRotAccessor.CONSTRUCTOR_1!!.newInstance(
                 id,
                 (x * 4096).toLong(), (y * 4096).toLong(), (z * 4096).toLong(),
+                MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
+            )
+        } else {
+            ClientboundMoveEntityPacket_PosRotAccessor.CONSTRUCTOR_2!!.newInstance(
+                id,
+                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(),
                 MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
             )
         }
