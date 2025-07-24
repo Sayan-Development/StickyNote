@@ -242,10 +242,15 @@ object PacketUtils {
                 id,
                 (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(), true
             )
-        } else {
+        } else if (ServerVersion.supports(9)) {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_1!!.newInstance(
                 id,
                 (x * 4096).toLong(), (y * 4096).toLong(), (z * 4096).toLong(), true
+            )
+        } else {
+            ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_2!!.newInstance(
+                id,
+                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(), true
             )
         }
     }
