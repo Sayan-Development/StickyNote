@@ -13,6 +13,7 @@ import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.nms.enum.*
 import org.sayandev.stickynote.bukkit.utils.MathUtils
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
+import org.sayandev.stickynote.bukkit.warn
 import org.sayandev.stickynote.core.math.Vector3
 import java.lang.reflect.Array
 import java.util.*
@@ -185,10 +186,11 @@ object PacketUtils {
 
     @JvmStatic
     fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
-        val effectConstructor = if (ServerVersion.isAtLeast(21, 5))
+        val effectConstructor = if (ServerVersion.isAtLeast(20, 6)) {
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_1!!
-        else
+        } else {
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!
+        }
         return effectConstructor.newInstance(player.entityId, getMobEffectByEffectType(effect))
     }
 

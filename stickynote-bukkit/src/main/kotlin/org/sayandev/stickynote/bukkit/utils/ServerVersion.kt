@@ -74,6 +74,4 @@ object ServerVersion {
             version() > version
         }
     }
-    //write a commit message for this method above:
-    //This method checks whether the server version is equal to the given version and patch or newer.
 }
