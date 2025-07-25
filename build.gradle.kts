@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "1.10.4.39"
+    version = "1.10.4.41"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -150,9 +150,11 @@ subprojects {
                     } else {
                         from(components["shadow"])
                         artifact(tasks["sourcesJar"])
+                        /*artifact(tasks["jar"]) {
+                            classifier = "unshaded"
+                        }*/
 //                        from(components["java"])
                     }
-
                     setPom(this)
                 }
                 /*create<MavenPublication>("catalog") {
