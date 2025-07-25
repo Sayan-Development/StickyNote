@@ -155,6 +155,7 @@ subprojects {
                         }*/
 //                        from(components["java"])
                     }
+
                     setPom(this)
                 }
                 /*create<MavenPublication>("catalog") {

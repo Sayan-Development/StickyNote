@@ -809,6 +809,8 @@ accessors {
         methodInferred("moveTo", "1.20.4", Double::class, Double::class, Double::class)
         methodInferred("level", "1.21.4")
         fieldInferred("position", "1.20.4")
+        field(Float::class, "yRot")
+        field(Float::class, "xRot")
         fieldInferred("locX", "1.8.8")
         fieldInferred("locY", "1.8.8")
         fieldInferred("locZ", "1.8.8")
