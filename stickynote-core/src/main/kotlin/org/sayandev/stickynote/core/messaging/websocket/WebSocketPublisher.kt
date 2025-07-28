@@ -29,6 +29,7 @@ open class  WebSocketPublisher<P : Any, R : Any>(
 
     init {
         server = MessageWebSocketServer.getWebSocketServer(connectionMeta.uri) ?: MessageWebSocketServer(connectionMeta.uri).apply {
+            logger.info("Starting a new WebSocket server at ${connectionMeta.uri}")
             start()
         }
 
