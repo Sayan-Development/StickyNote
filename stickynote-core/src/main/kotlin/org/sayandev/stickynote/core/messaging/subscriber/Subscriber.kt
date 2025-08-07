@@ -8,7 +8,7 @@ abstract class Subscriber<P, S>(
     val name: String,
 ) {
 
-    abstract suspend fun onSubscribe(payload: P): Deferred<S>
+    abstract suspend fun onSubscribe(payload: P): Deferred<S>?
 
     fun id(): String {
         return "$namespace:$name"
