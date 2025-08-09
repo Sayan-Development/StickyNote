@@ -7,13 +7,18 @@ import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.sayanventure.adventure.text.minimessage.MiniMessage
 import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
 import org.sayandev.stickynote.bungeecord.plugin
+import org.sayandev.stickynote.core.component.StickyComponent
+import org.sayandev.stickynote.core.component.StickyTag
+import org.sayandev.stickynote.core.component.modes.StickyComponentMiniMessage
 
 object AdventureUtils {
 
     @JvmStatic
+    @Deprecated("use sticky audience instead")
     val audience = BungeeAudiences.create(plugin)
 
     @JvmStatic
+    @Deprecated("use sticky minimessae instead")
     var miniMessage = MiniMessage.miniMessage()
 
     fun setTagResolver(vararg tagResolver: TagResolver) {
@@ -31,11 +36,11 @@ object AdventureUtils {
     }
 
     @JvmStatic
-    fun toComponent(content: String, vararg placeholder: TagResolver): Component {
-        return miniMessage.deserialize(content, *placeholder)
+    fun toComponent(content: String, vararg placeholder: StickyTag): StickyComponent {
+        return StickyComponentMiniMessage(content, placeholder.toList())
     }
 
-    fun String.component(vararg placeholder: TagResolver): Component {
+    fun String.component(vararg placeholder: StickyTag): StickyComponent {
         return toComponent(this, *placeholder)
     }
 }

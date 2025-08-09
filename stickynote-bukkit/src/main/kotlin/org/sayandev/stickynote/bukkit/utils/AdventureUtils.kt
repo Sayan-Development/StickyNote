@@ -17,6 +17,9 @@ import org.sayandev.sayanventure.adventure.text.serializer.legacy.LegacyComponen
 import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
+import org.sayandev.stickynote.core.component.StickyComponent
+import org.sayandev.stickynote.core.component.StickyTag
+import org.sayandev.stickynote.core.component.modes.StickyComponentMiniMessage
 
 object AdventureUtils {
 
@@ -29,10 +32,14 @@ object AdventureUtils {
 
     @JvmStatic
     val audience = BukkitAudiences.create(plugin)
+
     @JvmStatic
+    @Deprecated("use sticky minimessage instead")
     var miniMessage = MiniMessage.miniMessage()
+
     @JvmStatic
     var legacyAmpersandSerializer = LegacyComponentSerializer.legacyAmpersand()
+
     @JvmStatic
     var bungeeComponentSerializer = BungeeComponentSerializer.get()
 
@@ -105,45 +112,22 @@ object AdventureUtils {
     }
 
     @JvmStatic
-    fun toComponent(content: String, vararg placeholder: TagResolver): Component {
-        val component = miniMessage.deserialize(content, *placeholder)
+    fun toComponent(content: String, vararg placeholder: StickyTag): StickyComponent {
+        val component = StickyComponentMiniMessage(content, placeholder.toList())
         return if (options.removeStartingItalic) Component.empty().decoration(TextDecoration.ITALIC, false).append(component) else component
     }
 
     @JvmStatic
-    fun toAdventureComponent(content: String, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
-        val component = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(content, *placeholder)
-        return if (options.removeStartingItalic) net.kyori.adventure.text.Component.empty().decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false).append(component) else component
-    }
-
-    @JvmStatic
-    fun toComponent(player: Player?, content: String, vararg placeholder: TagResolver): Component {
+    fun toComponent(player: Player?, content: String, vararg placeholder: TagResolver): StickyComponent {
         return miniMessage.deserialize(PlaceholderAPIHook.injectPlaceholders(player, content), *placeholder)
     }
 
-    @JvmStatic
-    fun toAdventureComponent(player: Player?, content: String, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
-        return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(PlaceholderAPIHook.injectPlaceholders(player, content), *placeholder)
-    }
-
-    fun String.component(vararg placeholder: TagResolver): Component {
+    fun String.component(vararg placeholder: StickyTag): StickyComponent {
         return toComponent(this, *placeholder)
     }
 
-    fun Component.adventureComponent(): net.kyori.adventure.text.Component {
-        return net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(GsonComponentSerializer.gson().serialize(this))
-    }
-
-    fun String.adventureComponent(vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
-        return toAdventureComponent(this, *placeholder)
-    }
-
-    fun String.component(player: Player?, vararg placeholder: TagResolver): Component {
+    fun String.component(player: Player?, vararg placeholder: StickyTag): StickyComponent {
         return toComponent(player, this, *placeholder)
-    }
-
-    fun String.adventureComponent(player: Player?, vararg placeholder: net.kyori.adventure.text.minimessage.tag.resolver.TagResolver): net.kyori.adventure.text.Component {
-        return toAdventureComponent(player, this, *placeholder)
     }
 
     fun Component.legacyString(): String {
