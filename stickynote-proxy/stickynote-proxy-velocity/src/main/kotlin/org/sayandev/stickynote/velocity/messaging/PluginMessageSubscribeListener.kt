@@ -40,7 +40,7 @@ class PluginMessageSubscribeListener<P, S>(
             PayloadWrapper.State.PROXY -> {
                 launch {
                     val result = (Subscriber.HANDLER_LIST.find { it.namespace == channelIdentifier.namespace && it.name == channelIdentifier.name } as Subscriber<P, S>).onSubscribe(payloadWrapper.typedPayload(payloadClass))
-                    result?.invokeOnCompletion {
+                    result.invokeOnCompletion {
                         (event.source as ServerConnection).sendPluginMessage(channelIdentifier, PayloadWrapper(payloadWrapper.uniqueId, result.getCompleted(), PayloadWrapper.State.RESPOND, payloadWrapper.source).asJson().toByteArray())
                     }
                 }

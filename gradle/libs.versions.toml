@@ -17,7 +17,6 @@ sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
 mariadb = "3.3.3"
 jedis = "5.0.0"
-lettuce = "6.7.1.RELEASE"
 reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
@@ -71,7 +70,6 @@ sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlit
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
-lettuce = { group = "io.lettuce", name = "lettuce-core", version.ref = "lettuce" }
 reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
@@ -84,7 +82,6 @@ exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao",version.re
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime",version.ref = "exposed" }
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-reactive = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactive", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 
 # bukkit
@@ -173,13 +170,11 @@ implementation-core = [
     "exposed-dao",
     "exposed-kotlin-datetime",
     "kotlinx-coroutines",
-    "kotlinx-coroutines-reactive",
     "mysql-connector",
     "sqlite-jdbc",
 #    "h2",
     "mariadb",
     "jedis",
-    "lettuce",
 #    "caffeine"
 ]
 implementation-bukkit = [
