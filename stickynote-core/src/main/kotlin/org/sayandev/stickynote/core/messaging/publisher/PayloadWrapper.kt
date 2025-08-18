@@ -72,6 +72,10 @@ data class PayloadWrapper<P>(
             return gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)
         }
 
+        fun <P> String.asPayloadWrapper(clazz: Class<P>): PayloadWrapper<P> {
+            return gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)
+        }
+
         fun <P> String.asOptionalPayloadWrapper(): PayloadWrapper<P>? {
             return try {
                 gson.fromJson<PayloadWrapper<P>>(this, PayloadWrapper::class.java)

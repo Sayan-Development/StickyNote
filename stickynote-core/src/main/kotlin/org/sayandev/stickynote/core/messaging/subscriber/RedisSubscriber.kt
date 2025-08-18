@@ -8,7 +8,6 @@ import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
-import org.sayandev.stickynote.core.messaging.publisher.RedisPublisher
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
@@ -55,21 +54,20 @@ abstract class RedisSubscriber<P, S>(
         }
     }
 
-    private fun handleMessage(payloadWrapper: PayloadWrapper<P>) {
+    fun handleMessage(payloadWrapper: PayloadWrapper<P>) {
         when (payloadWrapper.state) {
             PayloadWrapper.State.PROXY -> handleProxyMessage(payloadWrapper)
             PayloadWrapper.State.FORWARD -> handleForwardMessage(payloadWrapper)
-            PayloadWrapper.State.RESPOND -> {} // Handle response if needed
+            PayloadWrapper.State.RESPOND -> {}
         }
     }
 
     private fun handleProxyMessage(payloadWrapper: PayloadWrapper<P>) {
-        val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") != null }.isSuccess
         if (!isVelocity) return
 
         launch(dispatcher) {
             val result = (HANDLER_LIST.find { it.namespace == namespace && it.name == name } as Subscriber<P, S>)
-                .onSubscribe(payloadWrapper.typedPayload(payloadClass))
+                .onSubscribe(payloadWrapper.typedPayload(payloadClass)) ?: return@launch
             result.await()
             publish(
                 PayloadWrapper(
@@ -85,8 +83,9 @@ abstract class RedisSubscriber<P, S>(
     private fun handleForwardMessage(payloadWrapper: PayloadWrapper<P>) {
         if (payloadWrapper.excludeSource && isSource(payloadWrapper.uniqueId)) return
         launch(dispatcher) {
-            val result = (HANDLER_LIST.find { it.namespace == namespace && it.name == name } as? Subscriber<P, S>)
-                ?.onSubscribe(payloadWrapper.typedPayload(payloadClass))
+            val subscriber = (HANDLER_LIST.find { it.namespace == namespace && it.name == name } as? Subscriber<P, S>)
+            val result = onSubscribe(payloadWrapper.typedPayload(payloadClass))
+            if (result == null && subscriber != null) return@launch
             if (payloadWrapper.target == "PROCESSED") return@launch
             publish(
                 PayloadWrapper(
@@ -177,6 +176,8 @@ abstract class RedisSubscriber<P, S>(
     }
 
     companion object {
+        val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") != null }.isSuccess
+
         const val TIMEOUT_SECONDS = 5L
     }
 }

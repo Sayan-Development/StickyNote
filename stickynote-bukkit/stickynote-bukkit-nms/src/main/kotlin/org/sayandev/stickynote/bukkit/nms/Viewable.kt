@@ -1,10 +1,11 @@
 package org.sayandev.stickynote.bukkit.nms
 
 import org.bukkit.entity.Player
+import java.util.Collections
 
 abstract class Viewable {
 
-    private val viewers: MutableSet<Player> = HashSet()
+    private val viewers: MutableSet<Player> = Collections.synchronizedSet(HashSet())
 
     /**
      * Adds a viewer
@@ -99,7 +100,10 @@ abstract class Viewable {
      * @return An immutable set of viewers
      */
     fun getViewers(): Set<Player> {
-        return HashSet(viewers)
+        synchronized(viewers) {
+            return HashSet(viewers)
+        }
     }
+
 
 }
