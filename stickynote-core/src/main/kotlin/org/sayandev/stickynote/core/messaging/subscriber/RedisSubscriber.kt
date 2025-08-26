@@ -1,27 +1,23 @@
 package org.sayandev.stickynote.core.messaging.subscriber
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asJson
-import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.asPayloadWrapper
 import org.sayandev.stickynote.core.messaging.publisher.PayloadWrapper.Companion.typedPayload
 import org.sayandev.stickynote.core.messaging.publisher.Publisher
+import org.sayandev.stickynote.core.messaging.redis.RedisConnectionManager
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch
-import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPubSub
-import redis.clients.jedis.exceptions.JedisException
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class RedisSubscriber<P, S>(
-    val dispatcher: CoroutineContext,
+    val dispatcher: CoroutineDispatcher,
     val redis: JedisPool,
     namespace: String,
     name: String,
@@ -30,110 +26,54 @@ abstract class RedisSubscriber<P, S>(
 ) : Subscriber<P, S>(namespace, name) {
 
     val channel = "$namespace:$name"
-    private var subJedis: Jedis = redis.resource
-    private var subscriberThread: Thread? = null
-    private val isSubscribed = AtomicBoolean(false)
-    private val shouldReconnect = AtomicBoolean(true)
-    private val pubSub = createPubSub()
 
     init {
-        startSubscriber()
+        RedisConnectionManager.registerNamespace(namespace, redis, dispatcher)
     }
 
-    private fun createPubSub(): JedisPubSub {
-        return object : JedisPubSub() {
-            override fun onMessage(channel: String, message: String) {
-                if (channel != this@RedisSubscriber.channel) return
-                try {
-                    val payloadWrapper = message.asPayloadWrapper<P>()
-                    handleMessage(payloadWrapper)
-                } catch (e: Exception) {
-                    logger.log(Level.WARNING, "Error processing message: ${e.message}")
-                }
+    fun handleForwardMessage(payloadWrapper: PayloadWrapper<Any>) {
+        if (payloadWrapper.excludeSource && isSource(payloadWrapper.uniqueId)) return
+        launch(dispatcher) {
+            try {
+                val typedPayload = payloadWrapper.typedPayload(payloadClass)
+                val result = onSubscribe(typedPayload)
+                if (result == null) return@launch
+                if (payloadWrapper.target == "PROCESSED") return@launch
+
+                publish(
+                    PayloadWrapper(
+                        payloadWrapper.uniqueId,
+                        result.getCompleted(),
+                        PayloadWrapper.State.RESPOND,
+                        payloadWrapper.source,
+                        "PROCESSED"
+                    )
+                )
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Error handling forward message: ${e.message}")
             }
         }
     }
 
-    fun handleMessage(payloadWrapper: PayloadWrapper<P>) {
-        when (payloadWrapper.state) {
-            PayloadWrapper.State.PROXY -> handleProxyMessage(payloadWrapper)
-            PayloadWrapper.State.FORWARD -> handleForwardMessage(payloadWrapper)
-            PayloadWrapper.State.RESPOND -> {}
-        }
-    }
-
-    private fun handleProxyMessage(payloadWrapper: PayloadWrapper<P>) {
+    fun handleProxyMessage(payloadWrapper: PayloadWrapper<Any>) {
         if (!isVelocity) return
 
         launch(dispatcher) {
-            val result = (HANDLER_LIST.find { it.namespace == namespace && it.name == name } as Subscriber<P, S>)
-                .onSubscribe(payloadWrapper.typedPayload(payloadClass)) ?: return@launch
-            result.await()
-            publish(
-                PayloadWrapper(
-                    payloadWrapper.uniqueId,
-                    result.getCompleted(),
-                    PayloadWrapper.State.RESPOND,
-                    payloadWrapper.source
+            try {
+                val typedPayload = payloadWrapper.typedPayload(payloadClass)
+                val result = onSubscribe(typedPayload) ?: return@launch
+                result.await()
+                publish(
+                    PayloadWrapper(
+                        payloadWrapper.uniqueId,
+                        result.getCompleted(),
+                        PayloadWrapper.State.RESPOND,
+                        payloadWrapper.source
+                    )
                 )
-            )
-        }
-    }
-
-    private fun handleForwardMessage(payloadWrapper: PayloadWrapper<P>) {
-        if (payloadWrapper.excludeSource && isSource(payloadWrapper.uniqueId)) return
-        launch(dispatcher) {
-            val subscriber = (HANDLER_LIST.find { it.namespace == namespace && it.name == name } as? Subscriber<P, S>)
-            val result = onSubscribe(payloadWrapper.typedPayload(payloadClass))
-            if (result == null && subscriber != null) return@launch
-            if (payloadWrapper.target == "PROCESSED") return@launch
-            publish(
-                PayloadWrapper(
-                    payloadWrapper.uniqueId,
-                    result?.getCompleted() ?: payloadWrapper.payload,
-                    if (result != null) PayloadWrapper.State.RESPOND else payloadWrapper.state,
-                    payloadWrapper.source,
-                    "PROCESSED"
-                )
-            )
-        }
-    }
-
-    private fun startSubscriber() {
-        if (!shouldReconnect.get() || isSubscribed.get()) return
-
-        synchronized(this) {
-            if (isSubscribed.get()) return
-
-            subscriberThread?.interrupt()
-            subscriberThread = Thread({
-                while (shouldReconnect.get()) {
-                    try {
-                        subJedis = redis.resource
-                        isSubscribed.set(true)
-                        subJedis.subscribe(pubSub, channel)
-                    } catch (e: JedisException) {
-                        logger.log(Level.WARNING, "Redis connection lost: ${e.message}")
-                        isSubscribed.set(false)
-                        safeCloseJedis()
-                        Thread.sleep(5000)
-                    } catch (e: Exception) {
-                        logger.log(Level.SEVERE, "Unexpected error in subscriber: ${e.message}")
-                        isSubscribed.set(false)
-                        safeCloseJedis()
-                        Thread.sleep(5000)
-                    }
-                }
-            }, "redis-sub-thread-${channel}-${UUID.randomUUID().toString().split("-").first()}")
-            subscriberThread?.start()
-        }
-    }
-
-    private fun safeCloseJedis() {
-        try {
-            subJedis.close()
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Error closing Jedis connection: ${e.message}")
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Error handling proxy message: ${e.message}")
+            }
         }
     }
 
@@ -166,13 +106,6 @@ abstract class RedisSubscriber<P, S>(
             .asSequence()
             .flatMap { publisher -> publisher.payloads.keys.asSequence() }
             .contains(uniqueId)
-    }
-
-    fun shutdown() {
-        shouldReconnect.set(false)
-        pubSub.unsubscribe()
-        safeCloseJedis()
-        subscriberThread?.interrupt()
     }
 
     companion object {
