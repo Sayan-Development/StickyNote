@@ -5,15 +5,14 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.sayandev.sayanventure.adventure.audience.Audience
+import org.sayandev.sayanventure.adventure.inventory.Book
 import org.sayandev.sayanventure.adventure.platform.bukkit.BukkitAudiences
 import org.sayandev.sayanventure.adventure.text.Component
 import org.sayandev.sayanventure.adventure.text.format.TextDecoration
 import org.sayandev.sayanventure.adventure.text.minimessage.MiniMessage
 import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
 import org.sayandev.sayanventure.adventure.text.serializer.bungeecord.BungeeComponentSerializer
-import org.sayandev.sayanventure.adventure.text.serializer.gson.GsonComponentSerializer
 import org.sayandev.sayanventure.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
 
@@ -76,6 +75,30 @@ object AdventureUtils {
             senderAudience(sender).sendActionBar(content)
         } else {
             sender.sendActionBar(content.adventureComponent())
+        }
+    }
+
+    @JvmStatic
+    fun openBook(
+        sender: CommandSender,
+        title: Component,
+        author: Component,
+        vararg pages: Component
+    ) {
+        if (!ServerVersion.isAtLeast(21, 6)) {
+            senderAudience(sender).openBook(Book.book(
+                title,
+                author,
+                *pages
+            ))
+        } else {
+            sender.openBook(
+                net.kyori.adventure.inventory.Book.book(
+                    title.adventureComponent(),
+                    author.adventureComponent(),
+                    *pages.map { it.adventureComponent() }.toTypedArray()
+                )
+            )
         }
     }
 

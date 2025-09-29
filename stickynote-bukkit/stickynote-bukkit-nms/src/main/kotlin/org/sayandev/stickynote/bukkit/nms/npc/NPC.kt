@@ -96,7 +96,18 @@ abstract class NPC: Viewable() {
      */
     fun move(vector: Vector3) {
         setPosition(position.add(vector))
-        getViewers().sendPacket(PacketUtils.getEntityPosPacket(entityId, vector.x, vector.y, vector.z))
+        getViewers().sendPacket(PacketUtils.getEntityPosPacket(entityId, vector.x, vector.y, vector.z, true))
+    }
+
+    /**
+     * Moves the NPC by the given vector with the onGround status
+     * @param vector The vector to move. Length of the vector shouldn't be greater than 8
+     * @param onGround Whether the NPC is on ground
+     * @apiNote The length of the vector shouldn't be greater than 8
+     */
+    fun move(vector: Vector3, onGround: Boolean) {
+        setPosition(position.add(vector))
+        getViewers().sendPacket(PacketUtils.getEntityPosPacket(entityId, vector.x, vector.y, vector.z, onGround))
     }
 
     /**
@@ -136,6 +147,22 @@ abstract class NPC: Viewable() {
         setPosition(position.add(vector))
         getViewers().sendPacket(
             PacketUtils.getEntityPosRotPacket(entityId, vector.x, vector.y, vector.z, yaw, pitch, true),
+            PacketUtils.getHeadRotatePacket(entity, yaw)
+        )
+    }
+
+    /**
+     * Moves the NPC by the given vector and looks with the given yaw and pitch with the onGround status
+     * @param vector The vector to move. Length of the vector shouldn't be greater than 8
+     * @param yaw The yaw to look
+     * @param pitch The pitch to look
+     * @param onGround Whether the NPC is on ground
+     * @apiNote The length of the vector shouldn't be greater than 8
+     */
+    fun moveAndLook(vector: Vector3, yaw: Float, pitch: Float, onGround: Boolean) {
+        setPosition(position.add(vector))
+        getViewers().sendPacket(
+            PacketUtils.getEntityPosRotPacket(entityId, vector.x, vector.y, vector.z, yaw, pitch, onGround),
             PacketUtils.getHeadRotatePacket(entity, yaw)
         )
     }

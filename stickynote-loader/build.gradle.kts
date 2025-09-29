@@ -1,10 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     `kotlin-dsl`
     publishing
-    id("com.gradle.plugin-publish") version "1.2.1"
-    id("com.gradleup.shadow") version "9.0.0-rc1"
-    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-rc.1"
+    id("com.gradle.plugin-publish") version "2.0.0"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 dependencies {
@@ -13,9 +12,9 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-rc1")
-    implementation("com.xpdustry.kotlin-shadow-relocator:com.xpdustry.kotlin-shadow-relocator.gradle.plugin:3.0.0-rc.1")
-//    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.2.2")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+    implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.2.0")
     testImplementation(kotlin("test"))
 }
 
@@ -32,7 +31,6 @@ tasks {
 
 allprojects {
     plugins.apply("com.gradleup.shadow")
-    plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     tasks {
         shadowJar {
@@ -50,6 +48,7 @@ allprojects {
         publications {
             if (project.name.contains("loader")) {
                 create<MavenPublication>("maven") {
+                    version = rootProject.version.toString()
                     groupId = rootProject.group as String
                     from(components["shadow"])
 //                    artifact(tasks["sourcesJar"])

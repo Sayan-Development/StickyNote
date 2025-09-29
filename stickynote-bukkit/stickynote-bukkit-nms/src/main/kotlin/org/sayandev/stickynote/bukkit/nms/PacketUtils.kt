@@ -186,10 +186,11 @@ object PacketUtils {
 
     @JvmStatic
     fun getRemoveMobEffectPacket(player: Player, effect: PotionEffectType): Any {
-        val effectConstructor = if (ServerVersion.isAtLeast(21, 5))
+        val effectConstructor = if (ServerVersion.isAtLeast(20, 6)) {
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_1!!
-        else
+        } else {
             ClientboundRemoveMobEffectPacketAccessor.CONSTRUCTOR_0!!
+        }
         return effectConstructor.newInstance(player.entityId, getMobEffectByEffectType(effect))
     }
 
@@ -236,16 +237,21 @@ object PacketUtils {
     }
 
     @JvmStatic
-    fun getEntityPosPacket(id: Int, x: Double, y: Double, z: Double): Any {
+    fun getEntityPosPacket(id: Int, x: Double, y: Double, z: Double, onGround: Boolean): Any {
         return if (ServerVersion.supports(13)) {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_0!!.newInstance(
                 id,
-                (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(), true
+                (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(), onGround
             )
-        } else {
+        } else if (ServerVersion.supports(9)) {
             ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_1!!.newInstance(
                 id,
                 (x * 4096).toLong(), (y * 4096).toLong(), (z * 4096).toLong(), true
+            )
+        } else {
+            ClientboundMoveEntityPacket_PosAccessor.CONSTRUCTOR_2!!.newInstance(
+                id,
+                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(), onGround
             )
         }
     }
@@ -266,10 +272,16 @@ object PacketUtils {
                 (x * 4096).toInt().toShort(), (y * 4096).toInt().toShort(), (z * 4096).toInt().toShort(),
                 MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
             )
-        } else {
+        } else if (ServerVersion.supports(9)) {
             ClientboundMoveEntityPacket_PosRotAccessor.CONSTRUCTOR_1!!.newInstance(
                 id,
                 (x * 4096).toLong(), (y * 4096).toLong(), (z * 4096).toLong(),
+                MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
+            )
+        } else {
+            ClientboundMoveEntityPacket_PosRotAccessor.CONSTRUCTOR_2!!.newInstance(
+                id,
+                (x * 32.0).toInt().toByte(), (y * 32.0).toInt().toByte(), (z * 32.0).toInt().toByte(),
                 MathUtils.getAngle(yaw), MathUtils.getAngle(pitch), onGround
             )
         }

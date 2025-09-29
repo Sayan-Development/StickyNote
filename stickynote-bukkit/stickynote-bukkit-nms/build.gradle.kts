@@ -29,7 +29,7 @@ dependencies {
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.7")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.8")
     implementation(accessorRuntime())
 }
 
@@ -45,7 +45,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.7")
+    versionRange("1.8.8", "1.21.8")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
@@ -293,6 +293,7 @@ accessors {
     val Villager = "net.minecraft.world.entity.npc.Villager"
     val Boat = "net.minecraft.world.entity.vehicle.Boat"
     val Creeper = "net.minecraft.world.entity.monster.Creeper"
+    val Zombie = "net.minecraft.world.entity.monster.Zombie"
     // 1.8
     val EntityPlayer = "net.minecraft.entity.player.EntityPlayerMP"
     val World = "net.minecraft.world.World"
@@ -808,6 +809,8 @@ accessors {
         methodInferred("moveTo", "1.20.4", Double::class, Double::class, Double::class)
         methodInferred("level", "1.21.4")
         fieldInferred("position", "1.20.4")
+        field(Float::class, "yRot")
+        field(Float::class, "xRot")
         fieldInferred("locX", "1.8.8")
         fieldInferred("locY", "1.8.8")
         fieldInferred("locZ", "1.8.8")
@@ -2013,6 +2016,10 @@ accessors {
         fieldInferred("DATA_SWELL_DIR", "1.16.5")
         fieldInferred("DATA_IS_POWERED", "1.16.5")
         fieldInferred("DATA_IS_IGNITED", "1.16.5")
+    }
+    mapClass(Zombie) {
+        constructor(EntityType, Level)
+        constructor(Level)
     }
 
 }

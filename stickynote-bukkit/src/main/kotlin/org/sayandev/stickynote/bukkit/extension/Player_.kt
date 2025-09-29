@@ -10,14 +10,10 @@ fun CommandSender.sendComponent(message: String, vararg placeholder: TagResolver
     AdventureUtils.sendComponent(this, message, *placeholder)
 }
 
-fun CommandSender.sendComponent(message: Component) {
-    AdventureUtils.sendComponent(this, message)
-}
-
 fun Player.sendComponentActionbar(content: String, vararg placeholder: TagResolver) {
     AdventureUtils.sendComponentActionbar(this, content, *placeholder)
 }
 
-fun Player.sendComponentActionbar(content: Component) {
-    AdventureUtils.sendComponentActionbar(this, content)
+fun CommandSender.openBook(title: Component, author: Component, vararg pages: Component) {
+    AdventureUtils.openBook(this, title, author, *pages)
 }
