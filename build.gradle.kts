@@ -1,14 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     `version-catalog`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.0.0-beta12"
-    id("com.xpdustry.kotlin-shadow-relocator") version "3.0.0-beta.1"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.10.4.60-REDIS-EXPERIMENT"
+    version = "1.10.5.20"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -16,10 +15,9 @@ allprojects {
     plugins.apply("java-library")
     plugins.apply("kotlin")
     plugins.apply("com.gradleup.shadow")
-    plugins.apply("com.xpdustry.kotlin-shadow-relocator")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
     }
 
     tasks {
@@ -141,32 +139,11 @@ subprojects {
     publishing {
         publications {
             if (!project.name.contains("loader") && !project.name.contains("catalog")) {
-                create<MavenPublication>("mavenJava") {
+                create<MavenPublication>("maven") {
                     groupId = rootProject.group as String
-//                    artifact(tasks["sourcesJar"])
-//                    artifact(tasks["jar"])
-                    if (project.name.contains("catalog")) {
-                        from(components["versionCatalog"])
-                    } else {
-                        from(components["shadow"])
-                        artifact(tasks["sourcesJar"])
-                        /*artifact(tasks["jar"]) {
-                            classifier = "unshaded"
-                        }*/
-//                        from(components["java"])
-                    }
-
+                    from(components["shadow"])
                     setPom(this)
                 }
-                /*create<MavenPublication>("catalog") {
-                    groupId = rootProject.group as String
-                    artifactId += "-catalog"
-//                    artifact(tasks["sourcesJar"])
-//                    artifact(tasks["jar"])
-                    from(components["versionCatalog"])
-
-                    setPom(this)
-                }*/
             }
             if (project.name.contains("catalog")) {
                 create<MavenPublication>("catalog") {
