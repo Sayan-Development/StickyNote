@@ -9,7 +9,7 @@ import org.incendo.cloud.kotlin.extension.buildAndRegister
 import org.incendo.cloud.kotlin.extension.commandBuilder
 import org.incendo.cloud.parser.standard.StringParser
 import org.incendo.cloud.suggestion.Suggestion
-import org.sayandev.sayanventure.adventure.text.Component
+import net.kyori.adventure.text.Component
 import org.sayandev.stickynote.core.command.interfaces.CommandExtension
 import org.sayandev.stickynote.core.command.interfaces.SenderExtension
 import org.sayandev.stickynote.core.utils.CoroutineUtils.launch

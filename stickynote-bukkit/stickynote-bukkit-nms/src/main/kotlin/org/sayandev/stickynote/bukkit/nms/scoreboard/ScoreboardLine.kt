@@ -1,6 +1,6 @@
 package org.sayandev.stickynote.bukkit.nms.scoreboard
 
-import org.sayandev.sayanventure.adventure.text.Component
+import net.kyori.adventure.text.Component
 
 open class ScoreboardLine(
     val component: Component,

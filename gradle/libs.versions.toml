@@ -11,7 +11,6 @@ cloud = "2.0.0"
 cloud-platform = "2.0.0-beta.10"
 #cloud-minecraft = "2.0.2-SNAPSHOT"
 adventure = "4.23.0"
-sayanventure = "1.0.3"
 mysql-connector = "8.4.0"
 sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
@@ -32,7 +31,7 @@ caffeine = "3.2.0"
 kaml = "0.85.0"
 
 # minecraft
-adventure-platform = "4.3.4"
+adventure-platform = "4.4.1"
 
 # bukkit
 paper = "1.21-R0.1-SNAPSHOT"
@@ -67,7 +66,6 @@ cloud-kotlin-extensions = { group = "org.incendo", name = "cloud-kotlin-extensio
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventure" }
-sayanventure-api = { group = "org.sayandev.sayanventure", name = "sayanventure", version.ref = "sayanventure" }
 mysql-connector = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-connector" }
 sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-jdbc" }
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
@@ -97,7 +95,6 @@ cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
-sayanventure-platform-bukkit = { group = "org.sayandev.sayanventure", name = "sayanventure-bukkit", version.ref = "sayanventure" }
 libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
 libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
 pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = "pathetic-mapping", version.ref = "pathetic-pathfinder-bukkit" }
@@ -121,7 +118,7 @@ cloud-velocity = { group = "org.incendo", name = "cloud-velocity", version.ref =
 
 # proxy - bungeecord
 bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
-sayanventure-platform-bungeecord = { group = "org.sayandev.sayanventure", name = "sayanventure-bungeecord", version.ref = "sayanventure" }
+adventure-platform-bungeecord = { group = "net.kyori", name = "adventure-platform-bungeecord", version.ref = "adventure-platform" }
 libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.ref = "libby" }
 mccoroutines-bungeecord-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-api", version.ref = "mccoroutines" }
 mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-core", version.ref = "mccoroutines" }
@@ -153,6 +150,9 @@ implementation-core = [
     "checker-qual",
     "javassist",
     "annotations",
+    "adventure-api",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-gson",
 #    "slf4j-api",
     "error_prone_annotations",
     "geantyref",
@@ -165,7 +165,6 @@ implementation-core = [
     "cloud-core",
     "cloud-kotlin-extensions",
 #    "cloud-kotlin-coroutines",
-    "sayanventure-api",
     "reflections",
     "kotlin-reflect",
     "hikari",
@@ -188,7 +187,7 @@ implementation-bukkit = [
     "cloud-minecraft-extras",
     "inventoryframework",
     "xseries",
-    "sayanventure-platform-bukkit",
+    "adventure-platform-bukkit",
     "pathetic-pathfinder-bukkit",
     "mccoroutines-bukkit-api",
     "mccoroutines-bukkit-core",
@@ -207,7 +206,7 @@ implementation-proxy-velocity = [
     "cloud-velocity"
 ]
 implementation-proxy-bungeecord = [
-    "sayanventure-platform-bungeecord",
+    "adventure-platform-bungeecord",
     "mccoroutines-bungeecord-api",
     "mccoroutines-bungeecord-core",
 ]

@@ -14,10 +14,10 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.annotations.ApiStatus
-import org.sayandev.sayanventure.adventure.platform.bukkit.MinecraftComponentSerializer
-import org.sayandev.sayanventure.adventure.text.Component
-import org.sayandev.sayanventure.adventure.text.format.TextDecoration
-import org.sayandev.sayanventure.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.sayandev.stickynote.bukkit.nms.accessors.*
 import org.sayandev.stickynote.bukkit.utils.ServerVersion
 import org.sayandev.stickynote.core.math.Vector3

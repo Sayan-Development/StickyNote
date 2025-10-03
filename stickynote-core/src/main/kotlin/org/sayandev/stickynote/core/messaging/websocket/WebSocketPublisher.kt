@@ -90,7 +90,7 @@ open class WebSocketPublisher<P : Any, R : Any>(
         val signal = CompletableDeferred<Unit>().also { openSignal = it }
         return object : WebSocketClient(uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
-                logger.info("Connected to WebSocket server ${uri.host}:${uri.port}")
+//                logger.info("Connected to WebSocket server ${uri.host}:${uri.port}")
                 if (!signal.isCompleted) signal.complete(Unit)
                 this.setConnectionLostTimeout(10)
             }
@@ -99,11 +99,11 @@ open class WebSocketPublisher<P : Any, R : Any>(
             }
             override fun onClose(code: Int, reason: String?, remote: Boolean) {
                 // Rate-limited to avoid spam during reconnect
-                infoRateLimited("WebSocket closed (${uri.host}:${uri.port}): $reason")
+//                infoRateLimited("WebSocket closed (${uri.host}:${uri.port}): $reason")
             }
             override fun onError(ex: Exception) {
                 // Rate-limited to avoid spam during reconnect
-                warnRateLimited("WebSocket error (${uri.host}:${uri.port}): ${ex.message}")
+//                warnRateLimited("WebSocket error (${uri.host}:${uri.port}): ${ex.message}")
             }
         }
     }
@@ -178,6 +178,7 @@ open class WebSocketPublisher<P : Any, R : Any>(
 
     // Retry connect with exponential backoff; optionally wait for onOpen.
     private fun connectWithRetry(uri: URI, maxAttempts: Int = 6, maxBackoffMs: Long = 2000): Boolean {
+        logger.info("Trying to open a new websocket connection on ${uri.host}:${uri.port}")
         var attempt = 0
         while (attempt < maxAttempts) {
             attempt++

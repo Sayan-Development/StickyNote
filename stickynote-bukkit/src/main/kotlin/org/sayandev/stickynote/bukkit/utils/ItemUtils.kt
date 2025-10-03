@@ -4,7 +4,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.sayandev.stickynote.bukkit.StickyNote
-import org.sayandev.stickynote.bukkit.utils.AdventureUtils.adventureComponent
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.bungeeComponent
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.legacyColored
@@ -25,12 +24,12 @@ object ItemUtils {
     fun ItemStack.withDisplayName(displayName: String, placeholders: Map<String, String> = emptyMap()): ItemStack {
         if (StickyNote.isPaper && ServerVersion.supports(18)) {
             this.editMeta {
-                it.displayName(displayName.adventureComponent(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray()))
+                it.displayName(displayName.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray()))
             }
         } else {
             if (ServerVersion.supports(16)) {
                 this.itemMeta.let { meta ->
-                    meta.setDisplayNameComponent(displayName.component(*placeholders.map { org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent())
+                    meta.setDisplayNameComponent(displayName.component(*placeholders.map { net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent())
                     this.itemMeta = meta
                 }
             } else {
@@ -47,13 +46,13 @@ object ItemUtils {
         if (StickyNote.isPaper && ServerVersion.supports(18)) {
             this.editMeta {
                 it.lore(lore.map {
-                    it.adventureComponent(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray())
+                    it.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray())
                 })
             }
         } else {
             if (ServerVersion.supports(16)) {
                 this.itemMeta.let { meta ->
-                    meta.loreComponents = lore.map { it.component(*placeholders.map { org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent() }
+                    meta.loreComponents = lore.map { it.component(*placeholders.map { net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent() }
                     this.itemMeta = meta
                 }
             } else {
