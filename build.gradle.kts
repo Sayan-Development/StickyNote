@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.3.0"
     `version-catalog`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.0"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "1.10.5.20"
+    version = "1.10.6.1"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -17,7 +17,7 @@ allprojects {
     plugins.apply("com.gradleup.shadow")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
     }
 
     tasks {

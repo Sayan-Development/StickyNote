@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.3.0"
     `kotlin-dsl`
     publishing
     id("com.gradle.plugin-publish") version "2.0.0"
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.0"
 }
 
 dependencies {
@@ -12,9 +12,9 @@ dependencies {
     api(libs.kotlin.poet.kotlin)
     api(libs.kotlin.poet.java)
 
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.2.2")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
-    implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.2.0")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
+    implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.3.0")
     testImplementation(kotlin("test"))
 }
 
