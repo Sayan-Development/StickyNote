@@ -551,12 +551,22 @@ object NMSUtils {
         return ConnectionAccessor.METHOD_GET_AVERAGE_SENT_PACKETS!!.invoke(getConnection(player)) as Float
     }
 
+    @Deprecated("Use createIdentifier instead")
     fun createResourceLocation(string: String): Any {
-        return ResourceLocationAccessor.CONSTRUCTOR_0!!.newInstance(string)
+        return createIdentifier(string)
     }
 
+    @Deprecated("Use createIdentifier instead")
     fun createResourceLocation(key: String, value: String): Any {
-        return ResourceLocationAccessor.CONSTRUCTOR_1!!.newInstance(key, value)
+        return createIdentifier(key, value)
+    }
+
+    fun createIdentifier(string: String): Any {
+        return IdentifierAccessor.CONSTRUCTOR_0!!.newInstance(string)
+    }
+
+    fun createIdentifier(key: String, value: String): Any {
+        return IdentifierAccessor.CONSTRUCTOR_1!!.newInstance(key, value)
     }
 
     fun getEntityDataSerializer(any: Any): Any {

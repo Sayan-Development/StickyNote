@@ -73,31 +73,34 @@ abstract class MySQLExecutor(
             if (queries.isEmpty()) continue
 
             val removedQueries: MutableSet<Query> = HashSet()
-            for (query in queries.filter { it.statusCode == StatusCode.FINISHED }.toList()) {
-                removedQueries.add(query)
-            }
-            queries.removeAll(removedQueries)
-            queue[priority]!!.removeAll(removedQueries)
+            synchronized(queries) {
+                for (query in queries.filter { it.statusCode == StatusCode.FINISHED }) {
+                    removedQueries.add(query)
+                }
+                queries.removeAll(removedQueries)
+                queue[priority]?.removeAll(removedQueries)
 
-            for (query in queries) {
-                if (query.hasDoneRequirements() && query.statusCode != StatusCode.RUNNING) {
-                    query.statusCode = StatusCode.RUNNING
+                for (query in queries) {
+                    if (query.hasDoneRequirements() && query.statusCode != StatusCode.RUNNING) {
+                        query.statusCode = StatusCode.RUNNING
 
-                    executeQuery(query).whenComplete { statusCode: StatusCode, error: Throwable? ->
-                        error?.printStackTrace()
+                        executeQuery(query).whenComplete { statusCode: StatusCode, error: Throwable? ->
+                            error?.printStackTrace()
 
-                        query.statusCode = statusCode
-                        poolingUsed--
+                            query.statusCode = statusCode
+                            poolingUsed--
+                        }
+
+                        poolingUsed++
+                        if (poolingUsed >= poolingSize) break
                     }
-
-                    poolingUsed++
-                    if (poolingUsed >= poolingSize) break
                 }
             }
             if (poolingUsed >= poolingSize) break
             if (queries.isNotEmpty()) break
         }
     }
+
 
     override fun runQuery(query: Query): QueryResult {
         return executeQuerySync(query)

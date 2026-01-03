@@ -29,7 +29,7 @@ dependencies {
     compileOnly(project(":stickynote-core"))
     compileOnly(project(":stickynote-bukkit"))
 
-    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.8")
+    mappingBundle("me.kcra.takenaka:mappings:1.8.8+1.21.11")
     implementation(accessorRuntime())
 }
 
@@ -45,7 +45,7 @@ accessors {
     namespaces("spigot", "mojang")
     accessorType(AccessorType.REFLECTION)
     codeLanguage(CodeLanguage.KOTLIN)
-    versionRange("1.8.8", "1.21.8")
+    versionRange("1.8.8", "1.21.11")
     mappingWebsite("https://mappings.dev/")
 
     val ClientboundPlayerInfoUpdatePacket = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket" // 1.19.3 and above
@@ -172,6 +172,7 @@ accessors {
     val EntityDataSerializers = "net.minecraft.network.syncher.EntityDataSerializers"
     val EntityDataAccessor = "net.minecraft.network.syncher.EntityDataAccessor"
     val ResourceLocation = "net.minecraft.resources.ResourceLocation"
+    val Identifier = "net.minecraft.resources.Identifier" // 1.21.11
     val ResourceKey = "net.minecraft.resources.ResourceKey"
     val Advancement = "net.minecraft.advancements.Advancement"
     val AdvancementHolder = "net.minecraft.advancements.AdvancementHolder" // 1.20.2 and above
@@ -193,9 +194,9 @@ accessors {
     val SpawnGroupData = "net.minecraft.world.entity.SpawnGroupData"
     val ChatType = "net.minecraft.network.chat.ChatType"
     val ChatTypeBound = "net.minecraft.network.chat.ChatType\$Bound"
-    val VillagerData = "net.minecraft.world.entity.npc.VillagerData"
-    val VillagerType = "net.minecraft.world.entity.npc.VillagerType"
-    val VillagerProfession = "net.minecraft.world.entity.npc.VillagerProfession"
+    val VillagerData = "net.minecraft.world.entity.npc.villager.VillagerData" // 1.21.11
+    val VillagerType = "net.minecraft.world.entity.npc.villager.VillagerType" // 1.21.11
+    val VillagerProfession = "net.minecraft.world.entity.npc.villager.VillagerProfession" // 1.21.11
     val ChatFormatting = "net.minecraft.ChatFormatting"
     val BoatType = "net.minecraft.world.entity.vehicle.Boat\$Type"
     val Registry = "net.minecraft.core.Registry"
@@ -278,10 +279,10 @@ accessors {
 
     val CrossbowItem = "net.minecraft.world.item.CrossbowItem"
     val ArmorStand = "net.minecraft.world.entity.decoration.ArmorStand"
-    val Arrow = "net.minecraft.world.entity.projectile.Arrow"
-    val AbstractThrownPotion = "net.minecraft.world.entity.projectile.AbstractThrownPotion"
-    val ThrownTrident = "net.minecraft.world.entity.projectile.ThrownTrident"
-    val ThrowableItemProjectile = "net.minecraft.world.entity.projectile.ThrowableItemProjectile"
+    val Arrow = "net.minecraft.world.entity.projectile.arrow.Arrow" // 1.21.11
+    val AbstractThrownPotion = "net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion" // 1.21.11
+    val ThrownTrident = "net.minecraft.world.entity.projectile.arrow.ThrownTrident" // 1.21.11
+    val ThrowableItemProjectile = "net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile" // 1.21.11
     val ItemEntity = "net.minecraft.world.entity.item.ItemEntity"
     val FallingBlockEntity = "net.minecraft.world.entity.item.FallingBlockEntity"
     val AreaEffectCloud = "net.minecraft.world.entity.AreaEffectCloud"
@@ -290,10 +291,10 @@ accessors {
     val FireworkRocketEntity = "net.minecraft.world.entity.projectile.FireworkRocketEntity"
     val LightningBolt = "net.minecraft.world.entity.LightningBolt"
     val SignBlockEntity = "net.minecraft.world.level.block.entity.SignBlockEntity"
-    val Villager = "net.minecraft.world.entity.npc.Villager"
-    val Boat = "net.minecraft.world.entity.vehicle.Boat"
+    val Villager = "net.minecraft.world.entity.npc.villager.Villager" // 1.21.11
+    val Boat = "net.minecraft.world.entity.vehicle.boat.Boat" // 1.21.11
     val Creeper = "net.minecraft.world.entity.monster.Creeper"
-    val Zombie = "net.minecraft.world.entity.monster.Zombie"
+    val Zombie = "net.minecraft.world.entity.monster.zombie.Zombie" // 1.21.11
     // 1.8
     val EntityPlayer = "net.minecraft.entity.player.EntityPlayerMP"
     val World = "net.minecraft.world.World"
@@ -1202,14 +1203,14 @@ accessors {
     mapClass(EntityDataAccessor) {
         methodInferred("getId", "1.20.4")
     }
-    mapClass(ResourceLocation) {
+    mapClass(Identifier) {
         constructor(String::class)
         constructor(String::class, String::class)
         methodInferred("getPath", "1.20.4")
         methodInferred("getNamespace", "1.20.4")
     }
     mapClass(ResourceKey) {
-        methodInferred("create", "1.20.4", ResourceKey, ResourceLocation)
+        methodInferred("create", "1.21.11", ResourceKey, Identifier)
     }
     mapClass(Advancement) {
         methodInferred("getDisplay", "1.19.2")
@@ -1225,7 +1226,7 @@ accessors {
         fieldInferred("CODEC", "1.20.4")
     }
     mapClass(AdvancementHolder) {
-        constructor(ResourceLocation, Advancement)
+        constructor(Identifier, Advancement)
     }
     mapClass(AdvancementBuilder) {
         methodInferred("advancement", "1.19.2")
@@ -1304,12 +1305,12 @@ accessors {
         constructor(Holder, Component, Optional::class)
     }
     mapClass(VillagerData) {
-        constructor(VillagerType, VillagerProfession, Int::class)
+        constructor(Holder, Holder, Int::class)
         methodInferred("getType", "1.19.2")
         methodInferred("getProfession", "1.19.2")
     }
-    mapClass(VillagerType) {
-        enumConstant(
+    mapClass(VillagerData) {
+        /*enumConstant(
             "DESERT",
             "JUNGLE",
             "PLAINS",
@@ -1317,10 +1318,18 @@ accessors {
             "SNOW",
             "SWAMP",
             "TAIGA",
-        )
+        ) Before 1.21.11 */
+
+        field(ResourceKey, "DESERT")
+        field(ResourceKey, "JUNGLE")
+        field(ResourceKey, "PLAINS")
+        field(ResourceKey, "SAVANNA")
+        field(ResourceKey, "SNOW")
+        field(ResourceKey, "SWAMP")
+        field(ResourceKey, "TAIGA")
     }
     mapClass(VillagerProfession) {
-        enumConstant(
+        /*enumConstant(
             "NONE",
             "ARMORER",
             "BUTCHER",
@@ -1336,7 +1345,22 @@ accessors {
             "SHEPHERD",
             "TOOLSMITH",
             "WEAPONSMITH",
-        )
+        ) Before 1.21.11 */
+        field(ResourceKey, "NONE")
+        field(ResourceKey, "ARMORER")
+        field(ResourceKey, "BUTCHER")
+        field(ResourceKey, "CARTOGRAPHER")
+        field(ResourceKey, "CLERIC")
+        field(ResourceKey, "FARMER")
+        field(ResourceKey, "FISHERMAN")
+        field(ResourceKey, "FLETCHER")
+        field(ResourceKey, "LEATHERWORKER")
+        field(ResourceKey, "LIBRARIAN")
+        field(ResourceKey, "MASON")
+        field(ResourceKey, "NITWIT")
+        field(ResourceKey, "SHEPHERD")
+        field(ResourceKey, "TOOLSMITH")
+        field(ResourceKey, "WEAPONSMITH")
     }
     mapClass(ChatFormatting) {
         enumConstant(
