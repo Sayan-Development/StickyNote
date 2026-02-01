@@ -1,5 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     `version-catalog`
     `maven-publish`
     id("com.gradleup.shadow") version "9.3.0"
@@ -7,17 +8,18 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "2.0.0-alpha.1"
+    version = "2.0.0-alpha.12"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("version-catalog")
     plugins.apply("java-library")
-    plugins.apply("kotlin")
+    plugins.apply("org.jetbrains.kotlin.jvm")
+    plugins.apply("org.jetbrains.kotlin.plugin.serialization")
     plugins.apply("com.gradleup.shadow")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
     }
 
     tasks {
@@ -141,7 +143,8 @@ subprojects {
             if (!project.name.contains("loader") && !project.name.contains("catalog")) {
                 create<MavenPublication>("maven") {
                     groupId = rootProject.group as String
-                    from(components["shadow"])
+                    from(components["java"])
+//                    from(components["shadow"])
                     setPom(this)
                 }
             }
