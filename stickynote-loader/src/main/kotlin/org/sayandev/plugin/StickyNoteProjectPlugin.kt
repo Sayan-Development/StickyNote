@@ -9,7 +9,6 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import kotlin.text.get
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
@@ -50,9 +49,20 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
 
+        /*target.buildscript {
+            repositories { mavenCentral() }
+
+            dependencies {
+                val kotlinVersion = "2.2.0"
+                classpath(kotlin("gradle-plugin", version = kotlinVersion))
+                classpath(kotlin("serialization", version = kotlinVersion))
+            }
+        }*/
+
         target.plugins.apply("com.gradleup.shadow")
-        target.plugins.apply("org.jetbrains.kotlin.jvm")
-        target.plugins.apply("java-library")
+//        target.plugins.apply("org.jetbrains.kotlin.jvm")
+//        target.plugins.apply("org.jetbrains.kotlin.plugin.serialization")
+//        target.plugins.apply("java-library")
 
         target.repositories {
             mavenLocal()
@@ -135,7 +145,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 if (config.relocate.get()) {
                     relocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
                     relocate("org.sayandev.stickynote", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.stickynote")
-                    relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
+                    /*relocate("com.mysql", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.mysql")
 //                    relocate("kotlin", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlin")
 //                    relocate("org.sqlite", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.sqlite")
                     relocate("kotlinx.coroutines", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.kotlinx.coroutines")
@@ -161,10 +171,9 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                             val splitted = stickyLoadDependency.relocation.split(".")
                             relocate(stickyLoadDependency.group, "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.${splitted[splitted.size - 1]}")
                         }
-                    }
+                    }*/
                 }
                 mergeServiceFiles()
-                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             }
 
             require(createStickyNoteLoader.loaderVersion.get() != "0.0.0") { "loaderVersion is not provided" }
@@ -178,11 +187,14 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
             project.dependencies.add("compileOnlyApi", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
             project.dependencies.add("testImplementation", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
-            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
-            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${KotlinVersion.CURRENT}")
+//            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
+//            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")
+            }
+            if (config.modules.get().map { it.type }.contains(StickyNoteModules.PAPER)) {
+                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-paper:${createStickyNoteLoader.loaderVersion.get()}")
             }
             if (config.modules.get().map { it.type }.contains(StickyNoteModules.VELOCITY)) {
                 project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity:${createStickyNoteLoader.loaderVersion.get()}")

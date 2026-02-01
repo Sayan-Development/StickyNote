@@ -12,6 +12,8 @@ dependencies {
     api(libs.mccoroutines.folia.core)
     api(libs.adventure.platform.bukkit)
 
+    compileOnlyApi(project(":stickynote-bukkit"))
+
     compileOnlyApi(libs.authlib)
     compileOnlyApi(libs.placeholderapi)
     compileOnlyApi(libs.skinsrestorer.api)

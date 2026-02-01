@@ -2,10 +2,10 @@ package org.sayandev.stickynote.bungeecord.utils
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import org.sayandev.sayanventure.adventure.platform.bungeecord.BungeeAudiences
-import org.sayandev.sayanventure.adventure.text.Component
-import org.sayandev.sayanventure.adventure.text.minimessage.MiniMessage
-import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.sayandev.stickynote.bungeecord.plugin
 
 object AdventureUtils {

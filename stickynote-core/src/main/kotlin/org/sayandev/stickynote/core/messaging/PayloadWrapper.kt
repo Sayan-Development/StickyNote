@@ -1,26 +1,21 @@
-package org.sayandev.stickynote.core.messaging.publisher
+package org.sayandev.stickynote.core.messaging
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.TypeAdapter
 import java.util.*
+import kotlin.reflect.KClass
 
 data class PayloadWrapper<P>(
     val uniqueId: UUID = UUID.randomUUID(),
     val payload: P,
-    val state: State = State.FORWARD,
+    val behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD,
     var source: String? = null,
     val target: String? = null,
     val excludeSource: Boolean = false,
 ) {
-    constructor(payload: P, state: State = State.FORWARD): this(UUID.randomUUID(), payload, state)
-
-    enum class State {
-        PROXY,
-        FORWARD,
-        RESPOND,
-    }
+    constructor(payload: P, behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD): this(UUID.randomUUID(), payload, behaviour)
 
     companion object {
         private var gson = Gson()
@@ -82,12 +77,19 @@ data class PayloadWrapper<P>(
             } catch (_: Exception) { null }
         }
 
-        fun <P> PayloadWrapper<*>.typedPayload(payloadClass: Class<P>): P {
+        fun <P : Any> PayloadWrapper<*>.typedPayload(payloadType: KClass<P>): P {
             return try {
-                gson.fromJson(gson.toJson(this.payload), payloadClass)
+                gson.fromJson(gson.toJson(this.payload), payloadType.java)
             } catch (e: JsonIOException) {
                 throw IllegalStateException("Could not convert payload to $this", e)
             }
+        }
+
+        fun <P> P.toPayloadWrapper(behaviour: PayloadBehaviour = PayloadBehaviour.FORWARD): PayloadWrapper<P> {
+            return PayloadWrapper(
+                payload = this,
+                behaviour = behaviour
+            )
         }
     }
 }

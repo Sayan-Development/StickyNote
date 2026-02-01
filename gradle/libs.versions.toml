@@ -2,7 +2,7 @@
 
 [versions]
 # core
-kotlin = "2.3.0"
+kotlin = "2.2.20"
 kotlin-poet = "1.17.0"
 snakeyaml = "2.2"
 #configurate = "4.3.0"
@@ -17,17 +17,19 @@ sqlite-jdbc = "3.46.0.0"
 h2 = "2.2.224"
 mariadb = "3.3.3"
 jedis = "5.0.0"
+java-websocket = "1.6.0"
 reflections = "0.10.2"
 hikari = "5.1.0"
 guava = "31.1-jre"
 gson = "2.11.0"
-kotlin-reflect = "2.3.0"
+kotlin-reflect = "2.2.20"
 netty = "4.1.111.Final"
 exposed = "0.61.0"
 libby = "2.0.0-SNAPSHOT"
 mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"
 caffeine = "3.2.0"
+kaml = "0.85.0"
 
 # minecraft
 adventure-platform = "4.4.1"
@@ -65,12 +67,12 @@ cloud-kotlin-extensions = { group = "org.incendo", name = "cloud-kotlin-extensio
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventure" }
-sayanventure-api = { group = "org.sayandev.sayanventure", name = "sayanventure", version.ref = "sayanventure" }
 mysql-connector = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-connector" }
 sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-jdbc" }
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }
 jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
 reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
 hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
@@ -83,6 +85,7 @@ exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kot
 libby = { group = "com.alessiodp.libby", name = "libby-core", version.ref = "libby" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+kaml = { group = "com.charleskorn.kaml", name = "kaml", version.ref = "kaml" }
 
 # bukkit
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -93,7 +96,6 @@ cloud-minecraft-extras = { group = "org.incendo", name = "cloud-minecraft-extras
 inventoryframework = { group = "com.github.stefvanschie.inventoryframework", name = "IF", version.ref = "inventoryframework" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventure-platform" }
-sayanventure-platform-bukkit = { group = "org.sayandev.sayanventure", name = "sayanventure-bukkit", version.ref = "sayanventure" }
 libby-bukkit = { group = "com.alessiodp.libby", name = "libby-bukkit", version.ref = "libby" }
 libby-paper = { group = "com.alessiodp.libby", name = "libby-paper", version.ref = "libby" }
 pathetic-pathfinder-bukkit = { group = "com.github.patheloper.pathetic", name = "pathetic-mapping", version.ref = "pathetic-pathfinder-bukkit" }
@@ -117,7 +119,7 @@ cloud-velocity = { group = "org.incendo", name = "cloud-velocity", version.ref =
 
 # proxy - bungeecord
 bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
-sayanventure-platform-bungeecord = { group = "org.sayandev.sayanventure", name = "sayanventure-bungeecord", version.ref = "sayanventure" }
+adventure-platform-bungeecord = { group = "net.kyori", name = "adventure-platform-bungeecord", version.ref = "adventure-platform" }
 libby-bungee = { group = "com.alessiodp.libby", name = "libby-bungee", version.ref = "libby" }
 mccoroutines-bungeecord-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-api", version.ref = "mccoroutines" }
 mccoroutines-bungeecord-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bungeecord-core", version.ref = "mccoroutines" }
@@ -149,18 +151,21 @@ implementation-core = [
     "checker-qual",
     "javassist",
     "annotations",
+    "adventure-api",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-gson",
 #    "slf4j-api",
     "error_prone_annotations",
     "geantyref",
 #    transitives - end
-    "kotlin",
+#    "kotlin",
+    "kaml",
     "snakeyaml",
     "configurate-yaml",
     "configurate-extra-kotlin",
     "cloud-core",
     "cloud-kotlin-extensions",
 #    "cloud-kotlin-coroutines",
-    "sayanventure-api",
     "reflections",
     "kotlin-reflect",
     "hikari",
@@ -175,6 +180,7 @@ implementation-core = [
 #    "h2",
     "mariadb",
     "jedis",
+    "java-websocket",
 #    "caffeine"
 ]
 implementation-bukkit = [
@@ -182,7 +188,7 @@ implementation-bukkit = [
     "cloud-minecraft-extras",
     "inventoryframework",
     "xseries",
-    "sayanventure-platform-bukkit",
+    "adventure-platform-bukkit",
     "pathetic-pathfinder-bukkit",
     "mccoroutines-bukkit-api",
     "mccoroutines-bukkit-core",
@@ -201,7 +207,7 @@ implementation-proxy-velocity = [
     "cloud-velocity"
 ]
 implementation-proxy-bungeecord = [
-    "sayanventure-platform-bungeecord",
+    "adventure-platform-bungeecord",
     "mccoroutines-bungeecord-api",
     "mccoroutines-bungeecord-core",
 ]
