@@ -1,20 +1,19 @@
 package org.sayandev.stickynote.bukkit.utils
 
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.sayandev.sayanventure.adventure.audience.Audience
-import org.sayandev.sayanventure.adventure.inventory.Book
-import org.sayandev.sayanventure.adventure.platform.bukkit.BukkitAudiences
-import org.sayandev.sayanventure.adventure.text.Component
-import org.sayandev.sayanventure.adventure.text.format.TextDecoration
-import org.sayandev.sayanventure.adventure.text.minimessage.MiniMessage
-import org.sayandev.sayanventure.adventure.text.minimessage.tag.resolver.TagResolver
-import org.sayandev.sayanventure.adventure.text.serializer.bungeecord.BungeeComponentSerializer
-import org.sayandev.sayanventure.adventure.text.serializer.gson.GsonComponentSerializer
-import org.sayandev.sayanventure.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.sayandev.stickynote.bukkit.StickyNote
 import org.sayandev.stickynote.bukkit.hook.PlaceholderAPIHook
 import org.sayandev.stickynote.bukkit.plugin
 
