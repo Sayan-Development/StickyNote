@@ -5,9 +5,11 @@ import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
+import kotlin.jvm.optionals.getOrNull
 
 class StickyNoteProjectPlugin : Plugin<Project> {
 
@@ -194,6 +196,8 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
+            val libs = target.extensions.getByType(VersionCatalogsExtension::class.java).named("stickyNoteLibs")
+
             for (module in config.modules.get()) {
                 val notation = "org.sayandev:${module.type.artifact}:${module.version}"
 
@@ -207,6 +211,11 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                             }
                         }
                         project.dependencies.add("implementation", fatJarDependency)
+
+                        val bundleName = module.type.artifact.removePrefix("stickynote-")
+                        libs.findBundle("implementation-$bundleName").getOrNull()?.get()?.forEach { bundleDependency ->
+                            project.dependencies.add("implementation", bundleDependency)
+                        }
                     }
                     StickyNotePackagingMode.LOADER_ONLY -> {
                         project.dependencies.add("compileOnlyApi", notation)
