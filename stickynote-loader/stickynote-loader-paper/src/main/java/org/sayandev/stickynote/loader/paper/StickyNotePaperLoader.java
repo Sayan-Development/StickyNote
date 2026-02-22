@@ -31,6 +31,7 @@ public class StickyNotePaperLoader {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
         for (String repository : getRepositories(stickyNotes)) {
+            if (repository.contains("file")) continue;
             String formattedRepository = repository.replace("{}", ".");
             if (formattedRepository.contains("repo.maven.apache.org/maven2")) {
                 resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://repo.papermc.io/repository/maven-public/").build());
