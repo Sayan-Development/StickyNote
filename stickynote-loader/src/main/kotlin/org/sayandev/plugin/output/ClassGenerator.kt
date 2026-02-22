@@ -1,19 +1,18 @@
 package org.sayandev.plugin.output
 
-import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.kotlinpoet.javapoet.JClassName
 import com.squareup.kotlinpoet.javapoet.JTypeSpec
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
-import org.apache.groovy.json.internal.Type
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.file.Directory
 import org.sayandev.plugin.ModuleConfiguration
 import org.sayandev.plugin.StickyLoadDependency
+import org.sayandev.plugin.StickyNotePackagingMode
 import javax.lang.model.element.Modifier
 import kotlin.jvm.optionals.getOrNull
 
@@ -25,7 +24,7 @@ class ClassGenerator(
     val relocate: Boolean,
     val relocation: Pair<String, String>,
     val stickyLoadDependencies: List<StickyLoadDependency>,
-    val useSubmodule: Boolean
+    val packagingMode: StickyNotePackagingMode
 ) {
     private val basePackage = "org.sayandev.stickynote.generated"
 
@@ -52,9 +51,9 @@ class ClassGenerator(
                     .build()
                 )
                 .apply {
-                    val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
-                    val libs = versionCatalogs.named("stickyNoteLibs")
-                    if (!useSubmodule) {
+                    if (packagingMode == StickyNotePackagingMode.LOADER_ONLY) {
+                        val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
+                        val libs = versionCatalogs.named("stickyNoteLibs")
                         for (module in modules) {
                             this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_").replace(".", "_")).uppercase())
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
@@ -70,13 +69,13 @@ class ClassGenerator(
                                     .build())
                             }
                         }
-                    }
 
-                    for (externalDependency in stickyLoadDependencies) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_STICKYLOAD_".plus(externalDependency.name.replace("-", "_").replace(".", "_")).uppercase())
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version, externalDependency.relocation?.replace(".", "{}"), true)
-                            .build())
+                        for (externalDependency in stickyLoadDependencies) {
+                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_STICKYLOAD_".plus(externalDependency.name.replace("-", "_").replace(".", "_")).uppercase())
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", externalDependency.group.replace(".", "{}"), externalDependency.name, externalDependency.version, externalDependency.relocation?.replace(".", "{}"), true)
+                                .build())
+                        }
                     }
 
                     for (repository in project.repositories.filterIsInstance<MavenArtifactRepository>().distinctBy { it.url }) {

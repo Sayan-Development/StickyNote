@@ -2,8 +2,6 @@ package org.sayandev.plugin
 
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.DefaultTask
-import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -38,45 +36,21 @@ abstract class StickyNoteTask : DefaultTask() {
     @get:Input
     abstract val stickyLoadDependencies: ListProperty<StickyLoadDependency>
 
+    @get:Input
+    abstract val packagingMode: Property<StickyNotePackagingMode>
+
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
-        val lateDependencies = listOf(
-            "sayan"
+        val classGenerator = ClassGenerator(
+            project = project,
+            outputDir = outputDir.get(),
+            modules = modules.get(),
+            relocate = relocate.get(),
+            relocation = relocation.get(),
+            stickyLoadDependencies = stickyLoadDependencies.get(),
+            packagingMode = packagingMode.get()
         )
-        val lateBundles = mutableListOf<MinimalExternalModuleDependency>()
-        val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
-        val libs = versionCatalogs.named("stickyNoteLibs")
-        for (bundleAlias in libs.bundleAliases) {
-            for (library in libs.findBundle(bundleAlias).get().get()) {
-                if (library.name.contains("libby")) continue
-                if (library.group.contains("alessiodp")) continue
-                if (project.configurations.getByName("implementation").dependencies.any { it.name == library.name }) continue
-                if (lateDependencies.any { library.name.contains(it) }) {
-                    lateBundles.add(library)
-                    continue
-                }
-                project.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
-            }
-        }
-
-        for (library in lateBundles) {
-            project.dependencies.add("compileOnly", "${library.group}:${library.name}:${library.version}")
-        }
-
-        for (libraryAlias in versionCatalogs.named("stickyNoteLibs").libraryAliases) {
-            val library = libs.findLibrary(libraryAlias).get().get()
-            project.dependencies.add("testImplementation", "${library.group}:${library.name}:${library.version}")
-        }
-
-
-        val moduleDependencyConfiguration = if (useSubmodule.get()) "implementation" else "compileOnly"
-        for (module in modules.get()) {
-            project.dependencies.add(moduleDependencyConfiguration, "org.sayandev:${module.type.artifact}:${module.version}")
-            project.dependencies.add("testImplementation", "org.sayandev:${module.type.artifact}:${module.version}")
-        }
-
-        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get(), useSubmodule.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()
         classGenerator.generateStickyNotesClass()

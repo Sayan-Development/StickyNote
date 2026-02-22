@@ -4,8 +4,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
@@ -46,6 +44,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             this.relocation.set(config.relocation)
             this.useKotlin.set(config.useKotlin)
             this.useSubmodule.set(config.useSubmodule)
+            this.packagingMode.set(config.packagingMode)
         }
 
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
@@ -150,9 +149,6 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
             createStickyNoteLoader.stickyLoadDependencies.set(stickyLoadDependencies)
 
-            val versionCatalogs = target.extensions.getByType(VersionCatalogsExtension::class.java)
-            val libs = versionCatalogs.named("stickyNoteLibs")
-
             target.tasks.withType<ShadowJar> {
                 if (config.relocate.get()) {
                     relocate("org.sayandev.loader", "${target.rootProject.group}.${target.rootProject.name.lowercase()}.lib.loader")
@@ -197,8 +193,16 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
-            project.dependencies.add("compileOnlyApi", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
-            project.dependencies.add("testImplementation", "org.sayandev:stickynote-core:${createStickyNoteLoader.loaderVersion.get()}")
+            val moduleDependencyConfiguration = when (config.packagingMode.get()) {
+                StickyNotePackagingMode.FAT -> "implementation"
+                StickyNotePackagingMode.LOADER_ONLY -> "compileOnlyApi"
+            }
+
+            for (module in config.modules.get()) {
+                val notation = "org.sayandev:${module.type.artifact}:${module.version}"
+                project.dependencies.add(moduleDependencyConfiguration, notation)
+                project.dependencies.add("testImplementation", notation)
+            }
 //            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 //            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 

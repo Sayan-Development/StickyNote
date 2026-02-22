@@ -25,7 +25,13 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
 
     abstract val submodulePath: Property<String>
 
+    abstract val packagingMode: Property<StickyNotePackagingMode>
+
     init {
+        val configuredPackagingMode = (project.findProperty("stickynote.packagingMode") as? String)
+            ?.uppercase()
+            ?.let { runCatching { StickyNotePackagingMode.valueOf(it) }.getOrNull() }
+
         outputDirectory.convention(project.layout.buildDirectory.dir("stickynote/output"))
         loaderVersion.convention("0.0.0")
         modules.convention(listOf())
@@ -35,6 +41,7 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         useKotlin.convention(false)
         useSubmodule.convention(project.providers.gradleProperty("stickynote.useSubmodule").map(String::toBoolean).orElse(false))
         submodulePath.convention(project.providers.gradleProperty("stickynote.submodulePath").orElse("stickynote"))
+        packagingMode.convention(configuredPackagingMode ?: StickyNotePackagingMode.FAT)
     }
 
     fun outputDirectory(outputDirectory: Any) {
@@ -55,6 +62,18 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
 
     fun submodulePath(submodulePath: String) {
         this.submodulePath.set(submodulePath)
+    }
+
+    fun packagingMode(packagingMode: StickyNotePackagingMode) {
+        this.packagingMode.set(packagingMode)
+    }
+
+    fun fatJar() {
+        packagingMode(StickyNotePackagingMode.FAT)
+    }
+
+    fun loaderOnlyJar() {
+        packagingMode(StickyNotePackagingMode.LOADER_ONLY)
     }
 
     fun basePackage(basePackage: String) {
