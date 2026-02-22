@@ -4,6 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
@@ -193,14 +194,25 @@ class StickyNoteProjectPlugin : Plugin<Project> {
                 extensions.getByType<JavaPluginExtension>().sourceSets["main"].java.srcDir(defaultLocation)
             }
 
-            val moduleDependencyConfiguration = when (config.packagingMode.get()) {
-                StickyNotePackagingMode.FAT -> "implementation"
-                StickyNotePackagingMode.LOADER_ONLY -> "compileOnlyApi"
-            }
-
             for (module in config.modules.get()) {
                 val notation = "org.sayandev:${module.type.artifact}:${module.version}"
-                project.dependencies.add(moduleDependencyConfiguration, notation)
+
+                when (config.packagingMode.get()) {
+                    StickyNotePackagingMode.FAT -> {
+                        // Keep full compile classpath while preventing Stickynote transitives from being shaded.
+                        project.dependencies.add("compileOnlyApi", notation)
+                        val fatJarDependency = project.dependencies.create(notation).also { dependency ->
+                            if (dependency is ModuleDependency) {
+                                dependency.isTransitive = false
+                            }
+                        }
+                        project.dependencies.add("implementation", fatJarDependency)
+                    }
+                    StickyNotePackagingMode.LOADER_ONLY -> {
+                        project.dependencies.add("compileOnlyApi", notation)
+                    }
+                }
+
                 project.dependencies.add("testImplementation", notation)
             }
 //            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
