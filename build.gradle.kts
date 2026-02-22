@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "org.sayandev"
-    version = "2.0.0-alpha.30"
+    version = "2.0.0-alpha.31"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
@@ -26,11 +26,11 @@ allprojects {
         mavenCentral()
 
         maven {
-            name = "sayandev"
+            name = "sayandev-snapshots"
             url = uri("https://repo.sayandev.org/snapshots")
         }
         maven {
-            name = "sayandev"
+            name = "sayandev-releases"
             url = uri("https://repo.sayandev.org/releases")
         }
         maven {
