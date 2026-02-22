@@ -4,7 +4,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.sayandev.stickynote.bukkit.StickyNote
-import org.sayandev.stickynote.bukkit.utils.AdventureUtils.bungeeComponent
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.component
 import org.sayandev.stickynote.bukkit.utils.AdventureUtils.legacyColored
 
@@ -22,45 +21,17 @@ object ItemUtils {
     }
 
     fun ItemStack.withDisplayName(displayName: String, placeholders: Map<String, String> = emptyMap()): ItemStack {
-        if (StickyNote.isPaper && ServerVersion.supports(18)) {
-            this.editMeta {
-                it.displayName(displayName.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray()))
-            }
-        } else {
-            if (ServerVersion.supports(16)) {
-                this.itemMeta.let { meta ->
-                    meta.setDisplayNameComponent(displayName.component(*placeholders.map { net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent())
-                    this.itemMeta = meta
-                }
-            } else {
-                this.itemMeta.let { meta ->
-                    meta.setDisplayName(displayName.legacyColored())
-                    this.itemMeta = meta
-                }
-            }
+        this.editMeta {
+            it.displayName(displayName.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray()))
         }
         return this
     }
 
     fun ItemStack.withLore(lore: List<String>, placeholders: Map<String, String> = emptyMap()): ItemStack {
-        if (StickyNote.isPaper && ServerVersion.supports(18)) {
-            this.editMeta {
-                it.lore(lore.map {
-                    it.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray())
-                })
-            }
-        } else {
-            if (ServerVersion.supports(16)) {
-                this.itemMeta.let { meta ->
-                    meta.loreComponents = lore.map { it.component(*placeholders.map { net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(it.key, it.value) }.toTypedArray()).bungeeComponent() }
-                    this.itemMeta = meta
-                }
-            } else {
-                this.itemMeta.let { meta ->
-                    meta.lore = lore.map { it.legacyColored() }
-                    this.itemMeta = meta
-                }
-            }
+        this.editMeta {
+            it.lore(lore.map {
+                it.component(*placeholders.map { Placeholder.parsed(it.key, it.value) }.toTypedArray())
+            })
         }
         return this
     }
