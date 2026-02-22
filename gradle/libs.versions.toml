@@ -188,7 +188,7 @@ implementation-bukkit = [
     "cloud-minecraft-extras",
     "inventoryframework",
     "xseries",
-    "adventure-platform-bukkit",
+#    "adventure-platform-bukkit",
     "pathetic-pathfinder-bukkit",
     "mccoroutines-bukkit-api",
     "mccoroutines-bukkit-core",
