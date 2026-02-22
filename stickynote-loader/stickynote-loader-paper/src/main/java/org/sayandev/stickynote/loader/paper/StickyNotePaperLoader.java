@@ -48,7 +48,6 @@ public class StickyNotePaperLoader {
         for (Dependency dependency : getDependencies(stickyNotes)) {
             String formattedDependency = (dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion())
                     .replace("{}", ".");
-            System.out.println("Dependency: " + formattedDependency);
             resolver.addDependency(new org.eclipse.aether.graph.Dependency(new DefaultArtifact(formattedDependency), null, false, exclusions));
         }
 
