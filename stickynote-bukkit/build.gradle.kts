@@ -9,6 +9,7 @@ dependencies {
     api(libs.mccoroutines.bukkit.core)
     api(libs.mccoroutines.folia.api)
     api(libs.mccoroutines.folia.core)
+    api(libs.adventure.platform.bukkit)
 
     compileOnlyApi(libs.authlib)
     compileOnlyApi(libs.placeholderapi)
