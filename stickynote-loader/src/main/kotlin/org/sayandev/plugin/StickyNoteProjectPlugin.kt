@@ -45,6 +45,7 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             this.relocate.set(config.relocate)
             this.relocation.set(config.relocation)
             this.useKotlin.set(config.useKotlin)
+            this.useSubmodule.set(config.useSubmodule)
         }
 
         target.dependencies.extensions.create("stickynote", StickyLoadDependencyExtension::class.java, target)
@@ -111,6 +112,17 @@ class StickyNoteProjectPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
+            if (config.useSubmodule.get()) {
+                val configuredSubmoduleDir = project.rootProject.file(config.submodulePath.get())
+                val hasIncludedBuild = project.gradle.includedBuilds.any {
+                    it.projectDir.canonicalFile == configuredSubmoduleDir.canonicalFile
+                }
+                require(hasIncludedBuild) {
+                    "StickyNote submodule mode is enabled, but '${configuredSubmoduleDir.path}' is not included as a composite build. " +
+                            "Enable it in settings using stickynote.useSubmodule=true and stickynote.submodulePath=${config.submodulePath.get()}."
+                }
+            }
+
             val stickyLoadDependencies = mutableListOf<StickyLoadDependency>()
             project.configurations.getByName("stickyload").dependencies.forEach { stickyLoadDependency ->
                 var relocation: String? = null

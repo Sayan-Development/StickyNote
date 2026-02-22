@@ -24,7 +24,8 @@ class ClassGenerator(
     val modules: List<ModuleConfiguration>,
     val relocate: Boolean,
     val relocation: Pair<String, String>,
-    val stickyLoadDependencies: List<StickyLoadDependency>
+    val stickyLoadDependencies: List<StickyLoadDependency>,
+    val useSubmodule: Boolean
 ) {
     private val basePackage = "org.sayandev.stickynote.generated"
 
@@ -53,19 +54,21 @@ class ClassGenerator(
                 .apply {
                     val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
                     val libs = versionCatalogs.named("stickyNoteLibs")
-                    for (module in modules) {
-                        this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_").replace(".", "_")).uppercase())
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", module.type.artifact, module.version, null, false)
-                            .build())
-                        val bundleName = module.type.artifact.removePrefix("stickynote-")
-                        val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
-                        for (library in moduleBundleProvider.get()) {
-                            if (library.group == "org.sayandev" && library.name.startsWith("stickynote")) continue
-                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "TRANSITIVE_DEPENDENCY_".plus(library.module.group.replace("-", "_").replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
+                    if (!useSubmodule) {
+                        for (module in modules) {
+                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_").replace(".", "_")).uppercase())
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
+                                .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", module.type.artifact, module.version, null, false)
                                 .build())
+                            val bundleName = module.type.artifact.removePrefix("stickynote-")
+                            val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
+                            for (library in moduleBundleProvider.get()) {
+                                if (library.group == "org.sayandev" && library.name.startsWith("stickynote")) continue
+                                this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "TRANSITIVE_DEPENDENCY_".plus(library.module.group.replace("-", "_").replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
+                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                    .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
+                                    .build())
+                            }
                         }
                     }
 

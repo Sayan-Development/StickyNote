@@ -33,12 +33,15 @@ abstract class StickyNoteTask : DefaultTask() {
     abstract val useKotlin: Property<Boolean>
 
     @get:Input
+    abstract val useSubmodule: Property<Boolean>
+
+    @get:Input
     abstract val stickyLoadDependencies: ListProperty<StickyLoadDependency>
 
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
-        /*val lateDependencies = listOf(
+        val lateDependencies = listOf(
             "sayan"
         )
         val lateBundles = mutableListOf<MinimalExternalModuleDependency>()
@@ -67,12 +70,13 @@ abstract class StickyNoteTask : DefaultTask() {
         }
 
 
+        val moduleDependencyConfiguration = if (useSubmodule.get()) "implementation" else "compileOnly"
         for (module in modules.get()) {
-            project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}:${module.version}")
+            project.dependencies.add(moduleDependencyConfiguration, "org.sayandev:${module.type.artifact}:${module.version}")
             project.dependencies.add("testImplementation", "org.sayandev:${module.type.artifact}:${module.version}")
-        }*/
+        }
 
-        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get())
+        val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get(), useSubmodule.get())
         classGenerator.generateRelocationClass()
         classGenerator.generateDependencyClass()
         classGenerator.generateStickyNotesClass()

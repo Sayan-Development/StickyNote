@@ -21,6 +21,10 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
 
     abstract val useKotlin: Property<Boolean>
 
+    abstract val useSubmodule: Property<Boolean>
+
+    abstract val submodulePath: Property<String>
+
     init {
         outputDirectory.convention(project.layout.buildDirectory.dir("stickynote/output"))
         loaderVersion.convention("0.0.0")
@@ -29,6 +33,8 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         relocate.convention(true)
         relocation.convention("org.sayandev.stickynote" to "${project.rootProject.group}.${project.rootProject.name.lowercase()}")
         useKotlin.convention(false)
+        useSubmodule.convention(project.providers.gradleProperty("stickynote.useSubmodule").map(String::toBoolean).orElse(false))
+        submodulePath.convention(project.providers.gradleProperty("stickynote.submodulePath").orElse("stickynote"))
     }
 
     fun outputDirectory(outputDirectory: Any) {
@@ -41,6 +47,14 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
 
     fun useKotlin(useKotlin: Boolean) {
         this.useKotlin.set(useKotlin)
+    }
+
+    fun useSubmodule(useSubmodule: Boolean) {
+        this.useSubmodule.set(useSubmodule)
+    }
+
+    fun submodulePath(submodulePath: String) {
+        this.submodulePath.set(submodulePath)
     }
 
     fun basePackage(basePackage: String) {
