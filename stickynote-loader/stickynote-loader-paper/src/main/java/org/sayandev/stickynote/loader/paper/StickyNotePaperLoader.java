@@ -11,6 +11,7 @@ import org.sayandev.loader.common.Dependency;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class StickyNotePaperLoader {
@@ -39,15 +40,16 @@ public class StickyNotePaperLoader {
             resolver.addRepository(new RemoteRepository.Builder(formattedRepository, "default", formattedRepository).build());
         }
 
-        Collection<Exclusion> exclusions = new ArrayList<>();
-        /*exclusions.add(new Exclusion("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-serialization-json-jvm", "*", "*"));
-        exclusions.add(new Exclusion("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-serialization-json", "*", "*"));
-        exclusions.add(new Exclusion("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-serialization-core", "*", "*"));
-        exclusions.add(new Exclusion("org{}jetbrains{}kotlinx".replace("{}", "."), "kotlinx-serialization-core-jvm", "*", "*"));*/
-
         for (Dependency dependency : getDependencies(stickyNotes)) {
             String formattedDependency = (dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion())
                     .replace("{}", ".");
+
+            String dependencyGroup = dependency.getGroup().replace("{}", ".");
+            boolean isStickyNoteDependency = dependencyGroup.equals("org.sayandev") && dependency.getName().startsWith("stickynote-");
+            Collection<Exclusion> exclusions = isStickyNoteDependency
+                    ? List.of(new Exclusion("*", "*", "*", "*"))
+                    : Collections.emptyList();
+
             System.out.println("Dependency: " + formattedDependency);
             resolver.addDependency(new org.eclipse.aether.graph.Dependency(new DefaultArtifact(formattedDependency), null, false, exclusions));
         }
