@@ -38,7 +38,7 @@ abstract class StickyNoteTask : DefaultTask() {
     @TaskAction
     @KotlinPoetJavaPoetPreview
     fun run() {
-        val lateDependencies = listOf(
+        /*val lateDependencies = listOf(
             "sayan"
         )
         val lateBundles = mutableListOf<MinimalExternalModuleDependency>()
@@ -70,7 +70,7 @@ abstract class StickyNoteTask : DefaultTask() {
         for (module in modules.get()) {
             project.dependencies.add("compileOnly", "org.sayandev:${module.type.artifact}:${module.version}")
             project.dependencies.add("testImplementation", "org.sayandev:${module.type.artifact}:${module.version}")
-        }
+        }*/
 
         val classGenerator = ClassGenerator(project, outputDir.get(), modules.get(), relocate.get(), relocation.get(), stickyLoadDependencies.get())
         classGenerator.generateRelocationClass()

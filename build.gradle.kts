@@ -1,32 +1,28 @@
 plugins {
-    kotlin("jvm") version "2.2.20"
-    kotlin("plugin.serialization") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
     `version-catalog`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.3.0"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 allprojects {
     group = "org.sayandev"
-    version = "2.0.0-alpha.12"
+    version = "2.0.0-alpha.19"
     description = "A modular Kotlin framework for Minecraft: JE"
 
     plugins.apply("maven-publish")
     plugins.apply("version-catalog")
-    plugins.apply("java-library")
     plugins.apply("org.jetbrains.kotlin.jvm")
+    plugins.apply("java-library")
     plugins.apply("org.jetbrains.kotlin.plugin.serialization")
     plugins.apply("com.gradleup.shadow")
 
     dependencies {
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.21")
     }
 
     tasks {
-        java {
-            disableAutoTargetJvm()
-        }
-
         shadowJar {
             archiveClassifier.set(null as String?)
         }
