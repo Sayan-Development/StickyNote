@@ -1,5 +1,4 @@
 dependencies {
-    api(libs.libby.bukkit)
     api(libs.libby.paper)
     api(libs.cloud.paper)
     api(libs.cloud.minecraft.extras)
@@ -10,7 +9,6 @@ dependencies {
     api(libs.mccoroutines.bukkit.core)
     api(libs.mccoroutines.folia.api)
     api(libs.mccoroutines.folia.core)
-    api(libs.adventure.platform.bukkit)
 
     compileOnlyApi(project(":stickynote-bukkit"))
 
