@@ -292,4 +292,9 @@ open class WebSocketPublisher<P : Any, R : Any>(
 
         return result
     }
+
+    open fun shutdown() {
+        closeQuietly()
+        unregister()
+    }
 }

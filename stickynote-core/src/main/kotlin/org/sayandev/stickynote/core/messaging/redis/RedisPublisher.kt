@@ -25,52 +25,58 @@ open class RedisPublisher<P : Any, S : Any>(
     logger,
 ) {
 
-    init {
-        val pubSub = object : JedisPubSub() {
-            override fun onMessage(channel: String, message: String) {
-                if (channel != this@RedisPublisher.messageMeta.id()) return
-                val result = message.asPayloadWrapper<S>()
-                when (result.behaviour) {
-                    PayloadBehaviour.FORWARD -> {
-                        val wrappedPayload = message.asPayloadWrapper<P>()
-                        if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
-                        val payloadResult = handle(wrappedPayload.typedPayload(messageMeta.payloadType)) ?: return
-                        connectionMeta.pool.resource.publish(
-                            channel.toByteArray(),
-                            PayloadWrapper(
-                                wrappedPayload.uniqueId,
-                                payloadResult,
-                                PayloadBehaviour.RESPONSE,
-                                wrappedPayload.source,
-                                wrappedPayload.target,
-                                wrappedPayload.excludeSource
-                            ).asJson().toByteArray()
-                        )
-                    }
-                    PayloadBehaviour.RESPONSE -> {
-                        for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
-                            if (publisher.messageMeta.id() == channel) {
-                                publisher.payloads[result.uniqueId]?.apply {
-                                    this.complete(result.typedPayload(messageMeta.resultType))
-                                    publisher.payloads.remove(result.uniqueId)
-                                }
+    @Volatile
+    private var running = true
+
+    private val pubSub = object : JedisPubSub() {
+        override fun onMessage(channel: String, message: String) {
+            if (channel != this@RedisPublisher.messageMeta.id()) return
+            val result = message.asPayloadWrapper<S>()
+            when (result.behaviour) {
+                PayloadBehaviour.FORWARD -> {
+                    val wrappedPayload = message.asPayloadWrapper<P>()
+                    if (wrappedPayload.excludeSource && isSource(wrappedPayload.uniqueId)) return
+                    val payloadResult = handle(wrappedPayload.typedPayload(messageMeta.payloadType)) ?: return
+                    connectionMeta.pool.resource.publish(
+                        channel.toByteArray(),
+                        PayloadWrapper(
+                            wrappedPayload.uniqueId,
+                            payloadResult,
+                            PayloadBehaviour.RESPONSE,
+                            wrappedPayload.source,
+                            wrappedPayload.target,
+                            wrappedPayload.excludeSource
+                        ).asJson().toByteArray()
+                    )
+                }
+                PayloadBehaviour.RESPONSE -> {
+                    for (publisher in HANDLER_LIST.filterIsInstance<RedisPublisher<P, S>>()) {
+                        if (publisher.messageMeta.id() == channel) {
+                            publisher.payloads[result.uniqueId]?.apply {
+                                this.complete(result.typedPayload(messageMeta.resultType))
+                                publisher.payloads.remove(result.uniqueId)
                             }
                         }
                     }
-                    else -> { }
                 }
+                else -> { }
             }
         }
+    }
+
+    init {
         Thread({
-            while (true) {
+            while (running) {
                 try {
                     connectionMeta.pool.resource.use { jedis ->
                         jedis.subscribe(pubSub, messageMeta.id())
                     }
                 } catch (e: JedisConnectionException) {
+                    if (!running) break
                     logger.severe("Redis connection lost for channel ${messageMeta.id()}: ${e.message}. Retrying in ${connectionMeta.timeoutMillis} milliseconds...")
                     Thread.sleep(connectionMeta.timeoutMillis)
                 } catch (e: Exception) {
+                    if (!running) break
                     logger.severe("Unexpected error in RedisPublisher: ${e.message}")
                     Thread.sleep(connectionMeta.timeoutMillis)
                 }
@@ -98,5 +104,11 @@ open class RedisPublisher<P : Any, S : Any>(
         }
 
         return result
+    }
+
+    open fun shutdown() {
+        running = false
+        runCatching { pubSub.unsubscribe() }
+        unregister()
     }
 }
