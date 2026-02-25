@@ -182,10 +182,23 @@ abstract class Config(
         }
 
         @JvmStatic
-        inline fun <reified T> fromFile(file: File, serializers: SerializersModule): T? {
+        inline fun <reified T> fromFile(
+            file: File,
+            serializers: SerializersModule,
+            updateWithDefaults: Boolean = true
+        ): T? {
             if (!file.exists()) return null
             return try {
-                Yaml(serializers, yaml.configuration).decodeFromStream(file.inputStream())
+                val serializerYaml = Yaml(serializers, yaml.configuration)
+                val result = serializerYaml.decodeFromStream<T>(file.inputStream())
+
+                // Keep existing configs forward-compatible: newly added properties
+                // with defaults are written back to disk automatically.
+                if (updateWithDefaults) {
+                    save(file, result, serializerYaml)
+                }
+
+                result
             } catch (e: EmptyYamlDocumentException) {
                 null
             }
