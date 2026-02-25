@@ -34,7 +34,16 @@ public abstract class StickyNoteLoader {
     public Class<?> stickyNotes = Class.forName("org.sayandev.stickynote.generated.StickyNotes");
     public Boolean relocate = (Boolean) stickyNotes.getField("RELOCATE").get(stickyNotes);
 
+    public boolean shouldLoadLibraries() {
+        return !getDependencies(stickyNotes).isEmpty();
+    }
+
     public void load(String id, File dataDirectory, Logger logger, LibraryManager libraryManager, boolean withLibDirectory) {
+        if (!shouldLoadLibraries()) {
+            onComplete();
+            return;
+        }
+
         File libDirectory = generateLibDirectory(dataDirectory, withLibDirectory);
 
         File[] files = libDirectory.listFiles();

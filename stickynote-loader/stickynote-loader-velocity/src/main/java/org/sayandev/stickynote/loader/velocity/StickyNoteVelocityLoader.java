@@ -33,6 +33,11 @@ public class StickyNoteVelocityLoader extends StickyNoteLoader {
         this.dataDirectory = dataDirectory;
         this.suspendingPluginContainer = suspendingPluginContainer;
 
+        if (!shouldLoadLibraries()) {
+            onComplete();
+            return;
+        }
+
         LibraryManager libraryManager = new VelocityLibraryManager<>(plugin, logger, new File(dataDirectory.getParent().toFile(), "stickynote").toPath(), server.getPluginManager());
         this.load(id, dataDirectory.toFile().getParentFile(), java.util.logging.Logger.getLogger(id), libraryManager, false);
     }
