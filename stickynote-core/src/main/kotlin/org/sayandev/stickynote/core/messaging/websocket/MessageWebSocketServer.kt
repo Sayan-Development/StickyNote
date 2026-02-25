@@ -49,7 +49,7 @@ class MessageWebSocketServer(
         }
 
         fun getWebSocketServer(uri: URI): MessageWebSocketServer? {
-            return if (isWebSocketAvailable(uri)) {
+            return if (!isWebSocketAvailable(uri)) {
                 MessageWebSocketServer(uri)
             } else {
                 null
