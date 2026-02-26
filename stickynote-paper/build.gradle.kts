@@ -1,7 +1,5 @@
 dependencies {
     api(libs.libby.paper)
-    api(libs.cloud.paper)
-    api(libs.cloud.minecraft.extras)
     api(libs.inventoryframework)
     api(libs.xseries) { isTransitive = false }
     api(libs.pathetic.pathfinder.bukkit)

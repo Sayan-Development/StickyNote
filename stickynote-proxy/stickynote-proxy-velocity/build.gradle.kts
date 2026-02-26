@@ -1,7 +1,6 @@
 dependencies {
     compileOnly(libs.velocity)
     compileOnlyApi(libs.libby.velocity)
-    api(libs.cloud.velocity)
     api(libs.sqlite.jdbc)
 
     api(libs.mccoroutines.velocity.api)

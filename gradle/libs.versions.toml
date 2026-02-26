@@ -30,6 +30,7 @@ mccoroutines = "2.20.0"
 kotlinx-coroutines = "1.10.1"
 caffeine = "3.2.0"
 kaml = "0.85.0"
+commandapi = "11.1.0"
 
 # minecraft
 adventure-platform = "4.4.1"
@@ -106,6 +107,7 @@ mccoroutines-bukkit-api = { group = "com.github.shynixn.mccoroutine", name = "mc
 mccoroutines-bukkit-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutines" }
 mccoroutines-folia-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-api", version.ref = "mccoroutines" }
 mccoroutines-folia-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-folia-core", version.ref = "mccoroutines" }
+commandapi-paper-shade = { group = "dev.jorel", name = "commandapi-paper-shade", version.ref = "commandapi" }
 
 # bukkit - nms
 takenaka = { group = "me.kcra.takenaka", name = "generator-accessor-runtime", version.ref = "takenaka" }
@@ -116,6 +118,7 @@ libby-velocity = { group = "com.alessiodp.libby", name = "libby-velocity", versi
 mccoroutines-velocity-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-api", version.ref = "mccoroutines" }
 mccoroutines-velocity-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-core", version.ref = "mccoroutines" }
 cloud-velocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloud-platform" }
+commandapi-velocity-shade = { group = "dev.jorel", name = "commandapi-velocity-shade", version.ref = "commandapi" }
 
 # proxy - bungeecord
 bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }

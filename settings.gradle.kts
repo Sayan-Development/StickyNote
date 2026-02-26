@@ -22,6 +22,12 @@ rootProject.name = "StickyNote"
 
 include("stickynote-core")
 include("stickynote-catalog")
+include("stickynote-cloud")
+include("stickynote-cloud-bukkit")
+include("stickynote-cloud-velocity")
+include("stickynote-command")
+include("stickynote-command-bukkit")
+include("stickynote-command-velocity")
 
 include("stickynote-bukkit")
 include("stickynote-bukkit:stickynote-bukkit-nms")
