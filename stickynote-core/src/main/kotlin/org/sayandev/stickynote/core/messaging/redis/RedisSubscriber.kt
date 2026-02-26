@@ -101,6 +101,6 @@ abstract class RedisSubscriber<P : Any, R : Any>(
     }
 
     fun isSource(uniqueId: UUID): Boolean {
-        return Publisher.Companion.HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+        return Publisher.HANDLER_LIST.any { publisher -> publisher.payloads.containsKey(uniqueId) }
     }
 }

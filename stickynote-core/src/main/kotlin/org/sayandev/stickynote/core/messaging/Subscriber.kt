@@ -1,6 +1,7 @@
 package org.sayandev.stickynote.core.messaging
 
 import kotlinx.coroutines.Deferred
+import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class Subscriber<P : Any, R : Any>(
     val messageMeta: MessageMeta<P, R>,
@@ -17,7 +18,7 @@ abstract class Subscriber<P : Any, R : Any>(
     }
 
     companion object {
-        val HANDLER_LIST = mutableListOf<Subscriber<*, *>>()
+        val HANDLER_LIST = CopyOnWriteArrayList<Subscriber<*, *>>()
 
         val isVelocity = runCatching { Class.forName("com.velocitypowered.api.proxy.ProxyServer") }.isSuccess
 

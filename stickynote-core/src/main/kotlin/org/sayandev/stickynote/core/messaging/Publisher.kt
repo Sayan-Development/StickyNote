@@ -2,6 +2,8 @@ package org.sayandev.stickynote.core.messaging
 
 import kotlinx.coroutines.CompletableDeferred
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Logger
 
 abstract class Publisher<M: ConnectionMeta, P : Any, R : Any>(
@@ -10,7 +12,7 @@ abstract class Publisher<M: ConnectionMeta, P : Any, R : Any>(
     val logger: Logger,
 ) {
 
-    val payloads: MutableMap<UUID, CompletableDeferred<R>> = mutableMapOf()
+    val payloads: MutableMap<UUID, CompletableDeferred<R>> = ConcurrentHashMap()
 
     open suspend fun publish(payloadWrapper: PayloadWrapper<P>): CompletableDeferred<R> {
         val deferred = CompletableDeferred<R>()
@@ -30,7 +32,7 @@ abstract class Publisher<M: ConnectionMeta, P : Any, R : Any>(
     }
 
     fun isSource(uniqueId: UUID): Boolean {
-        return HANDLER_LIST.flatMap { publisher -> publisher.payloads.keys }.contains(uniqueId)
+        return HANDLER_LIST.any { publisher -> publisher.payloads.containsKey(uniqueId) }
     }
 
     open fun register() {
@@ -46,7 +48,7 @@ abstract class Publisher<M: ConnectionMeta, P : Any, R : Any>(
     }
 
     companion object {
-        val HANDLER_LIST = mutableListOf<Publisher<out ConnectionMeta, *, *>>()
+        val HANDLER_LIST = CopyOnWriteArrayList<Publisher<out ConnectionMeta, *, *>>()
 
         fun <M : ConnectionMeta, P : Any, R : Any> register(publisher: Publisher<M, P, R>) {
             require(!HANDLER_LIST.contains(publisher)) { "Publisher with id ${publisher.messageMeta.id()} is already registered" }
