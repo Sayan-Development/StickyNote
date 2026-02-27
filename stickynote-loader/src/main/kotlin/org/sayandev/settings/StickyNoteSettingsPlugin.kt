@@ -24,7 +24,13 @@ class StickyNoteSettingsPlugin : Plugin<Settings> {
                 "StickyNote submodule mode is enabled, but '${submoduleDir.path}' was not found."
             }
 
-            settings.includeBuild(submoduleDir)
+            runCatching {
+                settings.includeBuild(submoduleDir)
+            }.onFailure { throwable ->
+                if (throwable.message?.contains("already been included") != true) {
+                    throw throwable
+                }
+            }
         }
 
         settings.dependencyResolutionManagement {

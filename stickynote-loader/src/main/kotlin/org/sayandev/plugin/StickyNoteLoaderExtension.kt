@@ -88,28 +88,60 @@ abstract class StickyNoteLoaderExtension(protected val project: Project) {
         this.relocation.set(from to to)
     }
 
-    fun modules(module: ModulesBuilder.() -> Unit) {
-        module(ModulesBuilder(this.modules))
+    val core: CoreStickyNoteModuleReference = CoreStickyNoteModuleReference()
+    val paper: PaperStickyNoteModuleReference = PaperStickyNoteModuleReference()
+    val proxy: ProxyStickyNoteModuleReference = ProxyStickyNoteModuleReference()
+    val velocity: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.PROXY_VELOCITY)
+    val bungeecord: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.PROXY_BUNGEECORD)
+    val cloud: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.CLOUD)
+    val command: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.COMMAND)
+    val configurationKotlinx: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.CORE_CONFIGURATION_KOTLINX)
+    val configurationConfigurate: SimpleStickyNoteModuleReference = SimpleStickyNoteModuleReference(StickyNoteModuleRegistry.CORE_CONFIGURATION_CONFIGURATE)
+
+    fun register(module: StickyNoteModuleReference) {
+        register(module.asSelection())
     }
 
-    fun modules(vararg type: StickyNoteModule) {
-        type.forEach {
-            modules.add(ModuleConfiguration(it, loaderVersion.get()))
-        }
+    fun registerModule(module: StickyNoteModuleReference) {
+        register(module)
     }
 
-    inner class ModulesBuilder(val modules: ListProperty<ModuleConfiguration>) {
-        fun module(init: ModuleConfiguration.() -> Unit) {
-            val configuration = ModuleConfiguration(StickyNoteModules.NONE, loaderVersion.get())
-            configuration.init()
-            require(configuration.type != StickyNoteModules.NONE) { "module type cannot be null/none" }
-            modules.add(configuration)
-        }
+    fun register(vararg modules: StickyNoteModuleReference) {
+        modules.forEach(::register)
+    }
 
-        fun module(type: StickyNoteModule) {
-            require(type != StickyNoteModules.NONE) { "module type cannot be null/none" }
-            modules.add(ModuleConfiguration(type, loaderVersion.get()))
-        }
+    fun registerModule(vararg modules: StickyNoteModuleReference) {
+        register(*modules)
+    }
+
+    fun register(module: StickyNoteModuleSelection) {
+        module.moduleIds.forEach(::registerModuleId)
+    }
+
+    fun registerModule(module: StickyNoteModuleSelection) {
+        register(module)
+    }
+
+    fun register(vararg modules: StickyNoteModuleSelection) {
+        modules.forEach(::register)
+    }
+
+    fun registerModule(vararg modules: StickyNoteModuleSelection) {
+        register(*modules)
+    }
+
+    fun modules(vararg modules: StickyNoteModuleReference) {
+        register(*modules)
+    }
+
+    fun modules(vararg modules: StickyNoteModuleSelection) {
+        register(*modules)
+    }
+
+    private fun registerModuleId(moduleId: String) {
+        require(StickyNoteModuleRegistry.isKnown(moduleId)) { "Unknown StickyNote module '$moduleId'" }
+        if (modules.get().any { it.moduleId == moduleId }) return
+        modules.add(ModuleConfiguration(moduleId, loaderVersion.get()))
     }
 
 }

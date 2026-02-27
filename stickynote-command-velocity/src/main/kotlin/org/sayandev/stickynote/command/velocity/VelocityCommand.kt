@@ -17,10 +17,6 @@ abstract class VelocityCommand(
     private vararg val aliases: String,
 ) : CommandExtension {
 
-    init {
-        register()
-    }
-
     final override fun register() {
         val command = CommandAPICommand(name)
             .withAliases(*aliases)

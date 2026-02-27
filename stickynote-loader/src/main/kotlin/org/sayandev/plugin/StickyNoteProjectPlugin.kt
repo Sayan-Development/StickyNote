@@ -4,7 +4,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
@@ -12,6 +13,15 @@ import org.gradle.kotlin.dsl.*
 import kotlin.jvm.optionals.getOrNull
 
 class StickyNoteProjectPlugin : Plugin<Project> {
+
+    private fun VersionCatalog.findBundleCompat(alias: String) =
+        sequenceOf(
+            alias,
+            alias.replace('-', '.'),
+            alias.replace('.', '-')
+        )
+            .mapNotNull { findBundle(it).getOrNull() }
+            .firstOrNull()
 
     /**
      * Exclude dependency from relocations. should be the same in StickyNoteLoader
@@ -39,8 +49,8 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
             this.outputDir.set(config.outputDirectory)
             this.loaderVersion.set(config.loaderVersion.get())
-            if (!config.modules.get().map { it.type }.contains(StickyNoteModules.CORE)) {
-                config.modules.add(ModuleConfiguration(StickyNoteModules.CORE, finalVersion))
+            if (config.modules.get().none { it.moduleId == StickyNoteModuleRegistry.CORE }) {
+                config.modules.add(ModuleConfiguration(StickyNoteModuleRegistry.CORE, finalVersion))
             }
             this.modules.set(config.modules)
             this.relocate.set(config.relocate)
@@ -197,24 +207,101 @@ class StickyNoteProjectPlugin : Plugin<Project> {
             }
 
             val libs = target.extensions.getByType(VersionCatalogsExtension::class.java).named("stickyNoteLibs")
+            if (config.modules.get().none { it.moduleId == StickyNoteModuleRegistry.CORE }) {
+                config.modules.add(ModuleConfiguration(StickyNoteModuleRegistry.CORE, createStickyNoteLoader.loaderVersion.get()))
+            }
 
-            for (module in config.modules.get()) {
-                val notation = "org.sayandev:${module.type.artifact}:${module.version}"
+            val configuredModules = config.modules.get()
+            val moduleVersionById = configuredModules.associate { it.moduleId to it.version }
+            val resolvedModuleDefinitions = StickyNoteModuleRegistry.resolveDefinitions(configuredModules.map { it.moduleId }.toSet())
+            val moduleExcludedDependencies = resolvedModuleDefinitions
+                .flatMap { it.excludedDependencies }
+                .toSet()
+            val moduleExcludedFilePatterns = resolvedModuleDefinitions
+                .flatMap { it.excludedFilePatterns }
+                .toSet()
+            val excludedCoordinates = moduleExcludedDependencies
+                .mapNotNull { token ->
+                    val split = token.split(":")
+                    if (split.size == 2 && split[1] != "*") split[0] to split[1] else null
+                }
+                .toSet()
+            val excludedGroups = moduleExcludedDependencies
+                .mapNotNull { token ->
+                    val split = token.split(":")
+                    if (split.size == 2 && split[1] == "*") split[0] else null
+                }
+                .toSet()
+            val excludedArtifacts = moduleExcludedDependencies
+                .filter { !it.contains(":") }
+                .toSet()
+
+            fun isExcludedDependency(group: String?, name: String): Boolean {
+                return excludedCoordinates.any { (excludedGroup, excludedName) ->
+                    excludedGroup == group && excludedName == name
+                } || excludedGroups.contains(group) || excludedArtifacts.contains(name)
+            }
+
+            if (config.packagingMode.get() == StickyNotePackagingMode.FAT) {
+                project.configurations.findByName("runtimeClasspath")?.let { runtimeClasspath ->
+                    excludedGroups.forEach { group ->
+                        runtimeClasspath.exclude(mapOf("group" to group))
+                    }
+                    excludedCoordinates.forEach { (group, module) ->
+                        runtimeClasspath.exclude(mapOf("group" to group, "module" to module))
+                    }
+                    excludedArtifacts.forEach { module ->
+                        runtimeClasspath.exclude(mapOf("module" to module))
+                    }
+                }
+
+                target.tasks.withType<ShadowJar>().configureEach {
+                    moduleExcludedFilePatterns.forEach { excludedPattern ->
+                        exclude(excludedPattern)
+                    }
+                    dependencies {
+                        excludedGroups.forEach { group ->
+                            exclude(dependency("$group:.*"))
+                        }
+                        excludedCoordinates.forEach { (group, module) ->
+                            exclude(dependency("$group:$module"))
+                        }
+                    }
+                }
+            }
+
+            createStickyNoteLoader.modules.set(
+                resolvedModuleDefinitions.map { definition ->
+                    ModuleConfiguration(
+                        definition.id,
+                        moduleVersionById[definition.id] ?: createStickyNoteLoader.loaderVersion.get()
+                    )
+                }
+            )
+
+            val artifactVersions = linkedMapOf<String, String>()
+            resolvedModuleDefinitions.forEach { definition ->
+                val version = moduleVersionById[definition.id] ?: createStickyNoteLoader.loaderVersion.get()
+                definition.artifacts.forEach { artifact ->
+                    artifactVersions.putIfAbsent(artifact, version)
+                }
+            }
+
+            for ((artifact, version) in artifactVersions) {
+                val notation = "org.sayandev:$artifact:$version"
 
                 when (config.packagingMode.get()) {
                     StickyNotePackagingMode.FAT -> {
-                        // Keep full compile classpath while preventing Stickynote transitives from being shaded.
+                        // FAT mode must include Stickynote transitives in runtime/shadow classpath.
                         project.dependencies.add("compileOnlyApi", notation)
-                        val fatJarDependency = project.dependencies.create(notation).also { dependency ->
-                            if (dependency is ModuleDependency) {
-                                dependency.isTransitive = false
+                        val dependency = project.dependencies.add("implementation", notation)
+                        if (dependency is ExternalModuleDependency) {
+                            excludedGroups.forEach { group ->
+                                dependency.exclude(mapOf("group" to group))
                             }
-                        }
-                        project.dependencies.add("implementation", fatJarDependency)
-
-                        val bundleName = module.type.artifact.removePrefix("stickynote-")
-                        libs.findBundle("implementation-$bundleName").getOrNull()?.get()?.forEach { bundleDependency ->
-                            project.dependencies.add("implementation", bundleDependency)
+                            excludedCoordinates.forEach { (group, module) ->
+                                dependency.exclude(mapOf("group" to group, "module" to module))
+                            }
                         }
                     }
                     StickyNotePackagingMode.LOADER_ONLY -> {
@@ -224,21 +311,35 @@ class StickyNoteProjectPlugin : Plugin<Project> {
 
                 project.dependencies.add("testImplementation", notation)
             }
+
+            if (config.packagingMode.get() == StickyNotePackagingMode.FAT) {
+                resolvedModuleDefinitions
+                    .flatMap { it.bundles }
+                    .distinct()
+                    .forEach { bundleAlias ->
+                        libs.findBundleCompat(bundleAlias)?.get()?.forEach { bundleDependency ->
+                            if (isExcludedDependency(bundleDependency.module.group, bundleDependency.name)) return@forEach
+                            project.dependencies.add("implementation", bundleDependency)
+                        }
+                    }
+            }
 //            project.dependencies.add("compileOnlyApi", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 //            project.dependencies.add("testImplementation", "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 
-            if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUKKIT)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bukkit:${createStickyNoteLoader.loaderVersion.get()}")
-            }
-            if (config.modules.get().map { it.type }.contains(StickyNoteModules.PAPER)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-paper:${createStickyNoteLoader.loaderVersion.get()}")
-            }
-            if (config.modules.get().map { it.type }.contains(StickyNoteModules.VELOCITY)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-velocity:${createStickyNoteLoader.loaderVersion.get()}")
-            }
-            if (config.modules.get().map { it.type }.contains(StickyNoteModules.BUNGEECORD)) {
-                project.dependencies.add("implementation", "org.sayandev:stickynote-loader-bungeecord:${createStickyNoteLoader.loaderVersion.get()}")
-            }
+            resolvedModuleDefinitions
+                .flatMap { it.loaderArtifacts }
+                .distinct()
+                .forEach { loaderArtifact ->
+                    val dependency = project.dependencies.add("implementation", "org.sayandev:$loaderArtifact:${createStickyNoteLoader.loaderVersion.get()}")
+                    if (config.packagingMode.get() == StickyNotePackagingMode.FAT && dependency is ExternalModuleDependency) {
+                        excludedGroups.forEach { group ->
+                            dependency.exclude(mapOf("group" to group))
+                        }
+                        excludedCoordinates.forEach { (group, module) ->
+                            dependency.exclude(mapOf("group" to group, "module" to module))
+                        }
+                    }
+                }
 
             createStickyNoteLoader.run()
         }

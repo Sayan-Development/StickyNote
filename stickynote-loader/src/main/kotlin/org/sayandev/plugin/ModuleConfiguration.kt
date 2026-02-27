@@ -3,7 +3,7 @@ package org.sayandev.plugin
 import java.io.Serializable
 
 data class ModuleConfiguration(
-    var type: StickyNoteModule,
+    var moduleId: String,
     var version: String
 ) : Serializable {
 

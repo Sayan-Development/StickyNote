@@ -142,74 +142,90 @@ takenaka = { id = "me.kcra.takenaka.accessor", version.ref = "takenaka" }
 kotlin-poet = ["kotlin-poet-kotlin", "kotlin-poet-java"]
 configurate = ["configurate-yaml", "configurate-extra-kotlin"]
 cloud = ["cloud-core", "cloud-kotlin-extensions", "cloud-kotlin-coroutines"]
-cloud-bukkit = ["cloud-paper", "cloud-minecraft-extras"]
+cloud-paper-bundle = ["cloud-paper", "cloud-minecraft-extras"]
 
 # implementation modules
 implementation-loader = [
     "kotlin-poet-java",
     "kotlin-poet-kotlin"
 ]
-implementation-core = [
-#    transitives - start
-#    "checker-qual", WHY IS IT HERE?
-#    "javassist", WHY IS IT HERE?
-#    "annotations", WHY IS IT HERE?
-#    "adventure-api",
-#    "adventure-text-minimessage",
-#    "adventure-text-serializer-gson",
-#    "slf4j-api",
-#    "error_prone_annotations", WHY IS IT HERE?
-#    "geantyref", WHY IS IT HERE?
-#    transitives - end
-#    "kotlin",
-    "kaml",
-#    "snakeyaml",
-#    "configurate-yaml",
-    "configurate-extra-kotlin",
-    "cloud-core",
-    "cloud-kotlin-extensions",
-#    "cloud-kotlin-coroutines",
+implementation-core-base = [
+    "adventure-api",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-gson",
     "reflections",
     "kotlin-reflect",
+    "kotlinx-coroutines",
+    "gson",
+]
+implementation-core-configuration-kotlinx = [
+    "kaml",
+]
+implementation-core-configuration-configurate = [
+    "snakeyaml",
+    "configurate-yaml",
+    "configurate-extra-kotlin",
+]
+implementation-core-database = [
     "hikari",
-#    "gson",
+    "mysql-connector",
+    "mariadb",
+    "sqlite-jdbc",
     "exposed-core",
     "exposed-jdbc",
     "exposed-dao",
     "exposed-kotlin-datetime",
-    "kotlinx-coroutines",
-#    "mysql-connector",
-#    "sqlite-jdbc",
-#    "h2",
-    "mariadb",
-    "jedis",
-    "java-websocket",
-#    "caffeine"
 ]
-implementation-bukkit = [
+implementation-core-messaging-redis = [
+    "jedis",
+]
+implementation-core-messaging-websocket = [
+    "java-websocket",
+]
+implementation-cloud = [
+    "cloud-core",
+    "cloud-kotlin-extensions",
+]
+implementation-cloud-paper = [
     "cloud-paper",
     "cloud-minecraft-extras",
-    "inventoryframework",
+]
+implementation-cloud-velocity = [
+    "cloud-velocity",
+]
+implementation-paper-base = [
+    "libby-paper",
     "xseries",
+    "pathetic-pathfinder-bukkit",
     "adventure-platform-bukkit",
-#    "pathetic-pathfinder-bukkit", WHY IS IT HERE?
     "mccoroutines-bukkit-api",
     "mccoroutines-bukkit-core",
     "mccoroutines-folia-api",
     "mccoroutines-folia-core",
 ]
-implementation-bukkit-nms = [
+implementation-paper-gui = [
+    "inventoryframework",
+]
+implementation-paper-nms = [
     "takenaka",
+]
+implementation-command-paper = [
+    "commandapi-paper-shade",
+    "kotlinx-coroutines",
+]
+implementation-command-velocity = [
+    "commandapi-velocity-shade",
+    "kotlinx-coroutines",
 ]
 implementation-proxy = [
 ]
-implementation-proxy-velocity = [
-#    MCCoroutine velocity dependencies are shaded into velocity itself
-#    "mccoroutines-velocity-api",
-#    "mccoroutines-velocity-core",
-    "cloud-velocity"
+implementation-proxy-velocity-base = [
+    "sqlite-jdbc",
+    "mccoroutines-velocity-api",
+    "mccoroutines-velocity-core",
 ]
-implementation-proxy-bungeecord = [
+implementation-proxy-bungeecord-base = [
+    "libby-bungee",
     "adventure-platform-bungeecord",
     "mccoroutines-bungeecord-api",
     "mccoroutines-bungeecord-core",

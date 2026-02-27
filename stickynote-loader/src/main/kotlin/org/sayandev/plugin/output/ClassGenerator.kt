@@ -7,11 +7,13 @@ import com.squareup.kotlinpoet.javapoet.JClassName
 import com.squareup.kotlinpoet.javapoet.JTypeSpec
 import com.squareup.kotlinpoet.javapoet.KotlinPoetJavaPoetPreview
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.file.Directory
 import org.sayandev.plugin.ModuleConfiguration
 import org.sayandev.plugin.StickyLoadDependency
+import org.sayandev.plugin.StickyNoteModuleRegistry
 import org.sayandev.plugin.StickyNotePackagingMode
 import javax.lang.model.element.Modifier
 import kotlin.jvm.optionals.getOrNull
@@ -27,6 +29,15 @@ class ClassGenerator(
     val packagingMode: StickyNotePackagingMode
 ) {
     private val basePackage = "org.sayandev.stickynote.generated"
+
+    private fun VersionCatalog.findBundleCompat(alias: String) =
+        sequenceOf(
+            alias,
+            alias.replace('-', '.'),
+            alias.replace('.', '-')
+        )
+            .mapNotNull { findBundle(it).getOrNull() }
+            .firstOrNull()
 
     fun generateStickyNotesClass() {
         val stickynotesClass = JClassName.get(basePackage, "StickyNotes")
@@ -54,19 +65,46 @@ class ClassGenerator(
                     if (packagingMode == StickyNotePackagingMode.LOADER_ONLY) {
                         val versionCatalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
                         val libs = versionCatalogs.named("stickyNoteLibs")
-                        for (module in modules) {
-                            this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "DEPENDENCY_".plus(module.type.artifact.replace("-", "_").replace(".", "_")).uppercase())
-                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", module.type.artifact, module.version, null, false)
-                                .build())
-                            val bundleName = module.type.artifact.removePrefix("stickynote-")
-                            val moduleBundleProvider = libs.findBundle("implementation-$bundleName").getOrNull() ?: continue
+                        val moduleVersionById = modules.associate { it.moduleId to it.version }
+                        val resolvedModules = StickyNoteModuleRegistry.resolveDefinitions(moduleVersionById.keys)
+
+                        val artifactVersions = linkedMapOf<String, String>()
+                        resolvedModules.forEach { module ->
+                            val version = moduleVersionById[module.id] ?: error("Missing version for module '${module.id}'")
+                            module.artifacts.forEach { artifact ->
+                                artifactVersions.putIfAbsent(artifact, version)
+                            }
+                        }
+
+                        for ((artifact, version) in artifactVersions) {
+                            this.addField(
+                                FieldSpec.builder(
+                                    JClassName.get(basePackage, "Dependency"),
+                                    "DEPENDENCY_".plus(artifact.replace("-", "_").replace(".", "_")).uppercase()
+                                )
+                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                    .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", "org{}sayandev", artifact, version, null, false)
+                                    .build()
+                            )
+                        }
+
+                        resolvedModules.flatMap { it.bundles }.distinct().forEach { bundleAlias ->
+                            val moduleBundleProvider = libs.findBundleCompat(bundleAlias) ?: return@forEach
                             for (library in moduleBundleProvider.get()) {
                                 if (library.group == "org.sayandev" && library.name.startsWith("stickynote")) continue
-                                this.addField(FieldSpec.builder(JClassName.get(basePackage, "Dependency"), "TRANSITIVE_DEPENDENCY_".plus(library.module.group.replace("-", "_").replace(".", "_").plus(library.module.name.replace("-", "_").replace(".", "_"))).uppercase())
-                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                    .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
-                                    .build())
+                                this.addField(
+                                    FieldSpec.builder(
+                                        JClassName.get(basePackage, "Dependency"),
+                                        "TRANSITIVE_DEPENDENCY_".plus(
+                                            library.module.group.replace("-", "_")
+                                                .replace(".", "_")
+                                                .plus(library.module.name.replace("-", "_").replace(".", "_"))
+                                        ).uppercase()
+                                    )
+                                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                        .initializer("new Dependency(\$S, \$S, \$S, \$S, \$L)", library.group.replace(".", "{}"), library.name, library.version, null, false)
+                                        .build()
+                                )
                             }
                         }
 

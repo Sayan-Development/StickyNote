@@ -1,7 +1,7 @@
 dependencies {
     compileOnly(libs.folia)
 
-    api(libs.libby.paper)
+    compileOnly(libs.libby.paper)
 
     api(project(":stickynote-loader:stickynote-loader-common"))
 

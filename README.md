@@ -14,25 +14,39 @@ StickyNote is more than just a collection of libraries. It groups and customizes
 # What Does the StickyNote Gradle Plugin Do?
 
 1. **Module Management**  
-   The plugin lets you select the modules you need for your project. For example, if you're developing a Bukkit plugin, you can add the required modules to your Gradle build file like this:
+   The plugin lets you select the modules you need for your project. For example, if you're developing a Paper plugin, you can add the required modules to your Gradle build file like this:
 
    ```kotlin
    stickynote {
-       modules(StickyNoteModules.BUKKIT)
+       registerModule(paper)
    }
    ```
 
-   With this, you'll have everything most plugins need, such as Adventure for message handling, Cloud for command management, and more.  
-
-   Want to include NMS (net.minecraft.server) utilities in your plugin? Simply add the `BUKKIT_NMS` module:
+   You can also select nested capabilities explicitly:
 
    ```kotlin
    stickynote {
-       modules(StickyNoteModules.BUKKIT, StickyNoteModules.BUKKIT_NMS)
+       registerModule(core {
+           database
+           configuration
+       })
+       registerModule(paper {
+           command
+           gui
+           nms
+       })
    }
    ```
 
-   Now you'll have access to utilities built with Takenaka, enabling features like packet NPCs, player info packets, and more.
+   Want only Paper + NMS utilities?
+
+   ```kotlin
+   stickynote {
+       registerModule(paper { nms })
+   }
+   ```
+
+   This tree-style DSL lets you keep dependencies minimal and only include the parts you actually use.
 
 2. **Dependency Management**  
    The plugin automatically adds all the required libraries to your dependencies, allowing you to access their Javadocs and source code within your IDE without issues.  
